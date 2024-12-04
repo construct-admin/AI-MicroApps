@@ -1,4 +1,4 @@
-APP_URL = "construct-alt-text-gen.streamlit.app"
+APP_URL = "https://alt-text-bot.streamlit.app/"
 APP_IMAGE = ""
 PUBLISHED = True
 
