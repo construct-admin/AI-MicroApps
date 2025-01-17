@@ -212,22 +212,6 @@ def build_user_prompt(user_input):
 
     return user_prompt
 
-# Example user input
-def example_user_input():
-    user_input = {
-        "request_type": "Suggest learning objectives based on the title",
-        "title": "Introduction to Python",
-        "lo_quantity": 3,
-        "goal_apply": True,
-        "goal_evaluate": True,
-        "goal_create": False,
-        "learning_preferences": True,
-        "relevance": True
-    }
-    return build_user_prompt(user_input)
-
-# Call the function to see the generated prompt
-print(example_user_input())
 
 # def prompt_conditionals(prompt, user_input, phase_name=None):
 #     #TO-DO: This is a hacky way to make prompts conditional that requires the user to know a lot of python and get the phase and field names exactly right. Future task to improve it. 
