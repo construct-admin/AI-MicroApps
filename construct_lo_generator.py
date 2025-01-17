@@ -139,70 +139,213 @@ PHASES = {
     }
 }
 
-# Function to handle Bloom's Taxonomy prompts
-def get_bloom_prompt(user_input):
-    bloom_goals = []
-    if user_input.get("goal_apply"):
-        bloom_goals.append("Apply")
-    if user_input.get("goal_evaluate"):
-        bloom_goals.append("Evaluate")
-    if user_input.get("goal_analyze"):
-        bloom_goals.append("Analyze")
-    if user_input.get("goal_create"):
-        bloom_goals.append("Create")
-    if bloom_goals:
-        return f"Start each learning objective with a verb from Bloom's taxonomy. **Avoid** verbs like understand, learn or know\. {', '.join(bloom_goals)}."
-    return ""
-
-# Function to handle relevance preferences
-def get_relevance_prompt(user_input):
-    relevance_prompts = []
-    if user_input.get("real_world_relevance"):
-        relevance_prompts.append("Try to provide learning objectives that are relevant to real-world practices and industry trends.")
-    if user_input.get("problem_solving"):
-        relevance_prompts.append("Try to provide objectives that focus on problem-solving and critical thinking.")
-    if user_input.get("meta_cognitive_reflection"):
-        relevance_prompts.append("Try to provide objectives that focus on meta-cognitive reflections.")
-    if user_input.get("ethical_consideration"):
-        relevance_prompts.append("Try to provide objectives that include emotional, moral, and ethical considerations.")
-    return " ".join(relevance_prompts)
-
-# Function to handle academic stage prompts
-def get_academic_stage_prompt(user_input):
-    stages = []
-    if user_input.get("lower_primary"):
-        stages.append("Lower Primary")
-    if user_input.get("middle_primary"):
-        stages.append("Middle Primary")
-    if user_input.get("upper_primary"):
-        stages.append("Upper Primary")
-    if user_input.get("lower_secondary"):
-        stages.append("Lower Secondary")
-    if user_input.get("upper_secondary"):
-        stages.append("Upper Secondary")
-    if user_input.get("undergraduate"):
-        stages.append("Undergraduate")
-    if user_input.get("postgraduate"):
-        stages.append("Postgraduate")
-    if stages:
-        return f"Target the following academic stage(s): {', '.join(stages)}."
-    return ""
-
-# Function to generate the final prompt
-def generate_final_prompt(user_input):
-    bloom_prompt = get_bloom_prompt(user_input)
-    relevance_prompt = get_relevance_prompt(user_input)
-    academic_stage_prompt = get_academic_stage_prompt(user_input)
-
+def prompt_conditionals(prompt, user_input, phase_name="generate_objectives"):
     if user_input["request_type"] == "Suggest learning objectives based on the title":
-        return f"Please suggest {user_input['lo_quantity']} module learning objectives for the provided title: {user_input['title']}. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
-    elif user_input["request_type"] == "Provide learning objectives based on the course learning objectives":
-        return f"Please write {user_input['lo_quantity']} module learning objectives based on the provided course-level learning objectives: {user_input['course_lo']}. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
-    elif user_input["request_type"] == "Provide learning objectives based on the graded assessment question(s) of the module":
-        return f"Please write {user_input['lo_quantity']} module learning objectives based on the graded quiz questions: {user_input['quiz_lo']}. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
-    elif user_input["request_type"] == "Provide learning objectives based on the formative activity questions":
-        return f"Please write {user_input['lo_quantity']} module learning objectives based on the formative activity questions: {user_input['form_lo']}. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
-    return "Invalid request type."
+        prompt = (
+             "Please suggest {lo_quantity} module learning objectives for the provided title: {title}.\n"
+             + "Be extremely strict and make sure that A) specific content exists that can be assessed to meet the learning objective and B) the learning objective is reasonable for an online course.")
+        if user_input["real_world_relevance"]:
+             prompt += (
+             "Try to provide learning objectives that are relevant to real-world practices and industry trends. \n"
+             )
+        if user_input["problem_solving"]:
+             prompt += (
+             "Try to provide objectives that focus on problem-solving and critical thinking. \n"
+             )
+        if user_input["meta_cognitive_reflection"]:
+             prompt += (
+             "Try to provide objectives that focus on meta-cognitive reflections. \n"
+             )
+        if user_input["ethical_consideration"]:
+             prompt += (
+             "Try to provide objectives that include emotional, moral, and ethical considerations. \n"
+             )
+        if any([user_input["goal_apply"], user_input["goal_evaluate"], user_input["goal_analyze"], user_input["goal_create"]]):
+            prompt += "Focus specifically on these cognitive goals: "  + "\n"
+            if user_input["goal_apply"]:
+                prompt+= "Apply \n"
+            if user_input["goal_evaluate"]:
+                prompt+= "Evaluate \n"
+            if user_input["goal_understand"]:
+                prompt+= "Understand \n"
+            if user_input["goal_analyze"]:
+                prompt+= "Analyze \n"
+            if user_input["goal_create"]:
+                prompt+= "Create \n"
+            prompt += ". \n"
+        if any([user_input["lower_primary"], user_input["middle_primary"], user_input["upper_primary"], user_input["lower_secondary"], user_input["upper_secondary"], user_input["undergraduate"], user_input["postgraduate"]]):
+            prompt += "Target the following academic stage(s): " + "\n"
+            if user_input["lower_primary"]:
+                prompt += "Lower Primary \n"
+            if user_input["middle_primary"]:
+                prompt += "Middle Primary \n"
+            if user_input["upper_primary"]:
+                prompt += "Upper Primary \n"
+            if user_input["lower_secondary"]:
+                prompt += "Lower Secondary \n"
+            if user_input["upper_secondary"]:
+                prompt += "Upper Secondary \n"
+            if user_input["undergraduate"]:
+                prompt += "Undergraduate \n"
+            if user_input["postgraduate"]:
+                prompt += "Postgraduate \n"
+            prompt += ". \n"
+    else:
+        if user_input["request_type"] == "Provide learning objectives based on the course learning objectives":
+            prompt = (
+             "Please write {lo_quantity} module learning objectives based on the provided course level learning objectives. \n {course_lo}"
+             + "Be extremely strict and make sure that A) specific content exists that can be assessed to meet the learning objective and B) the learning objective is reasonable for an online course.")
+        if user_input["real_world_relevance"]:
+             prompt += (
+             "Try to provide learning objectives that are relevant to real-world practices and industry trends. \n"
+             )
+        if user_input["problem_solving"]:
+             prompt += (
+             "Try to provide objectives that focus on problem-solving and critical thinking. \n"
+             )
+        if user_input["meta_cognitive_reflection"]:
+             prompt += (
+             "Try to provide objectives that focus on meta-cognitive reflections. \n"
+             )
+        if user_input["ethical_consideration"]:
+             prompt += (
+             "Try to provide objectives that include emotional, moral, and ethical considerations. \n"
+             )
+        if any([user_input["goal_apply"], user_input["goal_evaluate"], user_input["goal_analyze"], user_input["goal_create"]]):
+            prompt += "Focus specifically on these cognitive goals: "  + "\n"
+            if user_input["goal_apply"]:
+                prompt+= "Apply \n"
+            if user_input["goal_evaluate"]:
+                prompt+= "Evaluate \n"
+            if user_input["goal_understand"]:
+                prompt+= "Understand \n"
+            if user_input["goal_analyze"]:
+                prompt+= "Analyze \n"
+            if user_input["goal_create"]:
+                prompt+= "Create \n"
+            prompt += ". \n"
+        if any([user_input["lower_primary"], user_input["middle_primary"], user_input["upper_primary"], user_input["lower_secondary"], user_input["upper_secondary"], user_input["undergraduate"], user_input["postgraduate"]]):
+            prompt += "Target the following academic stage(s): " + "\n"
+            if user_input["lower_primary"]:
+                prompt += "Lower Primary \n"
+            if user_input["middle_primary"]:
+                prompt += "Middle Primary \n"
+            if user_input["upper_primary"]:
+                prompt += "Upper Primary \n"
+            if user_input["lower_secondary"]:
+                prompt += "Lower Secondary \n"
+            if user_input["upper_secondary"]:
+                prompt += "Upper Secondary \n"
+            if user_input["undergraduate"]:
+                prompt += "Undergraduate \n"
+            if user_input["postgraduate"]:
+                prompt += "Postgraduate \n"
+            prompt += ". \n"
+        else:
+            if user_input["request_type"] == "Provide learning objectives based on the graded assessment question(s) of the module":
+                prompt = (
+                "Please write {lo_quantity} module learning objectives based on the provided graded quiz questions. \n {quiz_lo}"
+             + "Be extremely strict and make sure that A) specific content exists that can be assessed to meet the learning objective and B) the learning objective is reasonable for an online course.")
+            if user_input["real_world_relevance"]:
+                prompt += (
+                "Try to provide learning objectives that are relevant to real-world practices and industry trends. \n"
+                )
+            if user_input["problem_solving"]:
+                prompt += (
+                "Try to provide objectives that focus on problem-solving and critical thinking. \n"
+                )
+            if user_input["meta_cognitive_reflection"]:
+                prompt += (
+                "Try to provide objectives that focus on meta-cognitive reflections. \n"
+                )
+            if user_input["ethical_consideration"]:
+                prompt += (
+                "Try to provide objectives that include emotional, moral, and ethical considerations. \n"
+                )
+            if any([user_input["goal_apply"], user_input["goal_evaluate"], user_input["goal_analyze"], user_input["goal_create"]]):
+                prompt += "Focus specifically on these cognitive goals: "  + "\n"
+                if user_input["goal_apply"]:
+                    prompt+= "Apply \n"
+                if user_input["goal_evaluate"]:
+                    prompt+= "Evaluate \n"
+                if user_input["goal_understand"]:
+                    prompt+= "Understand \n"
+                if user_input["goal_analyze"]:
+                    prompt+= "Analyze \n"
+                if user_input["goal_create"]:
+                    prompt+= "Create \n"
+                prompt += ". \n"
+            if any([user_input["lower_primary"], user_input["middle_primary"], user_input["upper_primary"], user_input["lower_secondary"], user_input["upper_secondary"], user_input["undergraduate"], user_input["postgraduate"]]):
+                prompt += "Target the following academic stage(s): " + "\n"
+                if user_input["lower_primary"]:
+                    prompt += "Lower Primary \n"
+                if user_input["middle_primary"]:
+                    prompt += "Middle Primary \n"
+                if user_input["upper_primary"]:
+                    prompt += "Upper Primary \n"
+                if user_input["lower_secondary"]:
+                    prompt += "Lower Secondary \n"
+                if user_input["upper_secondary"]:
+                    prompt += "Upper Secondary \n"
+                if user_input["undergraduate"]:
+                    prompt += "Undergraduate \n"
+                if user_input["postgraduate"]:
+                    prompt += "Postgraduate \n"
+                prompt += ". \n"
+            else:
+                if user_input["request_type"] == "Provide learning objectives based on the formative activity questions":
+                    prompt = (
+                    "Please write {lo_quantity} module learning objectives based on the formative activity questions. \n {form_lo}"
+                + "Be extremely strict and make sure that A) specific content exists that can be assessed to meet the learning objective and B) the learning objective is reasonable for an online course.")
+                if user_input["real_world_relevance"]:
+                    prompt += (
+                    "Try to provide learning objectives that are relevant to real-world practices and industry trends. \n"
+                    )
+                if user_input["problem_solving"]:
+                    prompt += (
+                    "Try to provide objectives that focus on problem-solving and critical thinking. \n"
+                    )
+                if user_input["meta_cognitive_reflection"]:
+                    prompt += (
+                    "Try to provide objectives that focus on meta-cognitive reflections. \n"
+                    )
+                if user_input["ethical_consideration"]:
+                    prompt += (
+                    "Try to provide objectives that include emotional, moral, and ethical considerations. \n"
+                    )
+                if any([user_input["goal_apply"], user_input["goal_evaluate"], user_input["goal_analyze"], user_input["goal_create"]]):
+                    prompt += "Focus specifically on these cognitive goals: "  + "\n"
+                if user_input["goal_apply"]:
+                    prompt+= "Apply \n"
+                if user_input["goal_evaluate"]:
+                    prompt+= "Evaluate \n"
+                if user_input["goal_understand"]:
+                    prompt+= "Understand \n"
+                if user_input["goal_analyze"]:
+                    prompt+= "Analyze \n"
+                if user_input["goal_create"]:
+                    prompt+= "Create \n"
+                prompt += ". \n"
+                if any([user_input["lower_primary"], user_input["middle_primary"], user_input["upper_primary"], user_input["lower_secondary"], user_input["upper_secondary"], user_input["undergraduate"], user_input["postgraduate"]]):
+                    prompt += "Target the following academic stage(s): " + "\n"
+                if user_input["lower_primary"]:
+                    prompt += "Lower Primary \n"
+                if user_input["middle_primary"]:
+                    prompt += "Middle Primary \n"
+                if user_input["upper_primary"]:
+                    prompt += "Upper Primary \n"
+                if user_input["lower_secondary"]:
+                    prompt += "Lower Secondary \n"
+                if user_input["upper_secondary"]:
+                    prompt += "Upper Secondary \n"
+                if user_input["undergraduate"]:
+                    prompt += "Undergraduate \n"
+                if user_input["postgraduate"]:
+                    prompt += "Postgraduate \n"
+                prompt += ". \n"
+    return prompt
+
+
 
 # Additional App Configuration
 PAGE_CONFIG = {
