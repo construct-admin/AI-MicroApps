@@ -55,16 +55,52 @@ def add_academic_stage_to_prompt(user_input):
         stages.append("Postgraduate")
     return f"Target the following academic stage(s): {', '.join(stages)}.\n" if stages else ""
 
+def resolve_user_input(user_input):
+    # Ensure extracted values are plain Python types, not DeltaGenerator objects
+    return {
+        "request_type": user_input.get("request_type", ""),
+        "title": user_input.get("title", ""),
+        "course_lo": user_input.get("course_lo", ""),
+        "quiz_lo": user_input.get("quiz_lo", ""),
+        "form_lo": user_input.get("form_lo", ""),
+        "lo_quantity": user_input.get("lo_quantity", 3),
+        "real_world_relevance": bool(user_input.get("real_world_relevance")),
+        "problem_solving": bool(user_input.get("problem_solving")),
+        "meta_cognitive_reflection": bool(user_input.get("meta_cognitive_reflection")),
+        "ethical_consideration": bool(user_input.get("ethical_consideration")),
+        "goal_apply": bool(user_input.get("goal_apply")),
+        "goal_evaluate": bool(user_input.get("goal_evaluate")),
+        "goal_analyze": bool(user_input.get("goal_analyze")),
+        "goal_create": bool(user_input.get("goal_create")),
+        "lower_primary": bool(user_input.get("lower_primary")),
+        "middle_primary": bool(user_input.get("middle_primary")),
+        "upper_primary": bool(user_input.get("upper_primary")),
+        "lower_secondary": bool(user_input.get("lower_secondary")),
+        "upper_secondary": bool(user_input.get("upper_secondary")),
+        "undergraduate": bool(user_input.get("undergraduate")),
+        "postgraduate": bool(user_input.get("postgraduate")),
+    }
+
 def prompt_conditionals(user_input):
+    user_input = resolve_user_input(user_input)  # Clean input
     preferences = add_preferences_to_prompt(user_input)
     bloom_goals = add_bloom_goals_to_prompt(user_input)
     academic_stage = add_academic_stage_to_prompt(user_input)
 
-    print(f"User Input: {user_input}")  # Debug log
-    print(f"Preferences: {preferences}")
-    print(f"Bloom Goals: {bloom_goals}")
-    print(f"Academic Stages: {academic_stage}")
+    # Validate inputs based on request type
+    if user_input["request_type"] == "Suggest learning objectives based on the title" and not user_input["title"]:
+        return "Error: Module title is required for this request type."
 
+    if user_input["request_type"] == "Provide learning objectives based on the course learning objectives" and not user_input["course_lo"]:
+        return "Error: Course learning objectives are required for this request type."
+
+    if user_input["request_type"] == "Provide learning objectives based on the graded assessment question(s) of the module" and not user_input["quiz_lo"]:
+        return "Error: Graded assessment questions are required for this request type."
+
+    if user_input["request_type"] == "Provide learning objectives based on the formative activity questions" and not user_input["form_lo"]:
+        return "Error: Formative activity questions are required for this request type."
+
+    # Construct prompt
     if user_input["request_type"] == "Suggest learning objectives based on the title":
         prompt = (
             f"Please suggest {user_input['lo_quantity']} module learning objectives for the provided title: {user_input['title']}.\n"
@@ -75,13 +111,20 @@ def prompt_conditionals(user_input):
             f"Please write {user_input['lo_quantity']} module learning objectives based on the provided course-level learning objectives: {user_input['course_lo']}.\n"
             f"{preferences}{bloom_goals}{academic_stage}"
         )
+    elif user_input["request_type"] == "Provide learning objectives based on the graded assessment question(s) of the module":
+        prompt = (
+            f"Please write {user_input['lo_quantity']} module learning objectives based on the graded quiz questions: {user_input['quiz_lo']}.\n"
+            f"{preferences}{bloom_goals}{academic_stage}"
+        )
+    elif user_input["request_type"] == "Provide learning objectives based on the formative activity questions":
+        prompt = (
+            f"Please write {user_input['lo_quantity']} module learning objectives based on the formative activity questions: {user_input['form_lo']}.\n"
+            f"{preferences}{bloom_goals}{academic_stage}"
+        )
     else:
         prompt = "Invalid request type."
-    
-    print(f"Final Prompt: {prompt}")  # Debug log
+
     return prompt
-
-
 
 PHASES = {
     "generate_objectives": {
@@ -211,7 +254,7 @@ PHASES = {
 }
 
 PAGE_CONFIG = {
-    "page_title": "Construct LO Generator",
+    "page_title": "LO Generator",
     "page_icon": "🔹",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
