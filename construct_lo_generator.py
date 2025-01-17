@@ -1,5 +1,13 @@
 import streamlit as st
 
+# Set the page configuration - MUST be the first Streamlit command
+st.set_page_config(
+    page_title="Learning Objectives Generator",
+    page_icon="🔹",
+    layout="centered",
+    initial_sidebar_state="expanded"
+)
+
 # Define whether the app is published and some app-level metadata
 PUBLISHED = True
 APP_URL = "https://construct-lo-generator.streamlit.app"
@@ -189,45 +197,6 @@ def prompt_conditionals(user_input):
         prompt += f"Target the following academic stage(s): {', '.join(stages)}.\n"
 
     return prompt
-
-# Debugging: Display the generated prompt for testing
-# Simulate user input for debugging
-user_input = {
-    "request_type": "Provide learning objectives based on the course learning objectives",
-    "course_lo": "Sample course objective",
-    "lo_quantity": 3,
-    "goal_apply": True,
-    "goal_evaluate": False,
-    "goal_analyze": True,
-    "real_world_relevance": True,
-    "problem_solving": True,
-    "meta_cognitive_reflection": False,
-    "ethical_consideration": True,
-    "lower_primary": False,
-    "middle_primary": False,
-    "upper_primary": False,
-    "lower_secondary": False,
-    "upper_secondary": True,
-    "undergraduate": False,
-    "postgraduate": True,
-}
-
-# Dynamically generate the prompt
-generated_prompt = prompt_conditionals(user_input)
-
-# Display the prompt in Streamlit for debugging purposes
-st.text_area("Debugging: Generated Prompt", generated_prompt)
-
-# App configuration settings
-PREFERRED_LLM = "gpt-4o-mini"
-LLM_CONFIG_OVERRIDE = {"temperature": 0.3}
-
-PAGE_CONFIG = {
-    "page_title": "Learning Objectives Generator",
-    "page_icon": "🔹",
-    "layout": "centered",
-    "initial_sidebar_state": "expanded"
-}
 
 # Main entry point for the app
 from core_logic.main import main
