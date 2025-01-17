@@ -113,7 +113,7 @@ PHASES = {
     }
 }
 
-# Helper functions for dynamic prompt construction
+# Helper functions for generating dynamic parts of the prompt
 def get_bloom_prompt(user_input):
     bloom_goals = []
     if user_input.get("goal_apply"):
@@ -166,16 +166,78 @@ def generate_final_prompt(user_input):
     relevance_prompt = get_relevance_prompt(user_input)
     academic_stage_prompt = get_academic_stage_prompt(user_input)
 
-    # Replace placeholders in the selected user prompt
-    prompt_template = PHASES["generate_objectives"]["user_prompt"][0]["prompt"]  # Adjust based on condition
-    final_prompt = prompt_template.format(
-        lo_quantity=user_input.get("lo_quantity", 3),
-        title=user_input.get("title", ""),
-        bloom_prompt=bloom_prompt,
-        relevance_prompt=relevance_prompt,
-        academic_stage_prompt=academic_stage_prompt
-    )
-    return final_prompt
+    # Generate the final prompt based on the user's request type
+    if user_input["request_type"] == "Suggest learning objectives based on the title":
+        return f"Please suggest {user_input['lo_quantity']} module learning objectives for the provided title: {user_input['title']}. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
+    elif user_input["request_type"] == "Provide learning objectives based on the course learning objectives":
+        return f"Please write {user_input['lo_quantity']} module learning objectives based on the provided course-level learning objectives: {user_input['course_lo']}. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
+    return "Invalid request type."
+
+# Streamlit UI for user interaction
+st.title(APP_TITLE)
+st.write(APP_INTRO)
+st.write(APP_HOW_IT_WORKS)
+
+# Gather user inputs
+request_type = st.radio("What would you like to do?", [
+    "Suggest learning objectives based on the title",
+    "Provide learning objectives based on the course learning objectives"
+])
+title = st.text_input("Enter the title of your module:", "")
+course_lo = st.text_area("Enter the course learning objective:", "", height=300)
+lo_quantity = st.slider("How many learning objectives would you like to generate?", 1, 6, 3)
+
+# Additional preferences
+real_world_relevance = st.checkbox("Prioritize objectives that have real-world relevance.")
+problem_solving = st.checkbox("Focus on problem-solving and critical thinking.")
+meta_cognitive_reflection = st.checkbox("Focus on meta-cognitive reflections.")
+ethical_consideration = st.checkbox("Include emotional, moral, and ethical considerations.")
+
+# Bloom's Taxonomy goals
+st.markdown("<h3>Bloom's Taxonomy</h3>", unsafe_allow_html=True)
+goal_apply = st.checkbox("Apply")
+goal_evaluate = st.checkbox("Evaluate")
+goal_analyze = st.checkbox("Analyze")
+goal_create = st.checkbox("Create")
+
+# Academic Stage
+st.markdown("<h3>Academic Stage:</h3>", unsafe_allow_html=True)
+lower_primary = st.checkbox("Lower Primary")
+middle_primary = st.checkbox("Middle Primary")
+upper_primary = st.checkbox("Upper Primary")
+lower_secondary = st.checkbox("Lower Secondary")
+upper_secondary = st.checkbox("Upper Secondary")
+undergraduate = st.checkbox("Undergraduate")
+postgraduate = st.checkbox("Postgraduate")
+
+# Generate final prompt
+user_input = {
+    "request_type": request_type,
+    "title": title,
+    "course_lo": course_lo,
+    "lo_quantity": lo_quantity,
+    "real_world_relevance": real_world_relevance,
+    "problem_solving": problem_solving,
+    "meta_cognitive_reflection": meta_cognitive_reflection,
+    "ethical_consideration": ethical_consideration,
+    "goal_apply": goal_apply,
+    "goal_evaluate": goal_evaluate,
+    "goal_analyze": goal_analyze,
+    "goal_create": goal_create,
+    "lower_primary": lower_primary,
+    "middle_primary": middle_primary,
+    "upper_primary": upper_primary,
+    "lower_secondary": lower_secondary,
+    "upper_secondary": upper_secondary,
+    "undergraduate": undergraduate,
+    "postgraduate": postgraduate
+}
+
+final_prompt = generate_final_prompt(user_input)
+
+# Display generated prompt
+st.markdown("### Generated Prompt:")
+st.text_area("Prompt", final_prompt, height=200)
 
 PREFERRED_LLM = "gpt-4o-mini"
 LLM_CONFIG_OVERRIDE = {"temperature": 0.3}
