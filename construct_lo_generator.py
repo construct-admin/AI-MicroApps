@@ -1,3 +1,5 @@
+import streamlit as st
+
 # Define whether the app is published and some app-level metadata
 PUBLISHED = True
 APP_URL = "https://construct-lo-generator.streamlit.app"
@@ -113,7 +115,7 @@ PHASES = {
             "undergraduate": {"type": "checkbox", "label": "Undergraduate"},
             "postgraduate": {"type": "checkbox", "label": "Postgraduate"},
         },
-        # The dynamically generated prompt using the `prompt_conditionals` function
+        # Dynamically generate the prompt using the `prompt_conditionals` function
         "user_prompt": [
             {
                 "condition": {},
@@ -122,7 +124,7 @@ PHASES = {
         ],
         "ai_response": True,
         "allow_revisions": True,
-        "show_prompt": True,
+        "show_prompt": True,  # Display the generated prompt
         "read_only_prompt": False
     }
 }
@@ -187,6 +189,34 @@ def prompt_conditionals(user_input):
         prompt += f"Target the following academic stage(s): {', '.join(stages)}.\n"
 
     return prompt
+
+# Debugging: Display the generated prompt for testing
+# Simulate user input for debugging
+user_input = {
+    "request_type": "Provide learning objectives based on the course learning objectives",
+    "course_lo": "Sample course objective",
+    "lo_quantity": 3,
+    "goal_apply": True,
+    "goal_evaluate": False,
+    "goal_analyze": True,
+    "real_world_relevance": True,
+    "problem_solving": True,
+    "meta_cognitive_reflection": False,
+    "ethical_consideration": True,
+    "lower_primary": False,
+    "middle_primary": False,
+    "upper_primary": False,
+    "lower_secondary": False,
+    "upper_secondary": True,
+    "undergraduate": False,
+    "postgraduate": True,
+}
+
+# Dynamically generate the prompt
+generated_prompt = prompt_conditionals(user_input)
+
+# Display the prompt in Streamlit for debugging purposes
+st.text_area("Debugging: Generated Prompt", generated_prompt)
 
 # App configuration settings
 PREFERRED_LLM = "gpt-4o-mini"
