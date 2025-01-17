@@ -37,7 +37,7 @@ PHASES = {
             "course_lo": {
                 "type": "text_area",
                 "label": "Enter the course learning objective: ",
-                "height": 500,
+                "height": 300,
                 "showIf": {"request_type": ["Provide learning objectives based on the course learning objectives"]}
             },
             # Input for graded assessment questions
@@ -52,7 +52,7 @@ PHASES = {
                 "type": "text_area",
                 "label": "Enter the formative activity question(s) of the module",
                 "height": 500,
-                "showIf": {"request_type": ["Provide learning objectives based on the graded assessment question(s) of the module"]}
+                "showIf": {"request_type": ["Provide learning objectives based on the formative activity questions"]}
             },
             # Slider to determine how many learning objectives to generate
             "lo_quantity": {
