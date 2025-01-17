@@ -9,6 +9,7 @@ APP_HOW_IT_WORKS = """
 2. Configure cognitive goals and relevance preferences.
 3. Generate specific, measurable, and aligned learning objectives.
 """
+
 SYSTEM_PROMPT = """You are EduDesignGPT, an expert instructional designer specialized in creating clear, specific, and measurable module-level learning objectives for online courses."""
 
 PHASES = {
@@ -139,7 +140,6 @@ PHASES = {
 }
 
 def append_preferences(user_prompt, user_input):
-    """Append preferences to the user_prompt based on user input."""
     preferences = []
     if user_input.get("real_world_relevance"):
         preferences.append("real-world practices and industry trends")
@@ -155,7 +155,6 @@ def append_preferences(user_prompt, user_input):
     return user_prompt
 
 def append_bloom_taxonomy(user_prompt, user_input):
-    """Append Bloom's taxonomy goals to the user_prompt."""
     bloom_goals = []
     if user_input.get("goal_apply"):
         bloom_goals.append("Apply")
@@ -171,7 +170,6 @@ def append_bloom_taxonomy(user_prompt, user_input):
     return user_prompt
 
 def append_academic_stage(user_prompt, user_input):
-    """Append academic stage information to the user_prompt."""
     stages = []
     if user_input.get("lower_primary"):
         stages.append("Lower Primary")
@@ -192,8 +190,7 @@ def append_academic_stage(user_prompt, user_input):
         user_prompt += f" Target the following academic stage(s): {', '.join(stages)}.\n"
     return user_prompt
 
-def prompt_conditionals(user_input, phase_name=None):
-    """Generate a complete user_prompt dynamically based on user input."""
+def prompt_conditionals(user_input):
     request_type = user_input.get("request_type", "Invalid request type")
     lo_quantity = user_input.get("lo_quantity", 1)
     user_prompt = ""
@@ -213,14 +210,11 @@ def prompt_conditionals(user_input, phase_name=None):
     else:
         user_prompt = "Invalid request type."
 
-    # Append preferences, Bloom's taxonomy goals, and academic stage
     user_prompt = append_preferences(user_prompt, user_input)
     user_prompt = append_bloom_taxonomy(user_prompt, user_input)
     user_prompt = append_academic_stage(user_prompt, user_input)
 
     return user_prompt
-
-
 
 # Additional App Configuration
 PAGE_CONFIG = {
