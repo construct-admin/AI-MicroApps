@@ -60,6 +60,11 @@ def prompt_conditionals(user_input):
     bloom_goals = add_bloom_goals_to_prompt(user_input)
     academic_stage = add_academic_stage_to_prompt(user_input)
 
+    print(f"User Input: {user_input}")  # Debug log
+    print(f"Preferences: {preferences}")
+    print(f"Bloom Goals: {bloom_goals}")
+    print(f"Academic Stages: {academic_stage}")
+
     if user_input["request_type"] == "Suggest learning objectives based on the title":
         prompt = (
             f"Please suggest {user_input['lo_quantity']} module learning objectives for the provided title: {user_input['title']}.\n"
@@ -70,19 +75,12 @@ def prompt_conditionals(user_input):
             f"Please write {user_input['lo_quantity']} module learning objectives based on the provided course-level learning objectives: {user_input['course_lo']}.\n"
             f"{preferences}{bloom_goals}{academic_stage}"
         )
-    elif user_input["request_type"] == "Provide learning objectives based on the graded assessment question(s) of the module":
-        prompt = (
-            f"Please write {user_input['lo_quantity']} module learning objectives based on the graded quiz questions: {user_input['quiz_lo']}.\n"
-            f"{preferences}{bloom_goals}{academic_stage}"
-        )
-    elif user_input["request_type"] == "Provide learning objectives based on the formative activity questions":
-        prompt = (
-            f"Please write {user_input['lo_quantity']} module learning objectives based on the formative activity questions: {user_input['form_lo']}.\n"
-            f"{preferences}{bloom_goals}{academic_stage}"
-        )
     else:
         prompt = "Invalid request type."
+    
+    print(f"Final Prompt: {prompt}")  # Debug log
     return prompt
+
 
 
 PHASES = {
