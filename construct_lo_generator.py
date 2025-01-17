@@ -1,13 +1,3 @@
-import streamlit as st
-
-# Set page configuration must be the first Streamlit command
-st.set_page_config(
-    page_title="Learning Objectives Generator",
-    page_icon="🔹",
-    layout="centered",
-    initial_sidebar_state="expanded"
-)
-
 PUBLISHED = True
 APP_URL = "https://construct-lo-generator.streamlit.app"
 APP_IMAGE = "lo_builder_flat.webp"
@@ -168,11 +158,13 @@ PREFERRED_LLM = "gpt-4o-mini"
 LLM_CONFIG_OVERRIDE = {"temperature": 0.3}
 
 PAGE_CONFIG = {
-    "page_title": "Learning Objectives Generator",
-    "page_icon": "🔹",
+    "page_title": "Construct LO Generator",
+    "page_icon": "️🔹",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }
+
+SIDEBAR_HIDDEN = True
 
 from core_logic.main import main
 if __name__ == "__main__":
