@@ -1,4 +1,11 @@
 import streamlit as st
+
+st.set_page_config = {
+    "page_title": "Construct LO Generator",
+    "page_icon": "️🔹",
+    "layout": "centered",
+    "initial_sidebar_state": "expanded"
+}
 PUBLISHED = True
 APP_URL = "https://construct-lo-generator.streamlit.app"
 APP_IMAGE = "lo_builder_flat.webp"
@@ -157,13 +164,6 @@ if st.button("Generate Prompt"):
 
 PREFERRED_LLM = "gpt-4o-mini"
 LLM_CONFIG_OVERRIDE = {"temperature": 0.3}
-
-PAGE_CONFIG = {
-    "page_title": "Construct LO Generator",
-    "page_icon": "️🔹",
-    "layout": "centered",
-    "initial_sidebar_state": "expanded"
-}
 
 SIDEBAR_HIDDEN = True
 
