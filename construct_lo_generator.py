@@ -1,6 +1,6 @@
 import streamlit as st
 
-# Set the page configuration - MUST be the first Streamlit command
+# Set the page configuration
 st.set_page_config(
     page_title="Learning Objectives Generator",
     page_icon="🔹",
@@ -24,134 +24,21 @@ APP_HOW_IT_WORKS = """
 3. Generate specific, measurable, and aligned learning objectives.
 """
 
-# The system prompt that defines the AI's behavior
-SYSTEM_PROMPT = "You are EduDesignGPT, an expert instructional designer specialized in creating clear, specific, and measurable module-level learning objectives for online courses. Your purpose is to assist course creators in developing learning objectives that align with best practices for online education."
-
-# Define all the phases and fields for user input
-PHASES = {
-    "generate_objectives": {
-        "name": "Generate Learning Objectives",
-        "fields": {
-            # Radio buttons for selecting the type of request
-            "request_type": {
-                "type": "radio",
-                "label": "What would you like to do?",
-                "options": [
-                    "Suggest learning objectives based on the title",
-                    "Provide learning objectives based on the course learning objectives",
-                    "Provide learning objectives based on the graded assessment question(s) of the module",
-                    "Provide learning objectives based on the formative activity questions"
-                ],
-            },
-            # Text input for the module title
-            "title": {
-                "type": "text_input",
-                "label": "Enter the title of your module.",
-                "showIf": {"request_type": ["Suggest learning objectives based on the title"]}
-            },
-            # Text area for course-level learning objectives
-            "course_lo": {
-                "type": "text_area",
-                "label": "Enter the course learning objective: ",
-                "height": 300,
-                "showIf": {"request_type": ["Provide learning objectives based on the course learning objectives"]}
-            },
-            # Text area for graded assessment questions
-            "quiz_lo": {
-                "type": "text_area",
-                "label": "Enter the graded assessment question(s) of the module.",
-                "height": 300,
-                "showIf": {"request_type": ["Provide learning objectives based on the graded assessment question(s) of the module"]}
-            },
-            # Text area for formative activity questions
-            "form_lo": {
-                "type": "text_area",
-                "label": "Enter the formative activity question(s) of the module",
-                "height": 300,
-                "showIf": {"request_type": ["Provide learning objectives based on the formative activity questions"]}
-            },
-            # Slider for selecting how many objectives to generate
-            "lo_quantity": {
-                "type": "slider",
-                "label": "How many learning objectives would you like to generate?",
-                "min_value": 1,
-                "max_value": 6,
-                "value": 3
-            },
-            # Checkbox for real-world relevance
-            "real_world_relevance": {
-                "type": "checkbox",
-                "label": "Try to provide learning objectives that are relevant to real-world practices and industry trends."
-            },
-            # Additional checkboxes for critical thinking, reflection, and ethics
-            "problem_solving": {
-                "type": "checkbox",
-                "label": "Focus on problem-solving and critical thinking."
-            },
-            "meta_cognitive_reflection": {
-                "type": "checkbox",
-                "label": "Focus on meta-cognitive reflections."
-            },
-            "ethical_consideration": {
-                "type": "checkbox",
-                "label": "Include emotional, moral, and ethical considerations."
-            },
-            # Section for Bloom's Taxonomy goals
-            "bloom_taxonomy": {
-                "type": "markdown",
-                "body": """<h3>Bloom's Taxonomy</h3> Select cognitive goals to focus on:""",
-                "unsafe_allow_html": True,
-            },
-            # Bloom's Taxonomy checkboxes
-            "goal_apply": {"type": "checkbox", "label": "Apply"},
-            "goal_evaluate": {"type": "checkbox", "label": "Evaluate"},
-            "goal_analyze": {"type": "checkbox", "label": "Analyze"},
-            "goal_create": {"type": "checkbox", "label": "Create"},
-            # Academic Stage Section
-            "academic_stage": {
-                "type": "markdown",
-                "body": """<h3>Academic Stage:</h3>
-                Select the category that best reflects the academic stage of the students:""",
-                "unsafe_allow_html": True,
-            },
-            # Academic Stage checkboxes
-            "lower_primary": {"type": "checkbox", "label": "Lower Primary"},
-            "middle_primary": {"type": "checkbox", "label": "Middle Primary"},
-            "upper_primary": {"type": "checkbox", "label": "Upper Primary"},
-            "lower_secondary": {"type": "checkbox", "label": "Lower Secondary"},
-            "upper_secondary": {"type": "checkbox", "label": "Upper Secondary"},
-            "undergraduate": {"type": "checkbox", "label": "Undergraduate"},
-            "postgraduate": {"type": "checkbox", "label": "Postgraduate"},
-        },
-        # Dynamically generate the prompt using the `prompt_conditionals` function
-        "user_prompt": [
-            {
-                "condition": {},
-                "prompt": lambda user_input: prompt_conditionals(user_input)
-            }
-        ],
-        "ai_response": True,
-        "allow_revisions": True,
-        "show_prompt": True,  # Display the generated prompt
-        "read_only_prompt": False
-    }
-}
-
-# Function to build the prompt dynamically based on user input
+# Dynamically build the AI prompt based on user input
 def prompt_conditionals(user_input):
     """
-    Dynamically build the AI prompt based on user input.
+    Generate the AI prompt dynamically based on user input.
     """
     prompt = ""
 
     # Add the main request type prompt
-    if user_input["request_type"] == "Provide learning objectives based on the course learning objectives":
+    if user_input.get("request_type") == "Provide learning objectives based on the course learning objectives":
         prompt = f"Please write {user_input['lo_quantity']} module learning objectives based on the provided course-level learning objectives: {user_input.get('course_lo', '')}.\n"
-    elif user_input["request_type"] == "Suggest learning objectives based on the title":
+    elif user_input.get("request_type") == "Suggest learning objectives based on the title":
         prompt = f"Please suggest {user_input['lo_quantity']} module learning objectives for the provided title: {user_input.get('title', '')}.\n"
-    elif user_input["request_type"] == "Provide learning objectives based on the graded assessment question(s) of the module":
+    elif user_input.get("request_type") == "Provide learning objectives based on the graded assessment question(s) of the module":
         prompt = f"Please suggest {user_input['lo_quantity']} module learning objectives based on the graded quiz questions: {user_input.get('quiz_lo', '')}.\n"
-    elif user_input["request_type"] == "Provide learning objectives based on the formative activity questions":
+    elif user_input.get("request_type") == "Provide learning objectives based on the formative activity questions":
         prompt = f"Please suggest {user_input['lo_quantity']} module learning objectives based on the formative activity questions: {user_input.get('form_lo', '')}.\n"
 
     # Add Bloom's Taxonomy goals
@@ -198,7 +85,33 @@ def prompt_conditionals(user_input):
 
     return prompt
 
-# Main entry point for the app
-from core_logic.main import main
-if __name__ == "__main__":
-    main(config=globals())
+# Simulate user input for testing purposes
+user_input = {
+    "request_type": "Provide learning objectives based on the course learning objectives",
+    "course_lo": "Sample course objective",
+    "lo_quantity": 3,
+    "goal_apply": True,
+    "goal_evaluate": False,
+    "goal_analyze": True,
+    "real_world_relevance": True,
+    "problem_solving": True,
+    "meta_cognitive_reflection": False,
+    "ethical_consideration": True,
+    "lower_primary": False,
+    "middle_primary": False,
+    "upper_primary": False,
+    "lower_secondary": False,
+    "upper_secondary": True,
+    "undergraduate": False,
+    "postgraduate": True,
+}
+
+# Generate the prompt based on user input
+generated_prompt = prompt_conditionals(user_input)
+
+# Display the generated prompt in Streamlit
+st.text_area("Generated Prompt", generated_prompt)
+
+# Example submission button to test
+if st.button("Submit"):
+    st.write("Prompt successfully generated!")
