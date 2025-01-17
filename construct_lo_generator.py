@@ -99,13 +99,11 @@ PHASES = {
         "user_prompt": [
             {
                 "condition": {"request_type": "Provide learning objectives based on the content"},
-                "prompt": """Please write {lo_quantity} module learning objectives based on the provided content. 
-                {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"""
+                "prompt": "Please write {lo_quantity} module learning objectives based on the provided content. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
             },
             {
                 "condition": {"request_type": "Suggest learning objectives based on the title"},
-                "prompt": """Please suggest {lo_quantity} module learning objectives for the provided title: {title}. 
-                {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"""
+                "prompt": "Please suggest {lo_quantity} module learning objectives for the provided title: {title}. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
             },
         ],
         "ai_response": True,
@@ -161,6 +159,23 @@ def get_academic_stage_prompt(user_input):
     if stages:
         return f"Target the following academic stage(s): {', '.join(stages)}."
     return ""
+
+def generate_final_prompt(user_input):
+    """Generate the final prompt by combining all dynamic components."""
+    bloom_prompt = get_bloom_prompt(user_input)
+    relevance_prompt = get_relevance_prompt(user_input)
+    academic_stage_prompt = get_academic_stage_prompt(user_input)
+
+    # Replace placeholders in the selected user prompt
+    prompt_template = PHASES["generate_objectives"]["user_prompt"][0]["prompt"]  # Adjust based on condition
+    final_prompt = prompt_template.format(
+        lo_quantity=user_input.get("lo_quantity", 3),
+        title=user_input.get("title", ""),
+        bloom_prompt=bloom_prompt,
+        relevance_prompt=relevance_prompt,
+        academic_stage_prompt=academic_stage_prompt
+    )
+    return final_prompt
 
 PREFERRED_LLM = "gpt-4o-mini"
 LLM_CONFIG_OVERRIDE = {"temperature": 0.3}
