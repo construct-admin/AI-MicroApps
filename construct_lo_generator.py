@@ -12,6 +12,7 @@ APP_HOW_IT_WORKS = """
 
 SYSTEM_PROMPT = """You are EduDesignGPT, an expert instructional designer specialized in creating clear, specific, and measurable module-level learning objectives for online courses."""
 
+# Helper functions to build the prompt
 def add_preferences_to_prompt(user_input):
     prompt = ""
     if user_input.get("real_world_relevance"):
@@ -54,7 +55,7 @@ def add_academic_stage_to_prompt(user_input):
         stages.append("Postgraduate")
     return f"Target the following academic stage(s): {', '.join(stages)}.\n" if stages else ""
 
-def prompt_conditionals(prompt, user_input, phase_name="generate_objectives"):
+def prompt_conditionals(user_input):
     preferences = add_preferences_to_prompt(user_input)
     bloom_goals = add_bloom_goals_to_prompt(user_input)
     academic_stage = add_academic_stage_to_prompt(user_input)
