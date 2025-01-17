@@ -1,3 +1,14 @@
+import streamlit as st
+
+# Set up the Streamlit page configuration at the very beginning
+st.set_page_config(
+    page_title="Learning Objectives Generator",
+    page_icon="🔹",
+    layout="centered",
+    initial_sidebar_state="expanded"
+)
+
+# App constants and introductory text
 PUBLISHED = True
 APP_URL = "https://construct-lo-generator.streamlit.app"
 APP_IMAGE = "lo_builder_flat.webp"
@@ -13,108 +24,10 @@ APP_HOW_IT_WORKS = """
 
 SYSTEM_PROMPT = """You are EduDesignGPT, an expert instructional designer specialized in creating clear, specific, and measurable module-level learning objectives for online courses. Your purpose is to assist course creators in developing learning objectives that align with best practices for online education."""
 
-PHASES = {
-    "generate_objectives": {
-        "name": "Generate Learning Objectives",
-        "fields": {
-            "request_type": {
-                "type": "radio",
-                "label": "What would you like to do?",
-                "options": [
-                    "Suggest learning objectives based on the title",
-                    "Provide learning objectives based on the course learning objectives",
-                    "Provide learning objectives based on the graded assessment question(s) of the module",
-                    "Provide learning objectives based on the formative activity questions"
-                ],
-            },
-            "title": {
-                "type": "text_input",
-                "label": "Enter the title of your module.",
-                "showIf": {"request_type": ["Suggest learning objectives based on the title"]}
-            },
-            "course_lo": {
-                "type": "text_area",
-                "label": "Enter the course learning objective: ",
-                "height": 300,
-                "showIf": {"request_type": ["Provide learning objectives based on the course learning objectives"]}
-            },
-            "quiz_lo": {
-                "type": "text_area",
-                "label": "Enter the graded assessment question(s) of the module.",
-                "height": 300,
-                "showIf": {"request_type": ["Provide learning objectives based on the graded assessment question(s) of the module"]}
-            },
-            "form_lo": {
-                "type": "text_area",
-                "label": "Enter the formative activity question(s) of the module",
-                "height": 300,
-                "showIf": {"request_type": ["Provide learning objectives based on the formative activity questions"]}
-            },
-            "lo_quantity": {
-                "type": "slider",
-                "label": "How many learning objectives would you like to generate?",
-                "min_value": 1,
-                "max_value": 6,
-                "value": 3
-            },
-            "real_world_relevance": {
-                "type": "checkbox",
-                "label": "Prioritize objectives that have real-world relevance."
-            },
-            "problem_solving": {
-                "type": "checkbox",
-                "label": "Focus on problem-solving and critical thinking."
-            },
-            "meta_cognitive_reflection": {
-                "type": "checkbox",
-                "label": "Focus on meta-cognitive reflections."
-            },
-            "ethical_consideration": {
-                "type": "checkbox",
-                "label": "Include emotional, moral, and ethical considerations."
-            },
-            "bloom_taxonomy": {
-                "type": "markdown",
-                "body": """<h3>Bloom's Taxonomy</h3> Select cognitive goals to focus on:""",
-                "unsafe_allow_html": True,
-            },
-            "goal_apply": {"type": "checkbox", "label": "Apply"},
-            "goal_evaluate": {"type": "checkbox", "label": "Evaluate"},
-            "goal_analyze": {"type": "checkbox", "label": "Analyze"},
-            "goal_create": {"type": "checkbox", "label": "Create"},
-            "academic_stage": {
-                "type": "markdown",
-                "body": """<h3>Academic Stage:</h3>
-                Select the category that best reflects the academic stage of the students:""",
-                "unsafe_allow_html": True,
-            },
-            "lower_primary": {"type": "checkbox", "label": "Lower Primary"},
-            "middle_primary": {"type": "checkbox", "label": "Middle Primary"},
-            "upper_primary": {"type": "checkbox", "label": "Upper Primary"},
-            "lower_secondary": {"type": "checkbox", "label": "Lower Secondary"},
-            "upper_secondary": {"type": "checkbox", "label": "Upper Secondary"},
-            "undergraduate": {"type": "checkbox", "label": "Undergraduate"},
-            "postgraduate": {"type": "checkbox", "label": "Postgraduate"},
-        },
-        "user_prompt": [
-            {
-                "condition": {"request_type": "Provide learning objectives based on the content"},
-                "prompt": "Please write {lo_quantity} module learning objectives based on the provided content. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
-            },
-            {
-                "condition": {"request_type": "Suggest learning objectives based on the title"},
-                "prompt": "Please suggest {lo_quantity} module learning objectives for the provided title: {title}. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
-            },
-        ],
-        "ai_response": True,
-        "allow_revisions": True,
-        "show_prompt": True,
-        "read_only_prompt": False
-    }
-}
+# Functions to generate parts of the dynamic prompt
 
-# Helper functions for generating dynamic parts of the prompt
 def get_bloom_prompt(user_input):
+    """Generate Bloom's Taxonomy goals based on user selection."""
     bloom_goals = []
     if user_input.get("goal_apply"):
         bloom_goals.append("Apply")
@@ -129,6 +42,7 @@ def get_bloom_prompt(user_input):
     return ""
 
 def get_relevance_prompt(user_input):
+    """Generate relevance-related preferences based on user selection."""
     relevance_prompts = []
     if user_input.get("real_world_relevance"):
         relevance_prompts.append("Try to provide learning objectives that are relevant to real-world practices and industry trends.")
@@ -141,6 +55,7 @@ def get_relevance_prompt(user_input):
     return " ".join(relevance_prompts)
 
 def get_academic_stage_prompt(user_input):
+    """Generate academic stage preferences based on user selection."""
     stages = []
     if user_input.get("lower_primary"):
         stages.append("Lower Primary")
@@ -161,19 +76,18 @@ def get_academic_stage_prompt(user_input):
     return ""
 
 def generate_final_prompt(user_input):
-    """Generate the final prompt by combining all dynamic components."""
+    """Combine all components into the final prompt."""
     bloom_prompt = get_bloom_prompt(user_input)
     relevance_prompt = get_relevance_prompt(user_input)
     academic_stage_prompt = get_academic_stage_prompt(user_input)
 
-    # Generate the final prompt based on the user's request type
     if user_input["request_type"] == "Suggest learning objectives based on the title":
         return f"Please suggest {user_input['lo_quantity']} module learning objectives for the provided title: {user_input['title']}. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
     elif user_input["request_type"] == "Provide learning objectives based on the course learning objectives":
         return f"Please write {user_input['lo_quantity']} module learning objectives based on the provided course-level learning objectives: {user_input['course_lo']}. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
     return "Invalid request type."
 
-# Streamlit UI for user interaction
+# Streamlit User Interface
 st.title(APP_TITLE)
 st.write(APP_INTRO)
 st.write(APP_HOW_IT_WORKS)
@@ -183,11 +97,13 @@ request_type = st.radio("What would you like to do?", [
     "Suggest learning objectives based on the title",
     "Provide learning objectives based on the course learning objectives"
 ])
-title = st.text_input("Enter the title of your module:", "")
-course_lo = st.text_area("Enter the course learning objective:", "", height=300)
+
+# Input fields for various request types
+title = st.text_input("Enter the title of your module:", "") if request_type == "Suggest learning objectives based on the title" else ""
+course_lo = st.text_area("Enter the course learning objective:", "", height=300) if request_type == "Provide learning objectives based on the course learning objectives" else ""
 lo_quantity = st.slider("How many learning objectives would you like to generate?", 1, 6, 3)
 
-# Additional preferences
+# Relevance preferences
 real_world_relevance = st.checkbox("Prioritize objectives that have real-world relevance.")
 problem_solving = st.checkbox("Focus on problem-solving and critical thinking.")
 meta_cognitive_reflection = st.checkbox("Focus on meta-cognitive reflections.")
@@ -210,7 +126,7 @@ upper_secondary = st.checkbox("Upper Secondary")
 undergraduate = st.checkbox("Undergraduate")
 postgraduate = st.checkbox("Postgraduate")
 
-# Generate final prompt
+# Compile user inputs into a dictionary
 user_input = {
     "request_type": request_type,
     "title": title,
@@ -233,11 +149,17 @@ user_input = {
     "postgraduate": postgraduate
 }
 
+# Generate the final prompt based on user inputs
 final_prompt = generate_final_prompt(user_input)
 
-# Display generated prompt
+# Display the generated prompt
 st.markdown("### Generated Prompt:")
 st.text_area("Prompt", final_prompt, height=200)
+
+# Submit button for clarity (optional)
+if st.button("Submit"):
+    st.success("Prompt generated successfully!")
+
 
 PREFERRED_LLM = "gpt-4o-mini"
 LLM_CONFIG_OVERRIDE = {"temperature": 0.3}
