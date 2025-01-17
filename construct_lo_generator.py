@@ -1,17 +1,11 @@
 import streamlit as st
-
-st.set_page_config = {
-    "page_title": "Construct LO Generator",
-    "page_icon": "️🔹",
-    "layout": "centered",
-    "initial_sidebar_state": "expanded"
-}
 PUBLISHED = True
 APP_URL = "https://construct-lo-generator.streamlit.app"
 APP_IMAGE = "lo_builder_flat.webp"
 
-APP_TITLE = "Learning Objectives Generator"
+APP_TITLE = "Construct Learning Objectives Generator"
 APP_INTRO = """This application is based on constructive alignment principles. It allows you to generate learning objectives that are aligned with your course-level learning objectives, assessments, and activities. Furthermore, it can be used to enhance existing learning objectives and validate objective alignment."""
+
 APP_HOW_IT_WORKS = """
 1. Provide details about your course/module.
 2. Select cognitive goals and relevance preferences.
@@ -89,9 +83,9 @@ def generate_final_prompt(user_input):
     return "Invalid request type."
 
 # App title and description
-# st.title(APP_TITLE)
-# st.write(APP_INTRO)
-# st.write(APP_HOW_IT_WORKS)
+st.title(APP_TITLE)
+st.write(APP_INTRO)
+st.write(APP_HOW_IT_WORKS)
 
 # Gather user inputs
 request_type = st.radio("What would you like to do?", [
@@ -164,6 +158,13 @@ if st.button("Generate Prompt"):
 
 PREFERRED_LLM = "gpt-4o-mini"
 LLM_CONFIG_OVERRIDE = {"temperature": 0.3}
+
+PAGE_CONFIG = {
+    "page_title": "Construct LO Generator",
+    "page_icon": "️🔹",
+    "layout": "centered",
+    "initial_sidebar_state": "expanded"
+}
 
 SIDEBAR_HIDDEN = True
 
