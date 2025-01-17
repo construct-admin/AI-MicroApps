@@ -91,9 +91,9 @@ def generate_final_prompt(user_input):
     return "Invalid request type."
 
 # App title and description
-st.title(APP_TITLE)
-st.write(APP_INTRO)
-st.write(APP_HOW_IT_WORKS)
+# st.title(APP_TITLE)
+# st.write(APP_INTRO)
+# st.write(APP_HOW_IT_WORKS)
 
 # Gather user inputs
 request_type = st.radio("What would you like to do?", [
@@ -159,15 +159,11 @@ user_input = {
     "postgraduate": postgraduate
 }
 
-# Display the initial blank prompt
-st.markdown("### Generated Prompt:")
-st.text_area("Prompt", INITIAL_PROMPT, height=200)
-
 # Submit button to generate the final prompt
 if st.button("Generate Prompt"):
     final_prompt = generate_final_prompt(user_input)
     st.text_area("Prompt", final_prompt, height=200)
-    
+
 PREFERRED_LLM = "gpt-4o-mini"
 LLM_CONFIG_OVERRIDE = {"temperature": 0.3}
 
