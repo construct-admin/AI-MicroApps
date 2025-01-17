@@ -1,5 +1,12 @@
 import streamlit as st
 
+st.set_page_config(
+    page_title="Learning Objectives Generator",
+    page_icon="🔹",
+    layout="centered",
+    initial_sidebar_state="expanded"
+)
+
 PUBLISHED = True
 APP_URL = "https://construct-lo-generator.streamlit.app"
 APP_IMAGE = "lo_builder_flat.webp"
