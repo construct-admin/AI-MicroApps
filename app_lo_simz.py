@@ -4,16 +4,11 @@ APP_IMAGE = "lo_builder_flat.webp"
 
 APP_TITLE = "Learning Objectives Generator"
 APP_INTRO = """This micro-app allows you to generate learning objectives or validate alignment for existing learning objectives. It streamlines instructional design by integrating AI to enhance efficiency and personalization."""
-
 APP_HOW_IT_WORKS = """
 1. Fill in the details of your course/module.
 2. Configure cognitive goals and relevance preferences.
 3. Generate specific, measurable, and aligned learning objectives.
 """
-
-SHARED_ASSET = {}
-
-HTML_BUTTON = {}
 
 SYSTEM_PROMPT = """You are EduDesignGPT, an expert instructional designer specialized in creating clear, specific, and measurable module-level learning objectives for online courses."""
 
@@ -137,6 +132,7 @@ PHASES = {
                 "label": "Postgraduate"
             }
         },
+        "user_prompt": "{user_prompt}",
         "ai_response": True,
         "allow_revisions": True,
         "show_prompt": True,
@@ -144,27 +140,8 @@ PHASES = {
     }
 }
 
-def build_user_prompt(user_input):
-    """Build the final user prompt based on inputs."""
-    request_type = user_input.get("request_type", "")
-    title = user_input.get("title", "Untitled Module")
-    lo_quantity = user_input.get("lo_quantity", 1)
-    course_lo = user_input.get("course_lo", "")
-    quiz_lo = user_input.get("quiz_lo", "")
-    form_lo = user_input.get("form_lo", "")
-
-    prompt = ""
-
-    if request_type == "Suggest learning objectives based on the title":
-        prompt += f"Please suggest {lo_quantity} module learning objectives for the provided title: {title}.\n"
-    elif request_type == "Provide learning objectives based on the course learning objectives":
-        prompt += f"Please write {lo_quantity} module learning objectives based on the provided course-level learning objectives: {course_lo}.\n"
-    elif request_type == "Provide learning objectives based on the graded assessment question(s) of the module":
-        prompt += f"Please write {lo_quantity} module learning objectives based on the graded quiz questions: {quiz_lo}.\n"
-    elif request_type == "Provide learning objectives based on the formative activity questions":
-        prompt += f"Please write {lo_quantity} module learning objectives based on the formative activity questions: {form_lo}.\n"
-
-    # Append preferences
+def append_preferences(user_prompt, user_input):
+    """Append preferences to the user_prompt based on user input."""
     preferences = []
     if user_input.get("real_world_relevance"):
         preferences.append("real-world practices and industry trends")
@@ -176,9 +153,11 @@ def build_user_prompt(user_input):
         preferences.append("emotional, moral, and ethical considerations")
 
     if preferences:
-        prompt += f"Focus on the following preferences: {', '.join(preferences)}.\n"
+        user_prompt += f" Focus on the following preferences: {', '.join(preferences)}.\n"
+    return user_prompt
 
-    # Append Bloom's Taxonomy
+def append_bloom_taxonomy(user_prompt, user_input):
+    """Append Bloom's taxonomy goals to the user_prompt."""
     bloom_goals = []
     if user_input.get("goal_apply"):
         bloom_goals.append("Apply")
@@ -190,9 +169,11 @@ def build_user_prompt(user_input):
         bloom_goals.append("Create")
 
     if bloom_goals:
-        prompt += f"Focus specifically on these cognitive goals: {', '.join(bloom_goals)}.\n"
+        user_prompt += f" Focus specifically on these cognitive goals: {', '.join(bloom_goals)}.\n"
+    return user_prompt
 
-    # Append Academic Stage
+def append_academic_stage(user_prompt, user_input):
+    """Append academic stage information to the user_prompt."""
     stages = []
     if user_input.get("lower_primary"):
         stages.append("Lower Primary")
@@ -210,22 +191,49 @@ def build_user_prompt(user_input):
         stages.append("Postgraduate")
 
     if stages:
-        prompt += f"Target the following academic stage(s): {', '.join(stages)}.\n"
+        user_prompt += f" Target the following academic stage(s): {', '.join(stages)}.\n"
+    return user_prompt
 
-    return prompt
+def prompt_conditionals(user_input, phase_name=None):
+    """Generate a complete user_prompt dynamically based on user input."""
+    request_type = user_input.get("request_type", "Invalid request type")
+    lo_quantity = user_input.get("lo_quantity", 1)
+    title = user_input.get("title", "Untitled Module")  # Handle missing title gracefully
 
-PREFERRED_LLM = "gpt-4o"
-LLM_CONFIG_OVERRIDE = {}
+    # Initialize user_prompt
+    user_prompt = ""
 
-SCORING_DEBUG_MODE = True
-DISPLAY_COST = True
+    # Construct prompt based on request type
+    if request_type == "Suggest learning objectives based on the title":
+        user_prompt = f"Please suggest {lo_quantity} module learning objectives for the provided title: {title}.\n"
+    elif request_type == "Provide learning objectives based on the course learning objectives":
+        course_lo = user_input.get("course_lo", "No course objectives provided.")
+        user_prompt = f"Please write {lo_quantity} module learning objectives based on the provided course-level learning objectives: {course_lo}.\n"
+    elif request_type == "Provide learning objectives based on the graded assessment question(s) of the module":
+        quiz_lo = user_input.get("quiz_lo", "No quiz questions provided.")
+        user_prompt = f"Please write {lo_quantity} module learning objectives based on the graded quiz questions: {quiz_lo}.\n"
+    elif request_type == "Provide learning objectives based on the formative activity questions":
+        form_lo = user_input.get("form_lo", "No formative activity questions provided.")
+        user_prompt = f"Please write {lo_quantity} module learning objectives based on the formative activity questions: {form_lo}.\n"
+    else:
+        user_prompt = "Invalid request type. Please select a valid option."
 
-COMPLETION_MESSAGE = "I hope this helps improve your learning objectives!"
-COMPLETION_CELEBRATION = False
+    # Append additional preferences
+    user_prompt = append_preferences(user_prompt, user_input)
 
-RAG_IMPLEMENTATION = False
-SOURCE_DOCUMENT = "sample.pdf"
+    # Append Bloom's Taxonomy goals
+    user_prompt = append_bloom_taxonomy(user_prompt, user_input)
 
+    # Append academic stage details
+    user_prompt = append_academic_stage(user_prompt, user_input)
+
+    # Log the final prompt for debugging
+    print("Generated user_prompt:", user_prompt)
+
+    # Return the constructed prompt
+    return user_prompt
+
+# Additional App Configuration
 PAGE_CONFIG = {
     "page_title": "Construct LO Generator",
     "page_icon": "️🔹",
@@ -237,5 +245,6 @@ SIDEBAR_HIDDEN = True
 
 from core_logic.main import main
 
+# Main entry point
 if __name__ == "__main__":
     main(config=globals())
