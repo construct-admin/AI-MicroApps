@@ -135,12 +135,91 @@ PHASES = {
                 "label": "Postgraduate"
             }
         },
-        "user_prompt": "{user_prompt}",
+        "phase_instructions": "The user will summarize the shared case study. Please critically review their response for accuracy. You will give them credit for mentioning Ebola, and you will be very pleased if they mention it is about Ebola with any other relevant details.",
+        "user_prompt": [
+            {
+            	"condition": {"request_type": "Validate alignment between learning content and objectives"},
+            	"prompt": """Please validate the alignment between the provided learning content and the learning objectives provided.\n
+            			Be extremely strict and make sure that A) specific content exists that can be assessed to meet the learning objective and B) the learning objective is reasonable for an online course.)"""
+            },
+            {
+            	"condition": {"request_type": "Suggest learning objectives based on the title"},
+            	"prompt": "Please suggest {lo_quantity} learning objectives for the provided course. \n"
+            },
+			{
+            	"condition": {"request_type": "Provide learning objectives based on the content"},
+            	"prompt": "Please write {lo_quantity} learning objectives based on the provided content.\n"
+            },
+            {
+                "condition": {"learning_objectives": True},
+                "prompt": "Here are my learning objectives: {learning_objectives}"
+            },
+            {
+                "condition": {},
+                "prompt": "Provide learning objectives that are specific, measurable, easy to understand, and suitable for an online course.\nStart each learning objective with a verb from Bloom's taxonomy. **Avoid** verbs like \"understand\", \"learn\", or \"know\".",
+            },
+            {
+                "condition": {},
+                "prompt": """If I provide them, please focus on the following Bloom's Taxonomy verbs: 
+                [Verbs List: 
+                """
+            },
+            {
+                "condition": {"goal_remember": True},
+                "prompt": "Remember"
+            },
+            {
+                "condition": {"goal_apply": True},
+                "prompt": "Apply"
+            },
+            {
+                "condition": {"goal_evaluate": True},
+                "prompt": "Evaluate"
+            },
+            {
+                "condition": {"goal_understand": True},
+                "prompt": "Understand"
+            },
+            {
+                "condition": {"goal_analyze": True},
+                "prompt": "Analyze"
+            },
+            {
+                "condition": {"goal_create": True},
+                "prompt": "Create"
+            },
+            {
+                "condition": {},
+                "prompt": "]"
+            },
+			{
+                "condition": {"learning_preferences": True},
+                "prompt": "Try to engage a variety of learning modalities (e.g. Visual, Auditory, Kinesthetic) \n"
+            },
+            {
+                "condition": {"relevance": True},
+                "prompt": "Try to provide learning objectives that are relevant in the real world.\n"
+            },
+            {
+            	"condition": {"request_type": "Provide learning objectives based on the content"},
+            	"prompt": """Here is the content:
+            	{learning_content}
+            	"""
+            },
+            {
+            	"condition": {"request_type": "Suggest learning objectives based on the title"},
+            	"prompt": """Here is the title of my course:
+            	{title}
+            	"""
+            },
+
+            ],
         "ai_response": True,
         "allow_revisions": True,
         "show_prompt": True,
         "read_only_prompt": False
     }
+
 }
 
 # def prompt_conditionals(prompt, user_input, phase_name=None):
