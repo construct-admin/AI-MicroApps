@@ -1,17 +1,19 @@
 PUBLISHED = True
-APP_URL = "https://lo-generator.streamlit.app"
+APP_URL = "https://construct-lo-generator.streamlit.app"
 APP_IMAGE = "lo_builder_flat.webp"
 
-APP_TITLE = "Learning Objectives Builder"
-APP_INTRO = """This micro-app allows you to generate learning objectives or validate alignment for existing learning objectives. It is meant as an experiment to explore how adoption, efficiency, and shareability of generative AI is affected when you wrap lightweight, hyper-personalized wrappers around it. Wrappers like this can take a few hours to build, which fast enough to justify building different micro-apps for different use cases. They also ideally codify good practices (in this case, instructional design practices) into AI prompting. 
-"""
+APP_TITLE = "Learning Objectives Generator"
+APP_INTRO = """This micro-app allows you to generate learning objectives or validate alignment for existing learning objectives. It streamlines instructional design by integrating AI to enhance efficiency and personalization."""
 
 APP_HOW_IT_WORKS = """
- 1. Fill in the details of the assessment.
-2. Choose the language model.
-3. Configure the prompt and additional options.
-4. Generate Learning Objectives.
- """
+1. Fill in the details of your course/module.
+2. Configure cognitive goals and relevance preferences.
+3. Generate specific, measurable, and aligned learning objectives.
+"""
+
+SHARED_ASSET = {}
+
+HTML_BUTTON = {}
 
 SYSTEM_PROMPT = """You are EduDesignGPT, an expert instructional designer specialized in creating clear, specific, and measurable module-level learning objectives for online courses."""
 
@@ -142,41 +144,41 @@ PHASES = {
     }
 }
 
-def build_prompt(user_input):
-    """Builds a dynamic prompt based on user input."""
-    # Start with the base prompt
+def build_user_prompt(user_input):
+    """Build the final user prompt based on inputs."""
+    request_type = user_input.get("request_type", "")
+    title = user_input.get("title", "Untitled Module")
+    lo_quantity = user_input.get("lo_quantity", 1)
+    course_lo = user_input.get("course_lo", "")
+    quiz_lo = user_input.get("quiz_lo", "")
+    form_lo = user_input.get("form_lo", "")
+
     prompt = ""
 
-    # Add title or request-specific details
-    request_type = user_input.get("request_type", "Invalid request type")
-    lo_quantity = user_input.get("lo_quantity", 1)
-
     if request_type == "Suggest learning objectives based on the title":
-        title = user_input.get("title", "Untitled Module")
         prompt += f"Please suggest {lo_quantity} module learning objectives for the provided title: {title}.\n"
     elif request_type == "Provide learning objectives based on the course learning objectives":
-        course_lo = user_input.get("course_lo", "")
         prompt += f"Please write {lo_quantity} module learning objectives based on the provided course-level learning objectives: {course_lo}.\n"
     elif request_type == "Provide learning objectives based on the graded assessment question(s) of the module":
-        quiz_lo = user_input.get("quiz_lo", "")
         prompt += f"Please write {lo_quantity} module learning objectives based on the graded quiz questions: {quiz_lo}.\n"
     elif request_type == "Provide learning objectives based on the formative activity questions":
-        form_lo = user_input.get("form_lo", "")
         prompt += f"Please write {lo_quantity} module learning objectives based on the formative activity questions: {form_lo}.\n"
-    else:
-        prompt += "Invalid request type.\n"
 
     # Append preferences
+    preferences = []
     if user_input.get("real_world_relevance"):
-        prompt += "Focus on real-world practices and industry trends.\n"
+        preferences.append("real-world practices and industry trends")
     if user_input.get("problem_solving"):
-        prompt += "Focus on problem-solving and critical thinking.\n"
+        preferences.append("problem-solving and critical thinking")
     if user_input.get("meta_cognitive_reflection"):
-        prompt += "Focus on meta-cognitive reflections.\n"
+        preferences.append("meta-cognitive reflections")
     if user_input.get("ethical_consideration"):
-        prompt += "Include emotional, moral, and ethical considerations.\n"
+        preferences.append("emotional, moral, and ethical considerations")
 
-    # Append Bloom's taxonomy goals
+    if preferences:
+        prompt += f"Focus on the following preferences: {', '.join(preferences)}.\n"
+
+    # Append Bloom's Taxonomy
     bloom_goals = []
     if user_input.get("goal_apply"):
         bloom_goals.append("Apply")
@@ -186,40 +188,46 @@ def build_prompt(user_input):
         bloom_goals.append("Analyze")
     if user_input.get("goal_create"):
         bloom_goals.append("Create")
+
     if bloom_goals:
-        prompt += f"Focus on the following cognitive goals: {', '.join(bloom_goals)}.\n"
+        prompt += f"Focus specifically on these cognitive goals: {', '.join(bloom_goals)}.\n"
 
-    # Append academic stage
-    academic_stages = []
+    # Append Academic Stage
+    stages = []
     if user_input.get("lower_primary"):
-        academic_stages.append("Lower Primary")
+        stages.append("Lower Primary")
     if user_input.get("middle_primary"):
-        academic_stages.append("Middle Primary")
+        stages.append("Middle Primary")
     if user_input.get("upper_primary"):
-        academic_stages.append("Upper Primary")
+        stages.append("Upper Primary")
     if user_input.get("lower_secondary"):
-        academic_stages.append("Lower Secondary")
+        stages.append("Lower Secondary")
     if user_input.get("upper_secondary"):
-        academic_stages.append("Upper Secondary")
+        stages.append("Upper Secondary")
     if user_input.get("undergraduate"):
-        academic_stages.append("Undergraduate")
+        stages.append("Undergraduate")
     if user_input.get("postgraduate"):
-        academic_stages.append("Postgraduate")
-    if academic_stages:
-        prompt += f"Target the following academic stage(s): {', '.join(academic_stages)}.\n"
+        stages.append("Postgraduate")
 
-    # Assign the final prompt to user_prompt
-    user_prompt = prompt
-    return user_prompt
-    
-PREFERRED_LLM = "gpt-4o-mini"
+    if stages:
+        prompt += f"Target the following academic stage(s): {', '.join(stages)}.\n"
+
+    return prompt
+
+PREFERRED_LLM = "gpt-4o"
 LLM_CONFIG_OVERRIDE = {}
 
 SCORING_DEBUG_MODE = True
 DISPLAY_COST = True
 
+COMPLETION_MESSAGE = "I hope this helps improve your learning objectives!"
+COMPLETION_CELEBRATION = False
+
+RAG_IMPLEMENTATION = False
+SOURCE_DOCUMENT = "sample.pdf"
+
 PAGE_CONFIG = {
-    "page_title": "LO Generator",
+    "page_title": "Construct LO Generator",
     "page_icon": "️🔹",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
@@ -228,5 +236,6 @@ PAGE_CONFIG = {
 SIDEBAR_HIDDEN = True
 
 from core_logic.main import main
+
 if __name__ == "__main__":
     main(config=globals())
