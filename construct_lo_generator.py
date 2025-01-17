@@ -84,6 +84,7 @@ def prompt_conditionals(user_input):
         prompt = "Invalid request type."
     return prompt
 
+
 PHASES = {
     "generate_objectives": {
         "name": "Generate Learning Objectives",
@@ -212,7 +213,7 @@ PHASES = {
 }
 
 PAGE_CONFIG = {
-    "page_title": "LO Generator",
+    "page_title": "Construct LO Generator",
     "page_icon": "🔹",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
