@@ -345,6 +345,86 @@ def prompt_conditionals(prompt, user_input, phase_name=None):
                 prompt += ". \n"
     return prompt
 
+def append_preferences(prompt, user_input):
+    """Append preferences to the prompt based on user input."""
+    if user_input.get("real_world_relevance"):
+        prompt += "Try to provide learning objectives relevant to real-world practices and industry trends.\n"
+    if user_input.get("problem_solving"):
+        prompt += "Focus on problem-solving and critical thinking.\n"
+    if user_input.get("meta_cognitive_reflection"):
+        prompt += "Focus on meta-cognitive reflections.\n"
+    if user_input.get("ethical_consideration"):
+        prompt += "Include emotional, moral, and ethical considerations.\n"
+    return prompt
+
+
+def append_bloom_taxonomy(prompt, user_input):
+    """Append Bloom's taxonomy goals to the prompt."""
+    bloom_goals = []
+    if user_input.get("goal_apply"):
+        bloom_goals.append("Apply")
+    if user_input.get("goal_evaluate"):
+        bloom_goals.append("Evaluate")
+    if user_input.get("goal_analyze"):
+        bloom_goals.append("Analyze")
+    if user_input.get("goal_create"):
+        bloom_goals.append("Create")
+
+    if bloom_goals:
+        prompt += f"Focus specifically on these cognitive goals: {', '.join(bloom_goals)}.\n"
+    return prompt
+
+
+def append_academic_stage(prompt, user_input):
+    """Append academic stage information to the prompt."""
+    stages = []
+    if user_input.get("lower_primary"):
+        stages.append("Lower Primary")
+    if user_input.get("middle_primary"):
+        stages.append("Middle Primary")
+    if user_input.get("upper_primary"):
+        stages.append("Upper Primary")
+    if user_input.get("lower_secondary"):
+        stages.append("Lower Secondary")
+    if user_input.get("upper_secondary"):
+        stages.append("Upper Secondary")
+    if user_input.get("undergraduate"):
+        stages.append("Undergraduate")
+    if user_input.get("postgraduate"):
+        stages.append("Postgraduate")
+
+    if stages:
+        prompt += f"Target the following academic stage(s): {', '.join(stages)}.\n"
+    return prompt
+
+
+def prompt_conditionals(prompt, user_input, phase_name=None):
+    """Generate a complete prompt based on user input."""
+    request_type = user_input.get("request_type", "Invalid request type")
+    lo_quantity = user_input.get("lo_quantity", 1)
+
+    if request_type == "Suggest learning objectives based on the title":
+        title = user_input.get("title", "Untitled Module")
+        prompt = f"Please suggest {lo_quantity} module learning objectives for the provided title: {title}.\n"
+    elif request_type == "Provide learning objectives based on the course learning objectives":
+        course_lo = user_input.get("course_lo", "")
+        prompt = f"Please write {lo_quantity} module learning objectives based on the provided course-level learning objectives: {course_lo}.\n"
+    elif request_type == "Provide learning objectives based on the graded assessment question(s) of the module":
+        quiz_lo = user_input.get("quiz_lo", "")
+        prompt = f"Please write {lo_quantity} module learning objectives based on the graded quiz questions: {quiz_lo}.\n"
+    elif request_type == "Provide learning objectives based on the formative activity questions":
+        form_lo = user_input.get("form_lo", "")
+        prompt = f"Please write {lo_quantity} module learning objectives based on the formative activity questions: {form_lo}.\n"
+    else:
+        prompt = "Invalid request type."
+
+    # Append preferences, Bloom's taxonomy goals, and academic stage
+    prompt = append_preferences(prompt, user_input)
+    prompt = append_bloom_taxonomy(prompt, user_input)
+    prompt = append_academic_stage(prompt, user_input)
+
+    return prompt
+
 
 
 # Additional App Configuration
