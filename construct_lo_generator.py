@@ -1,4 +1,6 @@
 import streamlit as st
+
+# App Configurations
 PUBLISHED = True
 APP_URL = "https://construct-lo-generator.streamlit.app"
 APP_IMAGE = "lo_builder_flat.webp"
@@ -14,10 +16,7 @@ APP_HOW_IT_WORKS = """
 
 SYSTEM_PROMPT = "You are EduDesignGPT, an expert instructional designer specialized in creating clear, specific, and measurable module-level learning objectives for online courses. Your purpose is to assist course creators in developing learning objectives that align with best practices for online education."
 
-# Initial blank prompt
-INITIAL_PROMPT = ""
-
-# Function to generate Bloom's Taxonomy goals
+# Utility Functions
 def get_bloom_prompt(user_input):
     bloom_goals = []
     if user_input.get("goal_apply"):
@@ -32,7 +31,6 @@ def get_bloom_prompt(user_input):
         return f"Focus on the following cognitive goals: {', '.join(bloom_goals)}."
     return ""
 
-# Function to generate relevance prompts
 def get_relevance_prompt(user_input):
     relevance_prompts = []
     if user_input.get("real_world_relevance"):
@@ -45,7 +43,6 @@ def get_relevance_prompt(user_input):
         relevance_prompts.append("Try to provide objectives that include emotional, moral, and ethical considerations.")
     return " ".join(relevance_prompts)
 
-# Function to generate Academic Stage prompts
 def get_academic_stage_prompt(user_input):
     stages = []
     if user_input.get("lower_primary"):
@@ -66,7 +63,6 @@ def get_academic_stage_prompt(user_input):
         return f"Target the following academic stage(s): {', '.join(stages)}."
     return ""
 
-# Function to dynamically generate the final prompt
 def generate_final_prompt(user_input):
     bloom_prompt = get_bloom_prompt(user_input)
     relevance_prompt = get_relevance_prompt(user_input)
@@ -82,12 +78,11 @@ def generate_final_prompt(user_input):
         return f"Please write {user_input['lo_quantity']} module learning objectives based on the formative activity questions: {user_input['form_lo']}. {bloom_prompt} {relevance_prompt} {academic_stage_prompt}"
     return "Invalid request type."
 
-# App title and description
+# Streamlit UI
 st.title(APP_TITLE)
 st.write(APP_INTRO)
 st.write(APP_HOW_IT_WORKS)
 
-# Gather user inputs
 request_type = st.radio("What would you like to do?", [
     "Suggest learning objectives based on the title",
     "Provide learning objectives based on the course learning objectives",
@@ -95,28 +90,27 @@ request_type = st.radio("What would you like to do?", [
     "Provide learning objectives based on the formative activity questions"
 ])
 
-# Inputs based on request type
+# Collect inputs
 title = st.text_input("Enter the title of your module:", "") if request_type == "Suggest learning objectives based on the title" else ""
 course_lo = st.text_area("Enter the course learning objective:", "", height=300) if request_type == "Provide learning objectives based on the course learning objectives" else ""
 quiz_lo = st.text_area("Enter the graded assessment question(s):", "", height=300) if request_type == "Provide learning objectives based on the graded assessment question(s) of the module" else ""
 form_lo = st.text_area("Enter the formative activity question(s):", "", height=300) if request_type == "Provide learning objectives based on the formative activity questions" else ""
-
 lo_quantity = st.slider("How many learning objectives would you like to generate?", 1, 6, 3)
 
-# Relevance preferences
+# Relevance options
 real_world_relevance = st.checkbox("Prioritize objectives that have real-world relevance.")
 problem_solving = st.checkbox("Focus on problem-solving and critical thinking.")
 meta_cognitive_reflection = st.checkbox("Focus on meta-cognitive reflections.")
 ethical_consideration = st.checkbox("Include emotional, moral, and ethical considerations.")
 
-# Bloom's Taxonomy goals
+# Bloom's taxonomy
 st.markdown("<h3>Bloom's Taxonomy</h3>", unsafe_allow_html=True)
 goal_apply = st.checkbox("Apply")
 goal_evaluate = st.checkbox("Evaluate")
 goal_analyze = st.checkbox("Analyze")
 goal_create = st.checkbox("Create")
 
-# Academic Stage
+# Academic stage
 st.markdown("<h3>Academic Stage:</h3>", unsafe_allow_html=True)
 lower_primary = st.checkbox("Lower Primary")
 middle_primary = st.checkbox("Middle Primary")
@@ -126,7 +120,6 @@ upper_secondary = st.checkbox("Upper Secondary")
 undergraduate = st.checkbox("Undergraduate")
 postgraduate = st.checkbox("Postgraduate")
 
-# Compile user inputs into a dictionary
 user_input = {
     "request_type": request_type,
     "title": title,
@@ -148,13 +141,19 @@ user_input = {
     "lower_secondary": lower_secondary,
     "upper_secondary": upper_secondary,
     "undergraduate": undergraduate,
-    "postgraduate": postgraduate
+    "postgraduate": postgraduate,
 }
 
-# Submit button to generate the final prompt
 if st.button("Generate Prompt"):
     final_prompt = generate_final_prompt(user_input)
-    st.text_area("Prompt", final_prompt, height=200)
+    st.text_area("Prompt", final_prompt, height=200, disabled=True)
+
+if st.button("Generate Response"):
+    final_prompt = generate_final_prompt(user_input)
+    response = "AI Response Placeholder"  # Replace with actual LLM call
+    st.text_area("Generated Response", response, height=300, disabled=True)
+
+
 
 PREFERRED_LLM = "gpt-4o-mini"
 LLM_CONFIG_OVERRIDE = {"temperature": 0.3}
