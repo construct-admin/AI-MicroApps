@@ -1,5 +1,5 @@
 PUBLISHED = True
-APP_URL = "https://lo-generator.streamlit.app"
+APP_URL = "https://construct-lo-generator.streamlit.app"
 APP_IMAGE = "lo_builder_flat.webp"
 
 APP_TITLE = "Learning Objectives Generator"
@@ -12,7 +12,6 @@ APP_HOW_IT_WORKS = """
 
 SYSTEM_PROMPT = """You are EduDesignGPT, an expert instructional designer specialized in creating clear, specific, and measurable module-level learning objectives for online courses."""
 
-# Helper functions to build the prompt
 def add_preferences_to_prompt(user_input):
     prompt = ""
     if user_input.get("real_world_relevance"):
@@ -55,52 +54,11 @@ def add_academic_stage_to_prompt(user_input):
         stages.append("Postgraduate")
     return f"Target the following academic stage(s): {', '.join(stages)}.\n" if stages else ""
 
-def resolve_user_input(user_input):
-    # Ensure extracted values are plain Python types, not DeltaGenerator objects
-    return {
-        "request_type": user_input.get("request_type", ""),
-        "title": user_input.get("title", ""),
-        "course_lo": user_input.get("course_lo", ""),
-        "quiz_lo": user_input.get("quiz_lo", ""),
-        "form_lo": user_input.get("form_lo", ""),
-        "lo_quantity": user_input.get("lo_quantity", 3),
-        "real_world_relevance": bool(user_input.get("real_world_relevance")),
-        "problem_solving": bool(user_input.get("problem_solving")),
-        "meta_cognitive_reflection": bool(user_input.get("meta_cognitive_reflection")),
-        "ethical_consideration": bool(user_input.get("ethical_consideration")),
-        "goal_apply": bool(user_input.get("goal_apply")),
-        "goal_evaluate": bool(user_input.get("goal_evaluate")),
-        "goal_analyze": bool(user_input.get("goal_analyze")),
-        "goal_create": bool(user_input.get("goal_create")),
-        "lower_primary": bool(user_input.get("lower_primary")),
-        "middle_primary": bool(user_input.get("middle_primary")),
-        "upper_primary": bool(user_input.get("upper_primary")),
-        "lower_secondary": bool(user_input.get("lower_secondary")),
-        "upper_secondary": bool(user_input.get("upper_secondary")),
-        "undergraduate": bool(user_input.get("undergraduate")),
-        "postgraduate": bool(user_input.get("postgraduate")),
-    }
-
-def prompt_conditionals(user_input):
-    user_input = resolve_user_input(user_input)  # Clean input
+def prompt_conditionals(prompt, user_input, phase_name="generate_objectives"):
     preferences = add_preferences_to_prompt(user_input)
     bloom_goals = add_bloom_goals_to_prompt(user_input)
     academic_stage = add_academic_stage_to_prompt(user_input)
 
-    # Validate inputs based on request type
-    if user_input["request_type"] == "Suggest learning objectives based on the title" and not user_input["title"]:
-        return "Error: Module title is required for this request type."
-
-    if user_input["request_type"] == "Provide learning objectives based on the course learning objectives" and not user_input["course_lo"]:
-        return "Error: Course learning objectives are required for this request type."
-
-    if user_input["request_type"] == "Provide learning objectives based on the graded assessment question(s) of the module" and not user_input["quiz_lo"]:
-        return "Error: Graded assessment questions are required for this request type."
-
-    if user_input["request_type"] == "Provide learning objectives based on the formative activity questions" and not user_input["form_lo"]:
-        return "Error: Formative activity questions are required for this request type."
-
-    # Construct prompt
     if user_input["request_type"] == "Suggest learning objectives based on the title":
         prompt = (
             f"Please suggest {user_input['lo_quantity']} module learning objectives for the provided title: {user_input['title']}.\n"
@@ -123,135 +81,9 @@ def prompt_conditionals(user_input):
         )
     else:
         prompt = "Invalid request type."
-
     return prompt
 
-PHASES = {
-    "generate_objectives": {
-        "name": "Generate Learning Objectives",
-        "fields": {
-            "request_type": {
-                "type": "radio",
-                "label": "What would you like to do?",
-                "options": [
-                    "Suggest learning objectives based on the title",
-                    "Provide learning objectives based on the course learning objectives",
-                    "Provide learning objectives based on the graded assessment question(s) of the module",
-                    "Provide learning objectives based on the formative activity questions"
-                ],
-            },
-            "title": {
-                "type": "text_input",
-                "label": "Enter the title of your module:",
-                "showIf": {"request_type": ["Suggest learning objectives based on the title"]}
-            },
-            "course_lo": {
-                "type": "text_area",
-                "label": "Enter the course learning objective:",
-                "showIf": {"request_type": ["Provide learning objectives based on the course learning objectives"]},
-                "height": 300
-            },
-            "quiz_lo": {
-                "type": "text_area",
-                "label": "Enter the graded assessment question(s):",
-                "showIf": {"request_type": ["Provide learning objectives based on the graded assessment question(s) of the module"]},
-                "height": 300
-            },
-            "form_lo": {
-                "type": "text_area",
-                "label": "Enter the formative activity question(s):",
-                "showIf": {"request_type": ["Provide learning objectives based on the formative activity questions"]},
-                "height": 300
-            },
-            "lo_quantity": {
-                "type": "slider",
-                "label": "How many learning objectives would you like to generate?",
-                "min_value": 1,
-                "max_value": 6,
-                "value": 3
-            },
-            "relevance_preferences": {
-                "type": "markdown",
-                "body": """<h3>Preferences:</h3> Select additional focus areas for your learning objectives.""",
-                "unsafe_allow_html": True
-            },
-            "real_world_relevance": {
-                "type": "checkbox",
-                "label": "Try to provide learning objectives that are relevant to real-world practices and industry trends."
-            },
-            "problem_solving": {
-                "type": "checkbox",
-                "label": "Focus on problem-solving and critical thinking."
-            },
-            "meta_cognitive_reflection": {
-                "type": "checkbox",
-                "label": "Focus on meta-cognitive reflections."
-            },
-            "ethical_consideration": {
-                "type": "checkbox",
-                "label": "Include emotional, moral, and ethical considerations."
-            },
-            "bloom_taxonomy": {
-                "type": "markdown",
-                "body": """<h3>Bloom's Taxonomy</h3> Select cognitive goals to focus on:""",
-                "unsafe_allow_html": True
-            },
-            "goal_apply": {
-                "type": "checkbox",
-                "label": "Apply"
-            },
-            "goal_evaluate": {
-                "type": "checkbox",
-                "label": "Evaluate"
-            },
-            "goal_analyze": {
-                "type": "checkbox",
-                "label": "Analyze"
-            },
-            "goal_create": {
-                "type": "checkbox",
-                "label": "Create"
-            },
-            "academic_stage": {
-                "type": "markdown",
-                "body": """<h3>Academic Stage:</h3> Select the category that best reflects the academic stage of the students.""",
-                "unsafe_allow_html": True
-            },
-            "lower_primary": {
-                "type": "checkbox",
-                "label": "Lower Primary"
-            },
-            "middle_primary": {
-                "type": "checkbox",
-                "label": "Middle Primary"
-            },
-            "upper_primary": {
-                "type": "checkbox",
-                "label": "Upper Primary"
-            },
-            "lower_secondary": {
-                "type": "checkbox",
-                "label": "Lower Secondary"
-            },
-            "upper_secondary": {
-                "type": "checkbox",
-                "label": "Upper Secondary"
-            },
-            "undergraduate": {
-                "type": "checkbox",
-                "label": "Undergraduate"
-            },
-            "postgraduate": {
-                "type": "checkbox",
-                "label": "Postgraduate"
-            }
-        },
-        "ai_response": True,
-        "allow_revisions": True,
-        "show_prompt": True,
-        "read_only_prompt": False
-    }
-}
+
 
 PAGE_CONFIG = {
     "page_title": "LO Generator",
