@@ -1,5 +1,6 @@
 import streamlit as st
 
+# Set page configuration must be the first Streamlit command
 st.set_page_config(
     page_title="Learning Objectives Generator",
     page_icon="🔹",
@@ -19,7 +20,9 @@ APP_HOW_IT_WORKS = """
 3. Generate specific, measurable, and aligned learning objectives.
 """
 
-# Set initial blank prompt
+SYSTEM_PROMPT = "You are EduDesignGPT, an expert instructional designer specialized in creating clear, specific, and measurable module-level learning objectives for online courses. Your purpose is to assist course creators in developing learning objectives that align with best practices for online education."
+
+# Initial blank prompt
 INITIAL_PROMPT = ""
 
 # Function to generate Bloom's Taxonomy goals
@@ -73,7 +76,6 @@ def get_academic_stage_prompt(user_input):
 
 # Function to dynamically generate the final prompt
 def generate_final_prompt(user_input):
-    """Combine all components into the final prompt."""
     bloom_prompt = get_bloom_prompt(user_input)
     relevance_prompt = get_relevance_prompt(user_input)
     academic_stage_prompt = get_academic_stage_prompt(user_input)
@@ -165,7 +167,7 @@ st.text_area("Prompt", INITIAL_PROMPT, height=200)
 if st.button("Generate Prompt"):
     final_prompt = generate_final_prompt(user_input)
     st.text_area("Prompt", final_prompt, height=200)
-
+    
 PREFERRED_LLM = "gpt-4o-mini"
 LLM_CONFIG_OVERRIDE = {"temperature": 0.3}
 
