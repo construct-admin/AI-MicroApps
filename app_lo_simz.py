@@ -150,6 +150,14 @@ PHASES = {
                 "prompt": "Please write {lo_quantity} learning objectives based on the provided course objectives: {course_lo}.",
             },
             {
+                "condition": {"request_type": "Provide learning objectives based on the graded assessment question(s) of the module"},
+                "prompt": "Please write {lo_quantity} learning objectives based on the provided graded assessment questions: {quiz_lo}.",
+            },
+             {
+                "condition": {"request_type": "Provide learning objectives based on the formative activity questions"},
+                "prompt": "Please write {lo_quantity} learning objectives based on the provided graded assessment questions: {form_lo}.",
+            },
+            {
                 "condition": {"real_world_relevance": True},
                 "prompt": "Try to provide learning objectives that are relevant to real-world practices and industry trends.",
             },
