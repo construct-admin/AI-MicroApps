@@ -88,7 +88,7 @@ PHASES = {
             },
             {
                 "condition": {"academic_stage_radio": True},
-                "prompt": "Please align the learning objectives to the following academic stage level: {academic_stage_radio}"
+                "prompt": "Align the discussion prompt to the following academic stage level: {academic_stage_radio}."
             }
         ],
         "ai_response": True,
@@ -97,6 +97,7 @@ PHASES = {
         "read_only_prompt": False
     }
 }
+
 
 PREFERRED_LLM = "gpt-4o"
 LLM_CONFIG_OVERRIDE = {"gpt-4o": {
@@ -120,19 +121,55 @@ PAGE_CONFIG = {
 SIDEBAR_HIDDEN = True
 
 # Prompt builder
-def build_user_prompt(user_input):
+def build_user_prompt_with_academic_level(user_input):
     """
-    Build the user prompt dynamically based on user input.
+    Dynamically build the user prompt with academic level (radio button) and user-provided inputs
+    for learning objectives and content.
     """
     try:
-        user_prompt_parts = [
-            config["prompt"].format(**{key: user_input.get(key, "") for key in config["condition"].keys()})
-            for config in PHASES["generate_discussion"]["user_prompt"]
-            if all(user_input.get(key) == value for key, value in config["condition"].items())
-        ]
-        return "\n".join(user_prompt_parts)
+        # Retrieve and validate inputs
+        learning_objectives = user_input.get("learning_objectives", "").strip()
+        learning_content = user_input.get("learning_content", "").strip()
+        academic_stage = user_input.get("academic_stage_radio", "").strip()
+
+        if not learning_objectives:
+            raise ValueError("The 'Learning Objectives' field is required.")
+        if not learning_content:
+            raise ValueError("The 'Learning Content' field is required.")
+        if not academic_stage:
+            raise ValueError("An 'Academic Stage' must be selected.")
+
+        # Construct the prompt
+        prompt = f"""
+        **Training Material**:
+        Input:
+        - Learning Objective: "{learning_objectives}"
+        - Learning Content: "{learning_content}"
+        - Academic Stage: "{academic_stage}"
+
+        Output:
+        Generate a discussion prompt aligned with the provided details.
+
+        **Discussion Prompt**:
+        Welcome to this discussion! Focus on the following learning objective and content:
+        - Learning Objective: "{learning_objectives}"
+        - Learning Content: "{learning_content}"
+
+        **Academic Stage**:
+        Tailor the discussion for learners at the {academic_stage} level.
+
+        **Instructions**:
+        - Include 1-2 open-ended questions that encourage critical thinking.
+        - Provide clear guidelines for participants, including word count (no more than 250 words for initial posts).
+        - Encourage learners to reference personal experiences or academic sources.
+        - Provide guidance on engaging constructively with peers' responses.
+        """
+        return prompt.strip()
+
     except KeyError as e:
-        raise ValueError(f"Missing key in user input: {e}")
+        raise ValueError(f"Missing or invalid key in user input: {e}")
+
+
 
 # Entry point
 from core_logic.main import main
