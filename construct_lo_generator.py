@@ -13,6 +13,15 @@ APP_HOW_IT_WORKS = """
 SYSTEM_PROMPT = """You are EduDesignGPT, an expert instructional designer specialized in creating clear, specific, and measurable module-level learning objectives for online courses."""
 
 # Helper functions for dynamic conditions
+def get_objective_prompts():
+    """Generate prompts for learning objective checkboxes."""
+    return [
+        {"condition": {"title_lo": True}, "prompt": "Please suggest {lo_quantity} learning objectives for the provided course title: {title}."},
+        {"condition": {"c_lo": True}, "prompt": "Please write {lo_quantity} learning objectives based on the provided course objectives: {course_lo}."},
+        {"condition": {"q_lo": True}, "prompt": "Please write {lo_quantity} learning objectives based on the provided graded assessment questions: {quiz_lo}."},
+        {"condition": {"f_lo": True}, "prompt": "Please write {lo_quantity} learning objectives based on the provided formative activity questions: {form_lo}."},
+    ]
+
 def get_bloom_taxonomy_conditions():
     return [
         {"condition": {"goal_apply": True}, "prompt": "Include cognitive goals: Apply."},
@@ -46,15 +55,26 @@ PHASES = {
         "name": "Generate Learning Objectives",
         "fields": {
             # Request Type Selection
-            "request_type": {
-                "type": "radio",
-                "label": "What would you like to do?",
-                "options": [
-                    "Suggest learning objectives based on the title",
-                    "Provide learning objectives based on the course learning objectives",
-                    "Provide learning objectives based on the graded assessment question(s) of the module",
-                    "Provide learning objectives based on the formative activity questions"
-                ]
+            "learning_obj_choices": {
+                "type": "markdown",
+                "body": """<h3>What would you like to do?</h3>""",
+                "unsafe_allow_html": True
+            },
+            "title_lo": {
+                "type": "checkbox",
+                "label": "Suggest learning objectives based on the title"
+            },
+            "c_lo": {
+                "type": "checkbox",
+                "label": "Provide learning objectives based on the course learning objectives"
+            },
+            "q_lo": {
+                "type": "checkbox",
+                "label": "Provide learning objectives based on the graded assessment question(s) of the module"
+            },
+            "f_lo": {
+                "type": "checkbox",
+                "label": "Provide learning objectives based on the formative activity questions"
             },
             # Input Fields
             "title": {
@@ -167,12 +187,12 @@ PHASES = {
         - Selected checkboxes (e.g., title, course objectives, assessments).
         - Preferences for relevance, Bloom's Taxonomy goals, and academic stages.
         """,
-        "user_prompt": [
-            {"condition": {"request_type": "Suggest learning objectives based on the title"}, "prompt": "Please suggest {lo_quantity} learning objectives for the provided course title: {title}."},
-            {"condition": {"request_type": "Provide learning objectives based on the course learning objectives"}, "prompt": "Please write {lo_quantity} learning objectives based on the provided course objectives: {course_lo}."},
-            {"condition": {"request_type": "Provide learning objectives based on the graded assessment question(s) of the module"}, "prompt": "Please write {lo_quantity} learning objectives based on the provided graded assessment questions: {quiz_lo}."},
-            {"condition": {"request_type": "Provide learning objectives based on the formative activity questions"}, "prompt": "Please write {lo_quantity} learning objectives based on the provided formative activity questions: {form_lo}."},
-        ] + get_relevance_conditions() + get_bloom_taxonomy_conditions() + get_academic_stage_conditions(),
+        "user_prompt": "user_prompt": (
+            get_objective_prompts()
+            + get_relevance_conditions()
+            + get_bloom_taxonomy_conditions()
+            + get_academic_stage_conditions()
+        ),
         "ai_response": True,
         "allow_revisions": True,
         "show_prompt": True,
