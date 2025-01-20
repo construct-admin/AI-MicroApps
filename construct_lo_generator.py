@@ -44,14 +44,15 @@ def get_relevance_conditions():
 
 def get_academic_stage_conditions():
     return [
-        {"condition": {"academic_stage_radio": "lower_primary"}, "prompt": "Target the academic stage: Lower Primary."},
-        {"condition": {"academic_stage_radio": "middle_primary"}, "prompt": "Target the academic stage: Middle Primary."},
-        {"condition": {"academic_stage_radio": "upper_primary"}, "prompt": "Target the academic stage: Upper Primary."},
-        {"condition": {"academic_stage_radio": "lower_secondary"}, "prompt": "Target the academic stage: Lower Secondary."},
-        {"condition": {"academic_stage_radio": "upper_secondary"}, "prompt": "Target the academic stage: Upper Secondary."},
-        {"condition": {"academic_stage_radio": "undergraduate"}, "prompt": "Target the academic stage: Undergraduate."},
-        {"condition": {"academic_stage_radio": "postgraduate"}, "prompt": "Target the academic stage: Postgraduate."},
+        {"condition": {"academic_stage_radio": "Lower Primary"}, "prompt": "Target the academic stage: Lower Primary."},
+        {"condition": {"academic_stage_radio": "Middle Primary"}, "prompt": "Target the academic stage: Middle Primary."},
+        {"condition": {"academic_stage_radio": "Upper Primary"}, "prompt": "Target the academic stage: Upper Primary."},
+        {"condition": {"academic_stage_radio": "Lower Secondary"}, "prompt": "Target the academic stage: Lower Secondary."},
+        {"condition": {"academic_stage_radio": "Upper Secondary"}, "prompt": "Target the academic stage: Upper Secondary."},
+        {"condition": {"academic_stage_radio": "Undergraduate"}, "prompt": "Target the academic stage: Undergraduate."},
+        {"condition": {"academic_stage_radio": "Postgraduate"}, "prompt": "Target the academic stage: Postgraduate."},
     ]
+
 
 # Define phases and fields
 PHASES = {
@@ -166,20 +167,20 @@ PHASES = {
             # Academic Stage
             "academic_stage": {
                 "type": "markdown",
-                "body": """<h3>Academic Stage</h3> Select the category that best reflects the academic stage of the students.""",
+                "body": """<h3>Academic Stage</h3>""",
                 "unsafe_allow_html": True
             },
             "academic_stage_radio": {
                 "type": "radio",
-                "label": "Select the academic stage:",
+                "label": "Select the category that best reflects the academic stage of the students.",
                 "options": [
-                    {"key": "lower_primary", "label": "Lower Primary"},
-                    {"key": "middle_primary", "label": "Middle Primary"},
-                    {"key": "upper_primary", "label": "Upper Primary"},
-                    {"key": "lower_secondary", "label": "Lower Secondary"},
-                    {"key": "upper_secondary", "label": "Upper Secondary"},
-                    {"key": "undergraduate", "label": "Undergraduate"},
-                    {"key": "postgraduate", "label": "Postgraduate"}
+                    "Lower Primary",
+                    "Middle Primary",
+                    "Upper Primary",
+                    "Lower Secondary",
+                    "Upper Secondary",
+                    "Undergraduate",
+                    "Postgraduate"
                 ]
             }
         },
