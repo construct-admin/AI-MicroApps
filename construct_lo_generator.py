@@ -1,6 +1,6 @@
 PUBLISHED = True
 APP_URL = "https://ai-microapps-a6qrjbdhuk5mjkkwjb3zdo.streamlit.app/"
-APP_IMAGE = "app_images\construct.webp"
+APP_IMAGE = "construct.ico"
 
 APP_TITLE = "Construct Learning Objectives Generator"
 APP_INTRO = """This micro-app allows you to generate learning objectives or validate alignment for existing learning objectives. It streamlines instructional design by integrating AI to enhance efficiency and personalization."""
@@ -203,6 +203,7 @@ PHASES = {
 # Page configuration
 PAGE_CONFIG = {
     "page_title": "Construct LO Generator",
+    "page_icon": "️app_images\construct.ico",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }
