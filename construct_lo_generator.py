@@ -1,5 +1,5 @@
 PUBLISHED = True
-APP_URL = "https://lo-generator.streamlit.app"
+APP_URL = "https://ai-microapps-a6qrjbdhuk5mjkkwjb3zdo.streamlit.app/"
 APP_IMAGE = "lo_builder_flat.webp"
 
 APP_TITLE = "Learning Objectives Generator"
