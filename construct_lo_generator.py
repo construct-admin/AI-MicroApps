@@ -187,7 +187,7 @@ PHASES = {
         - Selected checkboxes (e.g., title, course objectives, assessments).
         - Preferences for relevance, Bloom's Taxonomy goals, and academic stages.
         """,
-        "user_prompt": "user_prompt": (
+        "user_prompt": (
             get_objective_prompts()
             + get_relevance_conditions()
             + get_bloom_taxonomy_conditions()
