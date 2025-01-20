@@ -17,7 +17,7 @@ PHASES = {
         "name": "Generate Learning Objectives",
         "fields": {
             "request_type": {
-                "type": "radio",
+                "type": "checkbox",
                 "label": "What would you like to do?",
                 "options": [
                     "Suggest learning objectives based on the title",
@@ -29,24 +29,24 @@ PHASES = {
             "title": {
                 "type": "text_input",
                 "label": "Enter the title of your module:",
-                "showIf": {"request_type": ["Suggest learning objectives based on the title"]}
+                #"showIf": {"request_type": ["Suggest learning objectives based on the title"]}
             },
             "course_lo": {
                 "type": "text_area",
                 "label": "Enter the course learning objective:",
-                "showIf": {"request_type": ["Provide learning objectives based on the course learning objectives"]},
+                #"showIf": {"request_type": ["Provide learning objectives based on the course learning objectives"]},
                 "height": 300
             },
             "quiz_lo": {
                 "type": "text_area",
                 "label": "Enter the graded assessment question(s):",
-                "showIf": {"request_type": ["Provide learning objectives based on the graded assessment question(s) of the module"]},
+                #"showIf": {"request_type": ["Provide learning objectives based on the graded assessment question(s) of the module"]},
                 "height": 300
             },
             "form_lo": {
                 "type": "text_area",
                 "label": "Enter the formative activity question(s):",
-                "showIf": {"request_type": ["Provide learning objectives based on the formative activity questions"]},
+                #"showIf": {"request_type": ["Provide learning objectives based on the formative activity questions"]},
                 "height": 300
             },
             "lo_quantity": {
