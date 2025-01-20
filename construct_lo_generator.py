@@ -73,7 +73,7 @@ PHASES = {
             },
             "c_lo": {
                 "type": "checkbox",
-                "label": "Provide learning objectives based on the module learning objectives"
+                "label": "Provide module learning objectives based on the course learning objectives"
             },
             "q_lo": {
                 "type": "checkbox",
