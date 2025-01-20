@@ -1,6 +1,6 @@
 PUBLISHED = True
 APP_URL = "https://ai-microapps-a6qrjbdhuk5mjkkwjb3zdo.streamlit.app/"
-APP_IMAGE = "construct.ico"
+APP_IMAGE = "construct.webp"
 
 APP_TITLE = "Construct Learning Objectives Generator"
 APP_INTRO = """This micro-app allows you to generate learning objectives or validate alignment for existing learning objectives. It streamlines instructional design by integrating AI to enhance efficiency and personalization."""
@@ -44,13 +44,13 @@ def get_relevance_conditions():
 
 def get_academic_stage_conditions():
     return [
-        {"condition": {"lower_primary": True}, "prompt": "Target the academic stage: Lower Primary."},
-        {"condition": {"middle_primary": True}, "prompt": "Target the academic stage: Middle Primary."},
-        {"condition": {"upper_primary": True}, "prompt": "Target the academic stage: Upper Primary."},
-        {"condition": {"lower_secondary": True}, "prompt": "Target the academic stage: Lower Secondary."},
-        {"condition": {"upper_secondary": True}, "prompt": "Target the academic stage: Upper Secondary."},
-        {"condition": {"undergraduate": True}, "prompt": "Target the academic stage: Undergraduate."},
-        {"condition": {"postgraduate": True}, "prompt": "Target the academic stage: Postgraduate."},
+        {"condition": {"academic_stage_radio": "lower_primary"}, "prompt": "Target the academic stage: Lower Primary."},
+        {"condition": {"academic_stage_radio": "middle_primary"}, "prompt": "Target the academic stage: Middle Primary."},
+        {"condition": {"academic_stage_radio": "upper_primary"}, "prompt": "Target the academic stage: Upper Primary."},
+        {"condition": {"academic_stage_radio": "lower_secondary"}, "prompt": "Target the academic stage: Lower Secondary."},
+        {"condition": {"academic_stage_radio": "upper_secondary"}, "prompt": "Target the academic stage: Upper Secondary."},
+        {"condition": {"academic_stage_radio": "undergraduate"}, "prompt": "Target the academic stage: Undergraduate."},
+        {"condition": {"academic_stage_radio": "postgraduate"}, "prompt": "Target the academic stage: Postgraduate."},
     ]
 
 # Define phases and fields
@@ -165,38 +165,22 @@ PHASES = {
             },
             # Academic Stage
             "academic_stage": {
-            "type": "markdown",
-            "label": """<h3>Academic Stage</h3> Select the category that best reflects the academic stage of the students.""",
-            "unsafe_allow_html" :True
+                "type": "markdown",
+                "body": """<h3>Academic Stage</h3> Select the category that best reflects the academic stage of the students.""",
+                "unsafe_allow_html": True
             },
-            "lower_primary": {
+            "academic_stage_radio": {
                 "type": "radio",
-                "label": "Lower Primary",
-            },
-            "middle_primary": {
-                "type": "radio",
-                "label": "Middle Primary",
-            },
-            "upper_primary": {
-                "type": "radio",
-                "label": "Upper Primary",
-            },
-            "lower_secondary": {
-                "type": "radio",
-                "label": "Lower Secondary",
-            },
-            "upper_secondary": {
-                "type": "radio",
-                "label": "Upper Secondary",
-            },
-            "undergraduate": {
-                "type": "radio",
-                "label": "Undergraduate",
-            }
-            ,
-            "postgraduate": {
-                "type": "radio",
-                "label": "Postgraduate",
+                "label": "Select the academic stage:",
+                "options": [
+                    {"key": "lower_primary", "label": "Lower Primary"},
+                    {"key": "middle_primary", "label": "Middle Primary"},
+                    {"key": "upper_primary", "label": "Upper Primary"},
+                    {"key": "lower_secondary", "label": "Lower Secondary"},
+                    {"key": "upper_secondary", "label": "Upper Secondary"},
+                    {"key": "undergraduate", "label": "Undergraduate"},
+                    {"key": "postgraduate", "label": "Postgraduate"}
+                ]
             }
         },
         "phase_instructions": """
@@ -220,7 +204,7 @@ PHASES = {
 # Page configuration
 PAGE_CONFIG = {
     "page_title": "Construct LO Generator",
-    "page_icon": "️app_images\construct.ico",
+    "page_icon": "️app_images/construct.webp",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }
@@ -234,7 +218,7 @@ def build_user_prompt(user_input):
     """
     try:
         user_prompt_parts = [
-            config["prompt"].format(**user_input)
+            config["prompt"].format(**{key: user_input.get(key, "") for key in config["condition"].keys()})
             for config in PHASES["generate_objectives"]["user_prompt"]
             if all(user_input.get(key) == value for key, value in config["condition"].items())
         ]
