@@ -16,14 +16,15 @@ SYSTEM_PROMPT = """You are EduDesignGPT, an expert instructional designer specia
 def get_objective_prompts():
     """Generate prompts for learning objective checkboxes."""
     return [
-        {"condition": {"title_lo": True}, "prompt": "Please suggest {lo_quantity} module-learning objectives for the provided course title: {title}."},
-        {"condition": {"c_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided course objectives: {course_lo}."},
+        {"condition": {"title_lo": True}, "prompt": "Please suggest {lo_quantity} module-learning objectives for the provided module title: {title}."},
+        {"condition": {"c_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided course learning objectives: {course_lo}."},
         {"condition": {"q_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided graded assessment questions: {quiz_lo}."},
-        {"condition": {"f_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided formative activity questions: {form_lo}."},
+        {"condition": {"f_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided formative activity questions : {form_lo}."},
     ]
 
 def get_bloom_taxonomy_conditions():
     return [
+        {"condition":{},"prompt":"Please focus on the following Bloom's Taxonomy verbs: \n Verbs:"},
         {"condition": {"goal_rem": True}, "prompt": "Include cognitive goals: Remember."},
         {"condition": {"goal_apply": True}, "prompt": "Include cognitive goals: Apply."},
         {"condition": {"goal_evaluate": True}, "prompt": "Include cognitive goals: Evaluate."},
@@ -36,14 +37,15 @@ def get_bloom_taxonomy_conditions():
 
 def get_relevance_conditions():
     return [
-        {"condition": {"real_world_relevance": True}, "prompt": "Try to provide learning objectives that are relevant to real-world practices and industry trends."},
-        {"condition": {"problem_solving": True}, "prompt": "Focus on problem-solving and critical thinking."},
-        {"condition": {"meta_cognitive_reflection": True}, "prompt": "Focus on meta-cognitive reflections."},
-        {"condition": {"ethical_consideration": True}, "prompt": "Include emotional, moral, and ethical considerations."},
+        {"condition": {"real_world_relevance": True}, "prompt": "Try to provide module-learning objectives that are relevant to real-world practices and industry trends."},
+        {"condition": {"problem_solving": True}, "prompt": "Try to provide module-learning objectives that focus on problem-solving and critical thinking"},
+        {"condition": {"meta_cognitive_reflection": True}, "prompt": "Try to provide module-learning objectives that focus on meta-cognitive reflections"},
+        {"condition": {"ethical_consideration": True}, "prompt": "Try to provide module-learning objectives that include emotional, moral, and ethical considerations."},
     ]
 
 def get_academic_stage_conditions():
     return [
+        {"condition":{},"prompt":"Please align the learning objectives to the following academic stage level: \n Level:"},    
         {"condition": {"academic_stage_radio": "Lower Primary"}, "prompt": "Target the academic stage: Lower Primary."},
         {"condition": {"academic_stage_radio": "Middle Primary"}, "prompt": "Target the academic stage: Middle Primary."},
         {"condition": {"academic_stage_radio": "Upper Primary"}, "prompt": "Target the academic stage: Upper Primary."},
