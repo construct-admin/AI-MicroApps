@@ -167,6 +167,13 @@ PHASES = {
                 "max_value": 6,
                 "value": 1
             },
+            "distractors_num": {
+                "type": "slider",
+                "label": "Number of distractors per question:",
+                "min_value": 1,
+                "max_value": 4,
+                "value": 1
+            },
             "text_input": {
                 "type": "text_area",
                 "label": "Enter the text or context for the quiz questions:",
@@ -182,7 +189,7 @@ PHASES = {
         "user_prompt": [
             {
                 "condition": {},
-                "prompt": "Please write {questions_num} for {question_level} level multiple-choice question(s), each with {correct_ans_num} correct answer(s) and distractors, based on the following text:\n{text_input}\n"
+                "prompt": "Please write {questions_num} for {question_level} level multiple-choice question(s), each with {correct_ans_num} correct answer(s) and with {distractors_num} incorrect answers, based on the following text:\n{text_input}\n"
             },
             {
                 "condition": {"output_format": True},
