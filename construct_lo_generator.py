@@ -25,12 +25,12 @@ def get_objective_prompts():
 def get_bloom_taxonomy_conditions():
     return [
         {"condition":{},"prompt":"Please focus on the following Bloom's Taxonomy verbs: \n Verbs:"},
-        {"condition": {"goal_rem": True}, "prompt": "Include cognitive goals: Remember."},
-        {"condition": {"goal_apply": True}, "prompt": "Include cognitive goals: Apply."},
-        {"condition": {"goal_evaluate": True}, "prompt": "Include cognitive goals: Evaluate."},
-        {"condition": {"goal_under": True}, "prompt": "Include cognitive goals: Understand."},
-        {"condition": {"goal_analyze": True}, "prompt": "Include cognitive goals: Analyze."},
-        {"condition": {"goal_create": True}, "prompt": "Include cognitive goals: Create."},
+        {"condition": {"goal_rem": True}, "prompt": "Remember."},
+        {"condition": {"goal_apply": True}, "prompt": "Apply."},
+        {"condition": {"goal_evaluate": True}, "prompt": "Evaluate."},
+        {"condition": {"goal_under": True}, "prompt": "Understand."},
+        {"condition": {"goal_analyze": True}, "prompt": "Analyze."},
+        {"condition": {"goal_create": True}, "prompt": "Create."},
         
         
     ]
@@ -46,13 +46,13 @@ def get_relevance_conditions():
 def get_academic_stage_conditions():
     return [
         {"condition":{},"prompt":"Please align the learning objectives to the following academic stage level: \n Level:"},    
-        {"condition": {"academic_stage_radio": "Lower Primary"}, "prompt": "Target the academic stage: Lower Primary."},
-        {"condition": {"academic_stage_radio": "Middle Primary"}, "prompt": "Target the academic stage: Middle Primary."},
-        {"condition": {"academic_stage_radio": "Upper Primary"}, "prompt": "Target the academic stage: Upper Primary."},
-        {"condition": {"academic_stage_radio": "Lower Secondary"}, "prompt": "Target the academic stage: Lower Secondary."},
-        {"condition": {"academic_stage_radio": "Upper Secondary"}, "prompt": "Target the academic stage: Upper Secondary."},
-        {"condition": {"academic_stage_radio": "Undergraduate"}, "prompt": "Target the academic stage: Undergraduate."},
-        {"condition": {"academic_stage_radio": "Postgraduate"}, "prompt": "Target the academic stage: Postgraduate."},
+        {"condition": {"academic_stage_radio": "Lower Primary"}, "prompt": "Lower Primary."},
+        {"condition": {"academic_stage_radio": "Middle Primary"}, "prompt": "Middle Primary."},
+        {"condition": {"academic_stage_radio": "Upper Primary"}, "prompt": "Upper Primary."},
+        {"condition": {"academic_stage_radio": "Lower Secondary"}, "prompt": "Lower Secondary."},
+        {"condition": {"academic_stage_radio": "Upper Secondary"}, "prompt": "Upper Secondary."},
+        {"condition": {"academic_stage_radio": "Undergraduate"}, "prompt": "Undergraduate."},
+        {"condition": {"academic_stage_radio": "Postgraduate"}, "prompt": "Postgraduate."},
     ]
 
 
