@@ -16,10 +16,10 @@ SYSTEM_PROMPT = """You are EduDesignGPT, an expert instructional designer specia
 def get_objective_prompts():
     """Generate prompts for learning objective checkboxes."""
     return [
-        {"condition": {"title_lo": True}, "prompt": "Please suggest {lo_quantity} learning objectives for the provided course title: {title}."},
-        {"condition": {"c_lo": True}, "prompt": "Please write {lo_quantity} learning objectives based on the provided course objectives: {course_lo}."},
-        {"condition": {"q_lo": True}, "prompt": "Please write {lo_quantity} learning objectives based on the provided graded assessment questions: {quiz_lo}."},
-        {"condition": {"f_lo": True}, "prompt": "Please write {lo_quantity} learning objectives based on the provided formative activity questions: {form_lo}."},
+        {"condition": {"title_lo": True}, "prompt": "Please suggest {lo_quantity} module-learning objectives for the provided course title: {title}."},
+        {"condition": {"c_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided course objectives: {course_lo}."},
+        {"condition": {"q_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided graded assessment questions: {quiz_lo}."},
+        {"condition": {"f_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided formative activity questions: {form_lo}."},
     ]
 
 def get_bloom_taxonomy_conditions():
@@ -80,21 +80,25 @@ PHASES = {
             "title": {
                 "type": "text_input",
                 "label": "Enter the title of your module:",
+                "showIf": {"title_lo": True}
             },
             "course_lo": {
                 "type": "text_area",
                 "label": "Enter the course learning objective:",
-                "height": 300
+                "height": 300,
+                "showIf": {"c_lo": True}
             },
             "quiz_lo": {
                 "type": "text_area",
                 "label": "Enter the graded assessment question(s):",
-                "height": 300
+                "height": 300,
+                "showIf": {"q_lo": True}
             },
             "form_lo": {
                 "type": "text_area",
                 "label": "Enter the formative activity question(s):",
-                "height": 300
+                "height": 300,
+                "showIf": {"f_lo": True}
             },
             "lo_quantity": {
                 "type": "slider",
