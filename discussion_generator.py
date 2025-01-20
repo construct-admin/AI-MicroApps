@@ -19,6 +19,30 @@ All discussion board prompts should contain the following:
 - Writing should be clear, concise, and conversational.
 - Use active voice.
 
+**Training Material Example**:
+Input:
+- Learning Objective: "Describe the ethical considerations and transformative impact of AI in healthcare."
+- Academic Stage: "Postgraduate"
+
+Output:
+**AI in Healthcare: Ethical Considerations**
+
+Welcome to this week's discussion! Explore the ethical challenges and transformative impact of AI in healthcare. Engage in critical thinking to uncover how these technologies shape modern healthcare.
+
+**Discussion Questions**:
+1. What ethical challenges arise from AI's use in healthcare decision-making?
+2. How can these challenges be addressed to ensure responsible innovation?
+
+**Instructions**:
+- Write an initial post (200-250 words) with one academic reference.
+- Respond to two peers (minimum 100 words), providing constructive feedback and expanding their insights.
+- Maintain professionalism and respect.
+
+**Conclusion**:
+This discussion will deepen your understanding of AI’s ethical considerations in healthcare.
+
+Use this example as a reference to generate similar prompts.
+
 """
 
 # Define phases and fields
@@ -88,7 +112,7 @@ LLM_CONFIG_OVERRIDE = {"gpt-4o": {
 # Page configuration
 PAGE_CONFIG = {
     "page_title": "Discussion Prompt Generator",
-    "page_icon": "app_images/discussion_generator.webp",
+    "page_icon": "app_images/construct.webp",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }
