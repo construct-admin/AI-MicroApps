@@ -203,7 +203,7 @@ PHASES = {
 # Page configuration
 PAGE_CONFIG = {
     "page_title": "Construct LO Generator",
-    "page_icon": "️🔹",
+    # "page_icon": "️🔹",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }
