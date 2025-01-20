@@ -87,7 +87,7 @@ PHASES = {
                 "prompt": "Generate a discussion prompt aligned with the following learning content: {learning_content}."
             },
             {
-                "condition": {"academic_stage_radio": True},
+                "condition": {},
                 "prompt": "Align the discussion prompt to the following academic stage level: {academic_stage_radio}."
             }
         ],
