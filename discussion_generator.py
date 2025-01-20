@@ -80,15 +80,15 @@ PHASES = {
         "user_prompt": [
             {
                 "condition": {},
-                "prompt": "Generate a discussion prompt aligned with the following learning objective: {learning_objectives}."
+                "prompt": "The discussion question should be aligned with the provided learning objective: {learning_objectives}."
             },
             {
                 "condition": {},
-                "prompt": "Generate a discussion prompt aligned with the following learning content: {learning_content}."
+                "prompt": "The discussion question should be aligned with the following learning content: {learning_content}."
             },
             {
                 "condition": {},
-                "prompt": "Align the discussion prompt to the following academic stage level: {academic_stage_radio}."
+                "prompt": "Please align the learning objectives to the following academic stage level: {academic_stage_radio}."
             }
         ],
         "ai_response": True,
@@ -121,17 +121,17 @@ PAGE_CONFIG = {
 SIDEBAR_HIDDEN = True
 
 # Prompt builder
-def build_user_prompt_with_academic_level(user_input):
+def build_user_prompt(user_input):
     """
-    Dynamically build the user prompt with academic level (radio button) and user-provided inputs
-    for learning objectives and content.
+    Dynamically build the user prompt with user-provided inputs.
     """
     try:
-        # Retrieve and validate inputs
+        # Retrieve inputs
         learning_objectives = user_input.get("learning_objectives", "").strip()
         learning_content = user_input.get("learning_content", "").strip()
         academic_stage = user_input.get("academic_stage_radio", "").strip()
 
+        # Validate required inputs
         if not learning_objectives:
             raise ValueError("The 'Learning Objectives' field is required.")
         if not learning_content:
@@ -139,35 +139,19 @@ def build_user_prompt_with_academic_level(user_input):
         if not academic_stage:
             raise ValueError("An 'Academic Stage' must be selected.")
 
-        # Construct the prompt
-        prompt = f"""
-        **Training Material**:
-        Input:
-        - Learning Objective: "{learning_objectives}"
-        - Learning Content: "{learning_content}"
-        - Academic Stage: "{academic_stage}"
+        # Build the user prompt
+        user_prompt = [
+            f"The discussion question should be aligned with the provided learning objective: {learning_objectives}.",
+            f"The discussion question should be aligned with the following learning content: {learning_content}.",
+            f"Please align the learning objectives to the following academic stage level: {academic_stage}."
+        ]
 
-        Output:
-        Generate a discussion prompt aligned with the provided details.
-
-        **Discussion Prompt**:
-        Welcome to this discussion! Focus on the following learning objective and content:
-        - Learning Objective: "{learning_objectives}"
-        - Learning Content: "{learning_content}"
-
-        **Academic Stage**:
-        Tailor the discussion for learners at the {academic_stage} level.
-
-        **Instructions**:
-        - Include 1-2 open-ended questions that encourage critical thinking.
-        - Provide clear guidelines for participants, including word count (no more than 250 words for initial posts).
-        - Encourage learners to reference personal experiences or academic sources.
-        - Provide guidance on engaging constructively with peers' responses.
-        """
-        return prompt.strip()
+        # Combine the prompts
+        return "\n".join(user_prompt)
 
     except KeyError as e:
-        raise ValueError(f"Missing or invalid key in user input: {e}")
+        raise ValueError(f"Missing key in user input: {e}")
+
 
 
 
