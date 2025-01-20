@@ -37,10 +37,10 @@ def get_bloom_taxonomy_conditions():
 
 def get_relevance_conditions():
     return [
-        {"condition": {"real_world_relevance": True}, "prompt": "Try to provide module-learning objectives that are relevant to real-world practices and industry trends."},
-        {"condition": {"problem_solving": True}, "prompt": "Try to provide module-learning objectives that focus on problem-solving and critical thinking"},
-        {"condition": {"meta_cognitive_reflection": True}, "prompt": "Try to provide module-learning objectives that focus on meta-cognitive reflections"},
-        {"condition": {"ethical_consideration": True}, "prompt": "Try to provide module-learning objectives that include emotional, moral, and ethical considerations."},
+        {"condition": {"real_world_relevance": True}, "prompt": "Provide module-learning objectives that are relevant to real-world practices and industry trends."},
+        {"condition": {"problem_solving": True}, "prompt": "Provide module-learning objectives that focus on problem-solving and critical thinking"},
+        {"condition": {"meta_cognitive_reflection": True}, "prompt": "Provide module-learning objectives that focus on meta-cognitive reflections"},
+        {"condition": {"ethical_consideration": True}, "prompt": "Provide module-learning objectives that include emotional, moral, and ethical considerations."},
     ]
 
 def get_academic_stage_conditions():
@@ -122,7 +122,7 @@ PHASES = {
             },
             "real_world_relevance": {
                 "type": "checkbox",
-                "label": "Try to provide learning objectives that are relevant to real-world practices and industry trends."
+                "label": "Provide learning objectives that are relevant to real-world practices and industry trends."
             },
             "problem_solving": {
                 "type": "checkbox",
