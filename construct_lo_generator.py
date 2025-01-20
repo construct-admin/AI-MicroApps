@@ -204,6 +204,14 @@ PHASES = {
     }
 }
 
+PREFERRED_LLM = "gpt-4o"
+LLM_CONFIG_OVERRIDE = {"gpt-4o": {
+        "family": "openai",
+        "model": "gpt-4o",
+        "temperature": 0.3,
+    }
+}
+
 # Page configuration
 PAGE_CONFIG = {
     "page_title": "Construct LO Generator",
