@@ -176,7 +176,7 @@ PHASES = {
                 {"key": "undergraduate", "label": "Undergraduate"},
                 {"key": "postgraduate", "label": "Postgraduate"}
             ]
-            },
+            }
         },
         "phase_instructions": """
         Dynamically build the user prompt based on:
