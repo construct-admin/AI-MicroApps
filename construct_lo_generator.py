@@ -215,7 +215,7 @@ LLM_CONFIG_OVERRIDE = {"gpt-4o": {
 # Page configuration
 PAGE_CONFIG = {
     "page_title": "Construct LO Generator",
-    "page_icon": "️app_images/construct.webp",
+    "page_icon": "app_images/construct.webp",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }
