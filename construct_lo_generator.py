@@ -24,10 +24,14 @@ def get_objective_prompts():
 
 def get_bloom_taxonomy_conditions():
     return [
+        {"condition": {"goal_rem": True}, "prompt": "Include cognitive goals: Remember."},
         {"condition": {"goal_apply": True}, "prompt": "Include cognitive goals: Apply."},
         {"condition": {"goal_evaluate": True}, "prompt": "Include cognitive goals: Evaluate."},
+        {"condition": {"goal_under": True}, "prompt": "Include cognitive goals: Understand."},
         {"condition": {"goal_analyze": True}, "prompt": "Include cognitive goals: Analyze."},
         {"condition": {"goal_create": True}, "prompt": "Include cognitive goals: Create."},
+        
+        
     ]
 
 def get_relevance_conditions():
@@ -62,11 +66,11 @@ PHASES = {
             },
             "title_lo": {
                 "type": "checkbox",
-                "label": "Suggest learning objectives based on the title"
+                "label": "Suggest learning objectives based on the module title"
             },
             "c_lo": {
                 "type": "checkbox",
-                "label": "Provide learning objectives based on the course learning objectives"
+                "label": "Provide learning objectives based on the module learning objectives"
             },
             "q_lo": {
                 "type": "checkbox",
@@ -74,7 +78,7 @@ PHASES = {
             },
             "f_lo": {
                 "type": "checkbox",
-                "label": "Provide learning objectives based on the formative activity questions"
+                "label": "Provide learning objectives based on the formative activity questions of the module"
             },
             # Input Fields
             "title": {
@@ -135,6 +139,10 @@ PHASES = {
                 "body": """<h3>Bloom's Taxonomy</h3> Select cognitive goals to focus on:""",
                 "unsafe_allow_html": True
             },
+            "goal_rem": {
+                "type": "checkbox",
+                "label": "Remember"
+            },
             "goal_apply": {
                 "type": "checkbox",
                 "label": "Apply"
@@ -142,6 +150,10 @@ PHASES = {
             "goal_evaluate": {
                 "type": "checkbox",
                 "label": "Evaluate"
+            },
+            "goal_under": {
+                "type": "checkbox",
+                "label": "Understand"
             },
             "goal_analyze": {
                 "type": "checkbox",
@@ -153,38 +165,18 @@ PHASES = {
             },
             # Academic Stage
             "academic_stage": {
-                "type": "markdown",
-                "body": """<h3>Academic Stage:</h3> Select the category that best reflects the academic stage of the students.""",
-                "unsafe_allow_html": True
+            "type": "radio",
+            "label": "Select the academic stage:",
+            "options": [
+                {"key": "lower_primary", "label": "Lower Primary"},
+                {"key": "middle_primary", "label": "Middle Primary"},
+                {"key": "upper_primary", "label": "Upper Primary"},
+                {"key": "lower_secondary", "label": "Lower Secondary"},
+                {"key": "upper_secondary", "label": "Upper Secondary"},
+                {"key": "undergraduate", "label": "Undergraduate"},
+                {"key": "postgraduate", "label": "Postgraduate"}
+            ]
             },
-            "lower_primary": {
-                "type": "checkbox",
-                "label": "Lower Primary"
-            },
-            "middle_primary": {
-                "type": "checkbox",
-                "label": "Middle Primary"
-            },
-            "upper_primary": {
-                "type": "checkbox",
-                "label": "Upper Primary"
-            },
-            "lower_secondary": {
-                "type": "checkbox",
-                "label": "Lower Secondary"
-            },
-            "upper_secondary": {
-                "type": "checkbox",
-                "label": "Upper Secondary"
-            },
-            "undergraduate": {
-                "type": "checkbox",
-                "label": "Undergraduate"
-            },
-            "postgraduate": {
-                "type": "checkbox",
-                "label": "Postgraduate"
-            }
         },
         "phase_instructions": """
         Dynamically build the user prompt based on:
