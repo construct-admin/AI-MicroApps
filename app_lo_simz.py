@@ -16,7 +16,7 @@ PHASES = {
     "generate_objectives": {
         "name": "Generate Learning Objectives",
         "fields": {
-            "request_type": {
+            "learning_obj_choices": {
                 "type": "markdown",
                 "body": """<h3>What would you like to do?</h3>""",
                 "unsafe_allow_html": True
