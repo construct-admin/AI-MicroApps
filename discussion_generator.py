@@ -79,11 +79,11 @@ PHASES = {
         """,
         "user_prompt": [
             {
-                "condition": {"learning_objectives": True},
+                "condition": {},
                 "prompt": "Generate a discussion prompt aligned with the following learning objective: {learning_objectives}."
             },
             {
-                "condition": {"learning_content": True},
+                "condition": {},
                 "prompt": "Generate a discussion prompt aligned with the following learning content: {learning_content}."
             },
             {
