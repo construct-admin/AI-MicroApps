@@ -189,7 +189,7 @@ PHASES = {
         "user_prompt": [
             {
                 "condition": {},
-                "prompt": "Please write {questions_num} for {question_level} level multiple-choice question(s), each with {correct_ans_num} correct answer(s) and with {distractors_num} incorrect answers, based on the following text:\n{text_input}\n"
+                "prompt": "Please write {questions_num} for {question_level} level multiple-choice question(s), each with {correct_ans_num} correct answer(s) and with {distractors_num} incorrect answers, based on the following text:\n{text_input}\n for {output_format}"
             },
             {
                 "condition": {"output_format": True},
