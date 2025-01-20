@@ -165,17 +165,38 @@ PHASES = {
             },
             # Academic Stage
             "academic_stage": {
-            "type": "radio",
-            "label": "Select the academic stage:",
-            "options": [
-                {"key": "lower_primary", "label": "Lower Primary"},
-                {"key": "middle_primary", "label": "Middle Primary"},
-                {"key": "upper_primary", "label": "Upper Primary"},
-                {"key": "lower_secondary", "label": "Lower Secondary"},
-                {"key": "upper_secondary", "label": "Upper Secondary"},
-                {"key": "undergraduate", "label": "Undergraduate"},
-                {"key": "postgraduate", "label": "Postgraduate"}
-            ]
+            "type": "markdown",
+            "label": """<h3>Academic Stage</h3> Select the category that best reflects the academic stage of the students.""",
+            "unsafe_allow_html" :True
+            },
+            "lower_primary": {
+                "type": "radio",
+                "label": "Lower Primary",
+            },
+            "middle_primary": {
+                "type": "radio",
+                "label": "Middle Primary",
+            },
+            "upper_primary": {
+                "type": "radio",
+                "label": "Upper Primary",
+            },
+            "lower_secondary": {
+                "type": "radio",
+                "label": "Lower Secondary",
+            },
+            "upper_secondary": {
+                "type": "radio",
+                "label": "Upper Secondary",
+            },
+            "undergraduate": {
+                "type": "radio",
+                "label": "Undergraduate",
+            }
+            ,
+            "postgraduate": {
+                "type": "radio",
+                "label": "Postgraduate",
             }
         },
         "phase_instructions": """
