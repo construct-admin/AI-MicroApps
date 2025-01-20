@@ -48,7 +48,7 @@ Use this example as a reference to generate similar prompts.
 # Define phases and fields
 PHASES = {
     "generate_discussion": {
-        "name": "Generate Discussion Prompt",
+        "name": "Discussion Prompt Generator",
         "fields": {
             "learning_objectives": {
                 "type": "text_area",
@@ -58,7 +58,7 @@ PHASES = {
             "learning_content": {
                 "type": "text_area",
                 "label": "Enter the relevant learning content:",
-                "height": 300
+                "height": 500
             },
             "academic_stage_radio": {
                 "type": "radio",
@@ -80,7 +80,7 @@ PHASES = {
         "user_prompt": [
             {
                 "condition": {},
-                "prompt": "The discussion question should be aligned with the provided learning objective: {learning_objectives}."
+                "prompt": "The discussion question should be aligned with the provided learning objectives: {learning_objectives}."
             },
             {
                 "condition": {},
