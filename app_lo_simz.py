@@ -39,25 +39,21 @@ PHASES = {
             },
             "title": {
                 "type": "text_input",
-                "label": "Enter the title of your module:",
-                "showIf": {"request_type": ["Suggest learning objectives based on the title"]}
+                "label": "Enter the title of your module:"
             },
             "course_lo": {
                 "type": "text_area",
                 "label": "Enter the course learning objective:",
-                "showIf": {"request_type": ["Provide learning objectives based on the course learning objectives"]},
                 "height": 300
             },
             "quiz_lo": {
                 "type": "text_area",
                 "label": "Enter the graded assessment question(s):",
-                "showIf": {"request_type": ["Provide learning objectives based on the graded assessment question(s) of the module"]},
                 "height": 300
             },
             "form_lo": {
                 "type": "text_area",
                 "label": "Enter the formative activity question(s):",
-                "showIf": {"request_type": ["Provide learning objectives based on the formative activity questions"]},
                 "height": 300
             },
             "lo_quantity": {
