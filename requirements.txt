@@ -11,5 +11,4 @@ langchain-openai==0.1.23
 langchain-mongodb==0.1.8
 langchain==0.2.16
 langchain-community==0.2.16
-pypdf
-
+pypdf>=3.0.0
