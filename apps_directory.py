@@ -104,10 +104,18 @@ def display_apps(apps_metadata):
             app_number += 1  # Increment the counter
 
 def get_image_base64(image_path):
-    """Convert image to base64 for inline rendering."""
+    """Convert an image to base64 for inline rendering."""
     import base64
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode("utf-8")
+    try:
+        if not os.path.isfile(image_path):
+            raise FileNotFoundError(f"Image file not found: {image_path}")
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode("utf-8")
+    except FileNotFoundError:
+        print(f"Using placeholder image for missing file: {image_path}")
+        placeholder_path = os.path.join(APP_IMAGES_DIR, "placeholder.jpg")
+        with open(placeholder_path, "rb") as placeholder_file:
+            return base64.b64encode(placeholder_file.read()).decode("utf-8")
 
 def main():
     st.set_page_config(page_title="AI MicroApps", page_icon="🤖", layout="wide")
