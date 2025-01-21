@@ -33,17 +33,7 @@ def get_question_level_conditions():
 
 def get_output_format_conditions():
     return [
-        {"condition": {"output_format": "General Quiz Feedback"}, "prompt": "General Quiz Feedback."},
-        {"condition": {"output_format": "Answer-Option Level Quiz Feedback"}, "prompt": "Answer-Option Level Quiz Feedback."},
-        {"condition": {"output_format": "Coursera Ungraded Quiz"}, "prompt": "Coursera Ungraded Quiz."},
-        {"condition": {"output_format": "Coursera Graded Quiz"}, "prompt": "Coursera Graded Quiz."},
-        {"condition": {"output_format": "H5P Textual Upload Feature"}, "prompt": "H5P Textual Upload Feature."},
-        {"condition": {"output_format": "Open edX OLX Quiz"}, "prompt": "Open edX OLX Quiz."},
-    ]
-
-def get_example_for_output_format(output_format):
-    examples = {
-        "General Quiz Feedback": """Apply the formatting as seen in the example below. Indicate the correct answer by using an asterisk.
+        {"condition": {"output_format": "General Quiz Feedback"}, "prompt": """Apply the formatting as seen in the example below. Indicate the correct answer by using an asterisk.
 
 Which of the following is the weakest scatterer of conducting electrons?
 
@@ -55,9 +45,8 @@ B: Impurities in the material.
 
 D: Vibrating atoms within the material.
 
-General Feedback: Isotopes have the least effect on electron scattering because they maintain the chemical properties of the original atoms, causing minimal disruption to the electron flow. This makes them the weakest scatterers among the options presented.""",
-        
-        "Answer-Option Level Quiz Feedback": """Apply the formatting requirements as seen in the example below. Indicate the correct answer by using an asterisk.
+General Feedback: Isotopes have the least effect on electron scattering because they maintain the chemical properties of the original atoms, causing minimal disruption to the electron flow. This makes them the weakest scatterers among the options presented."""},
+        {"condition": {"output_format": "Answer-Option Level Quiz Feedback"}, "prompt": """Apply the formatting requirements as seen in the example below. Indicate the correct answer by using an asterisk.
 
 Which of the following is the weakest scatterer of conducting electrons?
 
@@ -75,9 +64,8 @@ Feedback: Sorry, that is incorrect. Impurities in a material are strong scattere
 
 D: Vibrating atoms within the material.
 
-Feedback: Sorry, that is incorrect. Vibrating atoms, which are associated with lattice vibrations or phonons, can be significant scatterers of conducting electrons, especially at higher temperatures. However, Isotope atoms are chemically identical to the majority of atoms in the material and thus behave similarly in terms of interacting with electrons.""",
-        
-        "Coursera Ungraded Quiz": """Apply the formatting as seen in the example below. Indicate the correct answer by using an asterisk.
+Feedback: Sorry, that is incorrect. Vibrating atoms, which are associated with lattice vibrations or phonons, can be significant scatterers of conducting electrons, especially at higher temperatures. However, Isotope atoms are chemically identical to the majority of atoms in the material and thus behave similarly in terms of interacting with electrons."""},
+        {"condition": {"output_format": "Coursera Ungraded Quiz"}, "prompt": """Apply the formatting as seen in the example below. Indicate the correct answer by using an asterisk.
 
 Which of the following is the weakest scatterer of conducting electrons?
 
@@ -95,9 +83,8 @@ Feedback: Sorry, that is incorrect. Impurities in a material are strong scattere
 
 D: Vibrating atoms within the material.
 
-Feedback: Sorry, that is incorrect. Vibrating atoms, which are associated with lattice vibrations or phonons, can be significant scatterers of conducting electrons, especially at higher temperatures. However, Isotope atoms are chemically identical to the majority of atoms in the material and thus behave similarly in terms of interacting with electrons.""",
-        
-        "Coursera Graded Quiz": """All questions should align with the structure below. Indicate the correct answer by using an asterisk.
+Feedback: Sorry, that is incorrect. Vibrating atoms, which are associated with lattice vibrations or phonons, can be significant scatterers of conducting electrons, especially at higher temperatures. However, Isotope atoms are chemically identical to the majority of atoms in the material and thus behave similarly in terms of interacting with electrons."""},
+        {"condition": {"output_format": "Coursera Graded Quiz"}, "prompt": """All questions should align with the structure below. Indicate the correct answer by using an asterisk.
 
 What is the threshold diameter below which the electrical conduction of a metal nanowire can become worse than that of the bulk?
 
@@ -111,9 +98,8 @@ C: The electron de Broglie wavelength in the metal.
 Feedback: To learn more about the relationship between the diameter of metal nanowires and their electrical conduction properties, review “Resource Placeholder.”
 
 D: The mean impurity distance in the metal.
-Feedback: To learn more about the relationship between the diameter of metal nanowires and their electrical conduction properties, review “Resource Placeholder.”""",
-        
-        "H5P Textual Upload Feature": """Exactly align the format of the questions and answers with the example below. (Each answer option should be on a separate line.). 
+Feedback: To learn more about the relationship between the diameter of metal nanowires and their electrical conduction properties, review “Resource Placeholder.”"""},
+        {"condition": {"output_format": "H5P Textual Upload Feature"}, "prompt": """Align the format of the questions and answers with the example below. (Each answer option should be on a separate line.) There is no feedback here. 
 
 Example:
 Who founded the Roman city of Barcino, which later became Barcelona?
@@ -121,20 +107,16 @@ Who founded the Roman city of Barcino, which later became Barcelona?
 The Greeks
 *The Romans:::Barcelona was originally founded as a Roman colony named Barcino around the end of the 1st century BC.
 The Visigoths
-The Carthaginians""",
-        
-        "Open edX OLX Quiz": """Align the quiz question format with the format below:
+The Carthaginians"""},
+        {"condition": {"output_format": "Open edX OLX Quiz"}, "prompt": """Align the quiz question format with the format below:
 
 >>Add the question text, or prompt, here. This text is required||You can add an optional tip or note related to the prompt like this. <<
 ( ) an incorrect answer {{You can specify optional feedback like this, which appears after this answer is submitted.}}
 (x) the correct answer
 ( ) an incorrect answer {{You can specify optional feedback for none, a subset, or all of the answers.}}
 ||You can add an optional hint like this. Problems that have a hint include a hint button, and this text appears the first time learners select the button.||
-||If you add more than one hint, a different hint appears each time learners select the hint button.||"""
-    }
-    return examples.get(output_format, "No example available.")
-
-
+||If you add more than one hint, a different hint appears each time learners select the hint button.||"""},
+    ]
 
 # Define phases and fields
 PHASES = {
@@ -239,9 +221,17 @@ def build_user_prompt(user_input):
     Build the user prompt dynamically based on user input.
     """
     try:
+        # Retrieve the selected output format
         output_format = user_input.get("output_format", "")
-        example_text = get_example_for_output_format(output_format)
 
+        # Fetch the corresponding example from get_output_format_conditions
+        output_conditions = get_output_format_conditions()
+        example_text = next(
+            (condition["prompt"] for condition in output_conditions if condition["condition"].get("output_format") == output_format),
+            "No example available."
+        )
+
+        # Build the user prompt dynamically
         user_prompt_parts = [
             config["prompt"].format(**{
                 key: user_input.get(key, ""),
@@ -250,9 +240,11 @@ def build_user_prompt(user_input):
             for config in PHASES["generate_questions"]["user_prompt"]
             if all(user_input.get(key) == value for key, value in config["condition"].items())
         ]
+
         return "\n".join(user_prompt_parts)
     except KeyError as e:
         raise ValueError(f"Missing key in user input: {e}")
+
 
 # Entry point
 from core_logic.main import main
