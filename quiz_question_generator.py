@@ -12,7 +12,7 @@ Output:
 - Produce quiz questions that are aligned with required formatting as seen under examples.
 - Align with corresponding learning objectives.
 - If there is no feedback indicated within the example, there should be no feedback produced.
-- If there is asterisk indicating the correct answer within the example, there should be an asterisk indicating the correct answer in your output.
+- If there is an asterisk indicating the correct answer within the example, there should always be an asterisk indicating the correct answer in your output.
 - If there are alphabets indicating the options, do not repeat the alphabets and always follow alphabetical order.
 
 Constraints:
