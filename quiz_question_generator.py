@@ -153,7 +153,7 @@ PHASES = {
             "module_lo": {
                 "type": "text_area",
                 "label": "Enter the module learning objective:",
-                "height": 300,
+                "height": 200,
             },
             "questions_num": {
                 "type": "slider",
@@ -212,7 +212,7 @@ PHASES = {
         "user_prompt": [
             {
                 "condition": {},
-                "prompt": "Please write {questions_num} multiple-choice question(s) for {question_level} level, each with {correct_ans_num} correct answer(s) and with {distractors_num} incorrect answers, based on the following text:\n{text_input}\n for {output_format}. Please align with the {title} of the module and the module learning objectives {module_lo}."
+                "prompt": "Please write {questions_num} multiple-choice question(s) for {question_level} level, each with {correct_ans_num} correct answer(s) and with {distractors_num} incorrect answers, based on the following text:\n{text_input}\n for {output_format}. Please align with the module title: {title} and the module learning objectives: {module_lo}."
             },
             {
                 "condition": {"output_format": True},
