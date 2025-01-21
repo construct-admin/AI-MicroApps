@@ -1,5 +1,5 @@
 PUBLISHED = True
-APP_URL = "https://ai-microapps-a6qrjbdhuk5mjkkwjb3zdo.streamlit.app/"
+APP_URL = "https://ai-microapps-ltajmcd53aypk3cp7mxsey.streamlit.app/"
 APP_IMAGE = "construct.webp"
 
 APP_TITLE = "Construct Learning Objectives Generator"
