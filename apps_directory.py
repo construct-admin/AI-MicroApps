@@ -118,7 +118,7 @@ def get_image_base64(image_path):
             return base64.b64encode(placeholder_file.read()).decode("utf-8")
 
 def main():
-    st.set_page_config(page_title="AI MicroApps", page_icon="🤖", layout="wide")
+    st.set_page_config(page_title="AI MicroApps", page_icon="app_images/construct.webp", layout="wide")
     st.title("AI MicroApps Directory")
 
     # Scan for all app files (starting with 'app_' and ending in '.py')
