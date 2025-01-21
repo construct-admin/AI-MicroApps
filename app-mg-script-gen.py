@@ -1,4 +1,4 @@
-APP_URL = "https://mg-script-gen.streamlit.app"
+APP_URL = "https://motion-graphic-script-gen.streamlit.app/"
 APP_IMAGE = "construct.webp"
 PUBLISHED = True
 
