@@ -1,4 +1,4 @@
-APP_URL = "https://quizquestiongen.streamlit.app"
+APP_URL = "https://quizquestion-generator.streamlit.app"
 APP_IMAGE = "construct.webp"
 PUBLISHED = True
 
