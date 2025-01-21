@@ -25,13 +25,13 @@ SOURCE_DOCUMENT = "rag_docs/ABETSIS_C1_M0_V1.pdf"  # Path to your PDF document
 
 # Required libraries
 import os
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 import openai
 
 # PDF Text Extraction
 def extract_text_from_pdf(pdf_path):
     """
-    Extract text from a PDF file using PyPDF2.
+    Extract text from a PDF file using pypdf.
     """
     text = ""
     reader = PdfReader(pdf_path)
