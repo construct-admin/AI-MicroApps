@@ -1,5 +1,5 @@
 APP_URL = "https://image-text-gen.streamlit.app/" 
-APP_IMAGE = "" #TODO: Add default image for the app
+APP_IMAGE = "construct.webp" 
 PUBLISHED = True # Status of the app
 
 APP_TITLE = "Text from Image Generator"
@@ -59,7 +59,7 @@ COMPLETION_CELEBRATION = False
 
 PAGE_CONFIG = {
     "page_title": "Text from Image Generator",
-    "page_icon": "🖼️",
+    "page_icon": "app_images/construct.webp",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }

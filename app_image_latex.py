@@ -1,5 +1,5 @@
-APP_URL = "https://image-late-gen.streamlit.app/" #TODO: Add URL for the app
-APP_IMAGE = "" #TODO: Add default image for the app
+APP_URL = "https://image-late-gen.streamlit.app/" 
+APP_IMAGE = "construct.webp" 
 PUBLISHED = True # Status of the app
 
 APP_TITLE = "LaTex Generator"
@@ -57,7 +57,7 @@ COMPLETION_CELEBRATION = False
 
 PAGE_CONFIG = {
     "page_title": "LaTeX Generator",
-    "page_icon": "🖼️",
+    "page_icon": "app_images/construct.webp",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }
