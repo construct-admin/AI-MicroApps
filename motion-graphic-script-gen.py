@@ -13,116 +13,75 @@ Output format:
 Format scripts as a table, with columns for approximate time, text, and visual cues. Because we should have a change in visuals every 15 seconds, I create the script in 15 - 20-second increments, with each increment being a row in the table. You work on the assumption that each minute of video will have 120 words of text.
 
 Scripts will include the following sections:
- 1) Begin with an engaging hook. This may be a reference to a person, story, interesting statistic or case study, or a critical question from the content that should be engaged with.  Avoid pretext.  Usually, we don’t need to tell them what we’re going to talk about.  We can just start talking about it.  The pretext is different from a hook.  
- 2) Following the introductory paragraph, add a paragraph that establishes the relevance of the learning material to real-world practices.
+ 1) Begin with an engaging hook.
+ 2) Add a paragraph that establishes the relevance of the learning material to real-world practices.
  3) Present the key theory or ideas of the content.
  4) Provide an explanation of how that links to solving the problems presented at the start.
- 5) A conclusion that pulls the video together. The conclusion should tie together the main points explored in the script. It can be presented as key takeaways, or as thought-provoking questions for reflection. 
-
-Language guide:
-You'll need to closely match the writing samples, ensuring consistency and adherence to the specific requirements. This includes understanding the nuances of scriptwriting, such as pacing, dialogue, and narrative structure, tailored to an educational context. You will be provided with documents and samples to reference, and your responses should reflect the style and tone of these materials.
+ 5) A conclusion that pulls the video together, tying key points explored in the script.
 """
 
-RAG_IMPLEMENTATION = True  # Enable RAG
-SOURCE_DOCUMENT = "rag_docs/ABETSIS_C1_M0_V1.pdf"  # The document to be used for RAG
+RAG_IMPLEMENTATION = True  # Enable RAG integration
+SOURCE_DOCUMENT = "rag_docs/ABETSIS_C1_M0_V1.pdf"  # Path to your PDF document
 
-# Import required libraries
-import fitz  # PyMuPDF for extracting text from PDFs
-from openai.embeddings_utils import get_embedding
-import faiss
-import numpy as np
+# Required libraries
 import os
+from PyPDF2 import PdfReader
+import openai
 
-openai.api_key = os.getenv("OPENAI_API_KEY") or st.secrets["OPENAI_API_KEY"]
-
-# Text Extraction
-def extract_text_with_formatting(pdf_path):
+# PDF Text Extraction
+def extract_text_from_pdf(pdf_path):
     """
-    Extracts text from a PDF file while preserving basic formatting.
+    Extract text from a PDF file using PyPDF2.
     """
-    document_text = ""
-    with fitz.open(pdf_path) as pdf:
-        for page in pdf:
-            document_text += page.get_text("text")  # Extract text with basic formatting
-    return document_text
-
-
-# Embedding and Retrieval
-def generate_embeddings(text_chunks):
-    """
-    Generate embeddings for a list of text chunks.
-    """
-    return [get_embedding(chunk, engine="text-embedding-ada-002") for chunk in text_chunks]
-
-
-def create_faiss_index(embeddings):
-    """
-    Create a FAISS index for efficient similarity search.
-    """
-    dimension = len(embeddings[0])
-    index = faiss.IndexFlatL2(dimension)
-    index.add(np.array(embeddings).astype("float32"))
-    return index
-
-
-def retrieve_relevant_chunks(query, index, text_chunks, top_k=3):
-    """
-    Retrieve the most relevant text chunks for a given query using a FAISS index.
-    """
-    query_embedding = get_embedding(query, engine="text-embedding-ada-002")
-    distances, indices = index.search(np.array([query_embedding]).astype("float32"), top_k)
-    return [text_chunks[i] for i in indices[0]]
-
+    text = ""
+    reader = PdfReader(pdf_path)
+    for page in reader.pages:
+        text += page.extract_text()
+    return text
 
 # Prompt Builder
 def build_user_prompt(user_input):
     """
-    Build the user prompt dynamically, integrating RAG-retrieved content.
+    Dynamically build the user prompt with user-provided inputs and document content.
     """
     try:
-        # Extract user inputs
+        # Retrieve user inputs
         learning_objectives = user_input.get("learning_objectives", "").strip()
         learning_content = user_input.get("learning_content", "").strip()
         academic_stage = user_input.get("academic_stage_radio", "").strip()
-        query = learning_content or "General query"
 
-        # Validate inputs
+        # Validate required inputs
         if not learning_objectives:
             raise ValueError("The 'Learning Objectives' field is required.")
+        if not learning_content:
+            raise ValueError("The 'Learning Content' field is required.")
         if not academic_stage:
             raise ValueError("An 'Academic Stage' must be selected.")
 
-        # Perform RAG if enabled
-        retrieved_content = ""
-        if RAG_IMPLEMENTATION:
-            # Extract and process document content
-            document_text = extract_text_with_formatting(SOURCE_DOCUMENT)
-            text_chunks = document_text.split("\n\n")  # Split text into paragraphs
-            embeddings = generate_embeddings(text_chunks)
-            index = create_faiss_index(embeddings)
-            retrieved_chunks = retrieve_relevant_chunks(query, index, text_chunks)
-            retrieved_content = "\n".join(retrieved_chunks)
+        # Load document content for RAG
+        document_text = ""
+        if RAG_IMPLEMENTATION and os.path.exists(SOURCE_DOCUMENT):
+            document_text = extract_text_from_pdf(SOURCE_DOCUMENT)
+            document_text = document_text[:2000]  # Truncate text to fit within token limits
 
-        # Construct the prompt
-        prompt = f"""
+        # Construct the user prompt
+        user_prompt = f"""
         {SYSTEM_PROMPT}
 
-        Learning Objectives: {learning_objectives}
-        Academic Stage: {academic_stage}
+        Example Template/Training Data:
+        {document_text}
 
-        Retrieved Content:
-        {retrieved_content}
-
-        User Query:
-        {query}
+        The motion graphic should be aligned with the provided objectives: {learning_objectives}.
+        The discussion question should be aligned with the following learning content: {learning_content}.
+        Please align the learning objectives to the following academic stage level: {academic_stage}.
         """
-        return prompt
+        return user_prompt
 
     except Exception as e:
-        raise ValueError(f"Error in building prompt: {e}")
+        raise ValueError(f"Error building prompt: {str(e)}")
 
 
-# Example data for testing
+# Configuration for the app
 PHASES = {
     "generate_discussion": {
         "name": "Motion Graphic Script Generator",
@@ -174,7 +133,6 @@ PHASES = {
         "read_only_prompt": False
     }
 }
-
 
 PREFERRED_LLM = "gpt-4o"
 LLM_CONFIG_OVERRIDE = {"gpt-4o": {
