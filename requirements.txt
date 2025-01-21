@@ -12,3 +12,6 @@ langchain-mongodb==0.1.8
 langchain==0.2.16
 langchain-community==0.2.16
 pypdf
+pymupdf
+faiss-cpu
+numpy
