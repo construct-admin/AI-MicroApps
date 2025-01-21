@@ -24,7 +24,6 @@ RAG_IMPLEMENTATION = True  # Enable RAG integration
 SOURCE_DOCUMENT = "rag_docs/ABETSIS_C1_M1_V1.pdf"  # Path to your PDF document
 
 # Required Libraries
-# Required Libraries
 import os
 import fitz  # PyMuPDF for PDF processing
 import openai
@@ -89,7 +88,7 @@ def build_user_prompt(user_input):
 # Configuration for the App
 PHASES = {
     "generate_discussion": {
-        "name": "Motion Graphic Script Generator",
+        "name": "Scenario Video Script Generator",
         "fields": {
             "learning_objectives": {
                 "type": "text_area",
