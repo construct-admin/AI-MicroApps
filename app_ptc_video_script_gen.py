@@ -18,11 +18,11 @@ Writing style and tone:
 - Writing should be clear and succinct 
 - Adopt a conversational tone
 
-The example scripts in the knowledge base should be used to inform the  tone, style, and structure of responses.    
+The example scripts in the knowledge base and pdf should be used to inform the  tone, style, and structure of responses  
 """
 
 RAG_IMPLEMENTATION = True  # Enable RAG integration
-SOURCE_DOCUMENT = "rag_docs/ABETSIS_C1_M1_V1.pdf"  # Path to your PDF document
+SOURCE_DOCUMENT = "rag_docs/PTC_Example_Pages_2_3_4.pdf"  # Path to your PDF document
 
 # Required Libraries
 import os
@@ -77,9 +77,9 @@ def build_user_prompt(user_input):
         Example Template/Training Data:
         {document_text}
 
-        The scenario video script should be aligned with the provided objectives: {learning_objectives}.
-        Base the scenario video script on the following learning content: {learning_content}.
-        Please align the scenario video script to the following academic stage level: {academic_stage}.
+        The PTC video script  should be aligned with the provided objectives: {learning_objectives}.
+        Base the PTC video script on the following learning content: {learning_content}.
+        Please align the PTC video script to the following academic stage level: {academic_stage}.
         """
         return user_prompt
 
@@ -98,7 +98,7 @@ PHASES = {
             },
             "learning_content": {
                 "type": "text_area",
-                "label": "Enter relevant learning content that will serve as the basis for the scenario video script.",
+                "label": "Enter relevant learning content that will serve as the basis for the PTC video script.",
                 "height": 500
             },
             "academic_stage_radio": {
@@ -121,15 +121,15 @@ PHASES = {
         "user_prompt": [
             {
                 "condition": {},
-                "prompt": "The scenario video script should be aligned with the provided objectives: {learning_objectives}."
+                "prompt": "The PTC video script should be aligned with the provided objectives: {learning_objectives}."
             },
             {
                 "condition": {},
-                "prompt": "Base the scenario video script on the following content. {learning_content}"
+                "prompt": "Base the PTC video script on the following content. {learning_content}"
             },
             {
                 "condition": {},
-                "prompt": "Please align the scenario video script to the following academic stage level: {academic_stage_radio}."
+                "prompt": "Please align the PTC video script to the following academic stage level: {academic_stage_radio}."
             }
         ],
         "ai_response": True,
