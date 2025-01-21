@@ -33,6 +33,7 @@ import faiss
 import numpy as np
 import os
 
+openai.api_key = os.getenv("OPENAI_API_KEY") or st.secrets["OPENAI_API_KEY"]
 
 # Text Extraction
 def extract_text_with_formatting(pdf_path):
