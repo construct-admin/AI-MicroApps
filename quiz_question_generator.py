@@ -113,7 +113,7 @@ Feedback: To learn more about the relationship between the diameter of metal nan
 D: The mean impurity distance in the metal.
 Feedback: To learn more about the relationship between the diameter of metal nanowires and their electrical conduction properties, review “Resource Placeholder.”""",
         
-        "H5P Textual Upload Feature": """Exactly align the format of the questions and answers with the example below. (Each answer option should be on a separate line.) There is no feedback here. 
+        "H5P Textual Upload Feature": """Exactly align the format of the questions and answers with the example below. (Each answer option should be on a separate line.). 
 
 Example:
 Who founded the Roman city of Barcino, which later became Barcelona?
