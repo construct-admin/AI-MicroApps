@@ -23,23 +23,23 @@ Scripts will include the following sections:
 RAG_IMPLEMENTATION = True  # Enable RAG integration
 SOURCE_DOCUMENT = "rag_docs/ABETSIS_C1_M0_V1.pdf"  # Path to your PDF document
 
-# Required libraries
+# Required Libraries
 import os
-from pypdf import PdfReader
+import fitz  # PyMuPDF for PDF processing
 import openai
 
-# PDF Text Extraction
+# PDF Text Extraction Function
 def extract_text_from_pdf(pdf_path):
     """
-    Extract text from a PDF file using pypdf.
+    Extract text from a PDF file using PyMuPDF (fitz).
     """
     text = ""
-    reader = PdfReader(pdf_path)
-    for page in reader.pages:
-        text += page.extract_text()
+    with fitz.open(pdf_path) as pdf:
+        for page in pdf:
+            text += page.get_text("text")  # Extract plain text from each page
     return text
 
-# Prompt Builder
+# Prompt Builder Function
 def build_user_prompt(user_input):
     """
     Dynamically build the user prompt with user-provided inputs and document content.
@@ -81,7 +81,7 @@ def build_user_prompt(user_input):
         raise ValueError(f"Error building prompt: {str(e)}")
 
 
-# Configuration for the app
+# Configuration for the App
 PHASES = {
     "generate_discussion": {
         "name": "Motion Graphic Script Generator",
@@ -144,7 +144,7 @@ LLM_CONFIG_OVERRIDE = {"gpt-4o": {
     "presence_penalty": 0.1
 }}
 
-# Page configuration
+# Page Configuration
 PAGE_CONFIG = {
     "page_title": "Motion Graphic Script Generator",
     "page_icon": "app_images/construct.webp",
@@ -154,7 +154,7 @@ PAGE_CONFIG = {
 
 SIDEBAR_HIDDEN = True
 
-# Entry point
+# Entry Point
 from core_logic.main import main
 if __name__ == "__main__":
     main(config=globals())
