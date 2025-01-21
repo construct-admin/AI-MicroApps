@@ -77,9 +77,9 @@ def build_user_prompt(user_input):
         Example Template/Training Data:
         {document_text}
 
-        The motion graphic should be aligned with the provided objectives: {learning_objectives}.
-        The discussion question should be aligned with the following learning content: {learning_content}.
-        Please align the learning objectives to the following academic stage level: {academic_stage}.
+        The motion graphic script should be aligned with the provided objectives: {learning_objectives}.
+        Base the motion graphic script on the following learning content: {learning_content}.
+        Please align the motion graphic script to the following academic stage level: {academic_stage}.
         """
         return user_prompt
 
@@ -129,7 +129,7 @@ PHASES = {
             },
             {
                 "condition": {},
-                "prompt": "Please align the learning objectives to the following academic stage level: {academic_stage_radio}."
+                "prompt": "Please align the motion graphic script to the following academic stage level: {academic_stage_radio}."
             }
         ],
         "ai_response": True,
