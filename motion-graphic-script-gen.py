@@ -24,6 +24,7 @@ RAG_IMPLEMENTATION = True  # Enable RAG integration
 SOURCE_DOCUMENT = "rag_docs/ABETSIS_C1_M0_V1.pdf"  # Path to your PDF document
 
 # Required Libraries
+# Required Libraries
 import os
 import fitz  # PyMuPDF for PDF processing
 import openai
@@ -49,6 +50,11 @@ def build_user_prompt(user_input):
         learning_objectives = user_input.get("learning_objectives", "").strip()
         learning_content = user_input.get("learning_content", "").strip()
         academic_stage = user_input.get("academic_stage_radio", "").strip()
+
+        # Debugging: Print retrieved values
+        print("Learning Objectives:", learning_objectives)
+        print("Learning Content:", learning_content)
+        print("Academic Stage:", academic_stage)
 
         # Validate required inputs
         if not learning_objectives:
@@ -79,7 +85,6 @@ def build_user_prompt(user_input):
 
     except Exception as e:
         raise ValueError(f"Error building prompt: {str(e)}")
-
 
 # Configuration for the App
 PHASES = {
