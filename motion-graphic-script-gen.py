@@ -125,7 +125,7 @@ PHASES = {
             },
             {
                 "condition": {},
-                "prompt": "Base the motion graphic script on the following content."
+                "prompt": "Base the motion graphic script on the following content. {learning_content}"
             },
             {
                 "condition": {},
