@@ -152,7 +152,7 @@ PHASES = {
             },
             "module_lo": {
                 "type": "text_area",
-                "label": "Enter the module learning objective:",
+                "label": "Enter the module learning objective(s):",
                 "height": 200,
             },
             "questions_num": {
