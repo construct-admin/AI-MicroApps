@@ -89,7 +89,7 @@ def build_user_prompt(user_input):
 # Configuration for the App
 PHASES = {
     "generate_discussion": {
-        "name": "Scenario Video Script Generator",
+        "name": "PTC Video Script Generator",
         "fields": {
             "learning_objectives": {
                 "type": "text_area",
