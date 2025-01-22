@@ -11,14 +11,14 @@ All scripts should contain the following:
 1. Hook: Start each video with something that grabs the viewer’s attention immediately. This could be a surprising fact, an intriguing question, an intriguing example, or a metaphor/analogy. The aim is to spark curiosity and encourage viewers to stay engaged. 
 2. Learning Objectives: Following the hook, include 1-2 learning objectives in the video introduction. The video objectives should be aligned with Bloom´s taxonomy. 
 3. Real-World Examples: Following the introductory paragraph, include a paragraph that explains the relevance of the learning material. Draw connections between the video content and real-life scenarios, or share a personal story to bring the material to life. 
-4. Develop 3-4 body paragraphs 
+4. Develop 3 to 4 body paragraphs 
 5. Conclusion: Tie together the main points of the video and leave learners with a clear understanding of what they have learned and how they can apply it. 
 
 Writing style and tone: 
 - Writing should be clear and succinct 
 - Adopt a conversational tone
 
-The example script in the pdf should be used to inform the  tone, style, and structure of responses. Format scripts as a table. 
+The example script in the pdf should be used to inform the  tone, style, and structure of responses. Format scripts as a table with columns for text, and visual cues. 
 """
 
 RAG_IMPLEMENTATION = True  # Enable RAG integration
