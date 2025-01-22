@@ -55,6 +55,7 @@ def build_user_prompt(user_input):
         print("Learning Objectives:", learning_objectives)
         print("Learning Content:", learning_content)
         print("Academic Stage:", academic_stage)
+       
 
         # Validate required inputs
         if not learning_objectives:
@@ -69,6 +70,7 @@ def build_user_prompt(user_input):
         if RAG_IMPLEMENTATION and os.path.exists(SOURCE_DOCUMENT):
             document_text = extract_text_from_pdf(SOURCE_DOCUMENT)
             document_text = document_text[:2000]  # Truncate text to fit within token limits
+            print("Document text being included in the prompt:", document_text[:500])
 
         # Construct the user prompt
         user_prompt = f"""
