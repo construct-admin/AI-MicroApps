@@ -28,7 +28,8 @@ SOURCE_DOCUMENT = "rag_docs/PTC_Example_Pages_2_3_4.pdf"  # Path to your PDF doc
 import os
 import fitz  # PyMuPDF for PDF processing
 import openai
-import streamlit as st
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 # PDF Text Extraction Function
 def extract_text_from_pdf(pdf_path):
@@ -71,7 +72,7 @@ def build_user_prompt(user_input):
         if RAG_IMPLEMENTATION and os.path.exists(SOURCE_DOCUMENT):
             document_text = extract_text_from_pdf(SOURCE_DOCUMENT)
             document_text = document_text[:2000]  # Truncate text to fit within token limits
-            st.write("Document text being included in the prompt:", document_text[:500])
+            logging.debug("Document text being included in the prompt: %s", document_text[:500])
 
         # Construct the user prompt
         user_prompt = f"""
