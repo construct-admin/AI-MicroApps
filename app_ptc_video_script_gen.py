@@ -31,6 +31,7 @@ import fitz  # PyMuPDF for PDF processing
 import openai
 import logging
 logging.basicConfig(level=logging.DEBUG)
+import streamlit as st
 
 # PDF Text Extraction Function
 def extract_text_from_pdf(pdf_path):
@@ -74,7 +75,7 @@ def build_user_prompt(user_input):
         if RAG_IMPLEMENTATION and os.path.exists(SOURCE_DOCUMENT):
             document_text = extract_text_from_pdf(SOURCE_DOCUMENT)
             document_text = document_text[:2000]  # Truncate text to fit within token limits
-            logging.debug("Document text being included in the prompt: %s", document_text[:500])
+            st.write("Extracted text:", text[:500])
 
         # Construct the user prompt
         user_prompt = f"""
