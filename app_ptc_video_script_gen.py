@@ -151,7 +151,7 @@ LLM_CONFIG_OVERRIDE = {"gpt-4o": {
 
 # Page Configuration
 PAGE_CONFIG = {
-    "page_title": "Scenario Video Script Generator",
+    "page_title": "PTC Video Script Generator",
     "page_icon": "app_images/construct.webp",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
