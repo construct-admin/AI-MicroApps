@@ -83,6 +83,8 @@ def build_user_prompt(user_input):
         Base the PTC video script on the following learning content: {learning_content}.
         Please align the PTC video script to the following academic stage level: {academic_stage}.
         """
+
+        print("Final Prompt Sent to AI:", user_prompt[:2000])
         return user_prompt
 
     except Exception as e:
