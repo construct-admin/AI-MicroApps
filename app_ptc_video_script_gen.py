@@ -20,6 +20,7 @@ Writing style and tone:
 
 The example script in the pdf should be used to inform the  tone, style, and structure of responses. Format scripts as a table with columns for text, and visual cues. 
 """
+print("Debugging output works!")
 
 RAG_IMPLEMENTATION = True  # Enable RAG integration
 SOURCE_DOCUMENT = "rag_docs/PTC_Example_Pages_2_3_4.pdf"  # Path to your PDF document
@@ -40,6 +41,7 @@ def extract_text_from_pdf(pdf_path):
     with fitz.open(pdf_path) as pdf:
         for page in pdf:
             text += page.get_text("text")  # Extract plain text from each page
+            print("Extracted text:", text[:500])
     return text
 
 # Prompt Builder Function
