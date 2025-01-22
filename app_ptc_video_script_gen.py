@@ -28,6 +28,7 @@ SOURCE_DOCUMENT = "rag_docs/PTC_Example_Pages_2_3_4.pdf"  # Path to your PDF doc
 import os
 import fitz  # PyMuPDF for PDF processing
 import openai
+import streamlit as st
 
 # PDF Text Extraction Function
 def extract_text_from_pdf(pdf_path):
@@ -55,7 +56,7 @@ def build_user_prompt(user_input):
         print("Learning Objectives:", learning_objectives)
         print("Learning Content:", learning_content)
         print("Academic Stage:", academic_stage)
-       
+        
 
         # Validate required inputs
         if not learning_objectives:
@@ -70,7 +71,7 @@ def build_user_prompt(user_input):
         if RAG_IMPLEMENTATION and os.path.exists(SOURCE_DOCUMENT):
             document_text = extract_text_from_pdf(SOURCE_DOCUMENT)
             document_text = document_text[:2000]  # Truncate text to fit within token limits
-            print("Document text being included in the prompt:", document_text[:500])
+            st.write("Document text being included in the prompt:", document_text[:500])
 
         # Construct the user prompt
         user_prompt = f"""
@@ -84,7 +85,7 @@ def build_user_prompt(user_input):
         Please align the PTC video script to the following academic stage level: {academic_stage}.
         """
 
-        print("Final Prompt Sent to AI:", user_prompt[:2000])
+        
         return user_prompt
 
     except Exception as e:
@@ -98,7 +99,7 @@ PHASES = {
             "learning_objectives": {
                 "type": "text_area",
                 "label": "Enter the relevant module-level learning objective(s):",
-                "height": 500
+                "height": 300
             },
             "learning_content": {
                 "type": "text_area",
