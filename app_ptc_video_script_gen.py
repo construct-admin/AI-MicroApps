@@ -18,7 +18,7 @@ Writing style and tone:
 - Writing should be clear and succinct 
 - Adopt a conversational tone
 
-The example scripts in the knowledge base and pdf should be used to inform the  tone, style, and structure of responses  
+The example script in the pdf should be used to inform the  tone, style, and structure of responses. Format scripts as a table. 
 """
 
 RAG_IMPLEMENTATION = True  # Enable RAG integration
