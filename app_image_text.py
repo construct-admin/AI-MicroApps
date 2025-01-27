@@ -17,7 +17,7 @@ HTML_BUTTON = {
 
 }
 
-SYSTEM_PROMPT = "You accept app_images in url and file format and extract the text from images exactly as it appears (verbatim)."
+SYSTEM_PROMPT = "You accept app_images in file format and extract the text from images exactly as it appears (verbatim)."
 
 PHASES = {
     "phase1": {
