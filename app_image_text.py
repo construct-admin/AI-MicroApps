@@ -3,7 +3,7 @@ APP_IMAGE = "construct.webp"
 PUBLISHED = True # Status of the app
 
 APP_TITLE = "Text from Image Generator"
-APP_INTRO = "This app accepts images via upload and returns the text featured within the image."
+APP_INTRO = "This application accepts images via upload and returns the text featured within the image."
 
 APP_HOW_IT_WORKS = """
 This app generates the text from images. 
