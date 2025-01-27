@@ -28,10 +28,6 @@ PHASES = {
     "phase1": {
         "name": "Image Input and Alt Text Generation",
         "fields": {
-            "http_img_urls": {
-                "type": "text_area",
-                "label": "Enter image urls"
-            },
             "uploaded_files": {
                 "type": "file_uploader",
                 "label": "Choose files",
