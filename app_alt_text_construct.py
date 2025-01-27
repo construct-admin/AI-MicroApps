@@ -3,7 +3,7 @@ APP_IMAGE = "construct.webp"
 PUBLISHED = True
 
 APP_TITLE = "Alt Text Generator"
-APP_INTRO = """This app accepts app_images via upload or URL and returns alt text for accessibility."""
+APP_INTRO = """This app accepts uploaded images and returns alt text for accessibility."""
 
 APP_HOW_IT_WORKS = """
 This app creates alt text for accessibility from app_images. 
