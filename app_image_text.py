@@ -23,10 +23,6 @@ PHASES = {
     "phase1": {
         "name": "Image Input and Text Generation",
         "fields": {
-            "http_img_urls": {
-                "type": "text_area",
-                "label": "Enter image urls"
-            },
             "uploaded_files": {
                 "type": "file_uploader",
                 "label": "Choose files",
@@ -34,7 +30,7 @@ PHASES = {
                 "multiple_files": True,
             },
         },
-       "phase_instructions": "Generate the exact text from the image urls and uploads",
+       "phase_instructions": "Generate the exact text from the image uploads",
         "user_prompt": [
             {
                 "condition": {},
