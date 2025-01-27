@@ -71,6 +71,10 @@ PHASES = {
                 "type": "checkbox",
                 "label": "Suggest learning objectives based on the module title"
             },
+            "m_lo": {
+                "type": "checkbox",
+                "label": "Provide module learning objectives based on the module description"
+            },
             "c_lo": {
                 "type": "checkbox",
                 "label": "Provide module learning objectives based on the course learning objectives"
@@ -106,6 +110,12 @@ PHASES = {
                 "label": "Enter the formative activity question(s):",
                 "height": 300,
                 "showIf": {"f_lo": True}
+            },
+                "mc_lo": {
+                "type": "text_area",
+                "label": "Enter the module description",
+                "height": 200,
+                "showIf": {"m_lo": True}
             },
             "lo_quantity": {
                 "type": "slider",
