@@ -20,6 +20,7 @@ def get_objective_prompts():
         {"condition": {"c_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided course learning objectives: {course_lo}."},
         {"condition": {"q_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided graded assessment questions: {quiz_lo}."},
         {"condition": {"f_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided formative activity questions : {form_lo}."},
+        {"condition": {"m_lo": True}, "prompt": "Please write {lo_quantity} module-learning objectives based on the provided formative activity questions : {mc_lo}."},
     ]
 
 def get_bloom_taxonomy_conditions():
@@ -111,11 +112,11 @@ PHASES = {
                 "height": 300,
                 "showIf": {"f_lo": True}
             },
-                "mc_lo": {
-                "type": "text_area",
-                "label": "Enter the module description",
-                "height": 200,
-                "showIf": {"m_lo": True}
+            "mc_lo": {
+            "type": "text_area",
+            "label": "Enter the module description",
+            "height": 200,
+            "showIf": {"m_lo": True}
             },
             "lo_quantity": {
                 "type": "slider",
