@@ -3,7 +3,7 @@ APP_IMAGE = "construct.webp"
 PUBLISHED = True # Status of the app
 
 APP_TITLE = "LaTex Generator"
-APP_INTRO = "This app accepts images via upload or URL and returns LaTeX code."
+APP_INTRO = "This app accepts uploaded images and returns LaTeX code."
 
 APP_HOW_IT_WORKS = """
 This app creates LaTeX code from images. 
@@ -23,10 +23,6 @@ PHASES = {
     "phase1": {
         "name": "Image Input and LaTeX Generation",
         "fields": {
-            "http_img_urls": {
-                "type": "text_area",
-                "label": "Enter image urls"
-            },
             "uploaded_files": {
                 "type": "file_uploader",
                 "label": "Choose files",
@@ -44,6 +40,8 @@ PHASES = {
         ],
         "show_prompt": True,
         "allow_skip": False,
+        "ai_response": True,
+        "allow_revisions": True,
     }
 }
 PREFERRED_LLM = "gpt-4o"
