@@ -40,6 +40,8 @@ PHASES = {
         ],
         "show_prompt": True,
         "allow_skip": False,
+        "ai_response": True,
+        "allow_revisions": True,
     }
 }
 PREFERRED_LLM = "gpt-4o"
