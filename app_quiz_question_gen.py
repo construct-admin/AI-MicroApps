@@ -119,14 +119,14 @@ Selection: Open edX OLX Quiz
 End of example for Open edX OLX Quiz
 
 Selection: NIC Quiz
->>Add the question text, or prompt, here. This text is required<<
+Add the question text, or prompt, here. This text is required
 ( ) an incorrect answer 
 (x) the correct answer
 ( ) an incorrect answer 
 
-||You can add feedback like this 
+You can add feedback like below:
 Correct: The definition of the Active Adult segment emphasizes age eligibility, market-rate rental, and lifestyle focus while excluding meal services.
-Incorrect: Please review section 2.1: Defining the Segment, and try again.||
+Incorrect: Please review section 2.1: Defining the Segment, and try again.
 
 End of example for NIC Quiz Feedback
 """
