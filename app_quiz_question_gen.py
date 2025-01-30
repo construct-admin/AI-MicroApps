@@ -119,13 +119,12 @@ Selection: Open edX OLX Quiz
 End of example for Open edX OLX Quiz
 
 Selection: NIC Quiz
->>Which of the following characteristics define the active adult segment according to NIC?<<
+>>Add the question text, or prompt, here. This text is required<<
+( ) an incorrect answer 
+(x) the correct answer
+( ) an incorrect answer 
 
-( )A. Rental properties that provide full meal services
-( )B. Properties exclusively restricted to residents aged 62 years or older
-( )C. Multifamily properties with limited lifestyle amenities
-(x)D. Rental properties that are age-eligible, market-rate, and lifestyle focused, while excluding meal services
-
+Feedback is provided in the format below:
 Correct: The definition of the Active Adult segment emphasizes age eligibility, market-rate rental, and lifestyle focus while excluding meal services.
 Incorrect: Please review section 2.1: Defining the Segment, and try again.
 
