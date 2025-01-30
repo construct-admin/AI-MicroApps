@@ -121,7 +121,7 @@ Selection: Open edX OLX Quiz
 End of example for Open edX OLX Quiz
 
 Selection: NIC Quiz
->>Which of the following characteristics define the active adult segment according to NIC?
+Which of the following characteristics define the active adult segment according to NIC?
 
 ( )A. Rental properties that provide full meal services
 ( )B. Properties exclusively restricted to residents aged 62 years or older
