@@ -14,6 +14,7 @@ Output:
 - If there is no feedback indicated within the example, there should be no feedback produced.
 - If there is an asterisk indicating the correct answer within the example, there should always be an asterisk indicating the correct answer in your output.
 - If there are alphabets indicating the options, do not repeat the alphabets and always follow alphabetical order.
+- Allow users to copy the output easily with a copy button as you do for latex.
 
 Constraints:
 - Ensure that distractors are viable and that the question is not too easy to answer.
@@ -116,6 +117,19 @@ Selection: Open edX OLX Quiz
 ||If you add more than one hint, a different hint appears each time learners select the hint button.||
 
 End of example for Open edX OLX Quiz
+
+Selection: NIC Quiz
+>>Which of the following characteristics define the active adult segment according to NIC?<<
+
+( )A. Rental properties that provide full meal services
+( )B. Properties exclusively restricted to residents aged 62 years or older
+( )C. Multifamily properties with limited lifestyle amenities
+(x)D. Rental properties that are age-eligible, market-rate, and lifestyle focused, while excluding meal services
+
+Correct: The definition of the Active Adult segment emphasizes age eligibility, market-rate rental, and lifestyle focus while excluding meal services.
+Incorrect: Please review section 2.1: Defining the Segment, and try again.
+
+End of example for NIC Quiz Feedback
 """
 
 # Helper functions for dynamic conditions
@@ -139,6 +153,7 @@ def get_output_format_conditions():
         {"condition": {"output_format": "Coursera Graded Quiz"}, "prompt": "Please align the output format according to the example provided for the selection Coursera Graded Quiz."},
         {"condition": {"output_format": "H5P Textual Upload Feature"}, "prompt": "Please align the output format according to the example provided for the selection H5P Textual Upload Feature."},
         {"condition": {"output_format": "Open edX OLX Quiz"}, "prompt": "Please align the output format according to the example provided for the selection Open edX OLX Quiz."},
+        {"condition": {"output_format": "NIC Quiz"}, "prompt": "Please align the output format according to the example provided for the selection NIC Quiz."},
     ]
 
 # Define phases and fields
@@ -180,7 +195,8 @@ PHASES = {
                     "Coursera Ungraded Quiz",
                     "Coursera Graded Quiz",
                     "H5P Textual Upload Feature",
-                    "Open edX OLX Quiz"
+                    "Open edX OLX Quiz",
+                    "NIC Quiz"
                 ]
             },
             "correct_ans_num": {
