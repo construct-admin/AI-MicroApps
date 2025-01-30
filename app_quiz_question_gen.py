@@ -14,7 +14,7 @@ Output:
 - If there is no feedback indicated within the example, there should be no feedback produced.
 - If there is an asterisk indicating the correct answer within the example, there should always be an asterisk indicating the correct answer in your output.
 - If there are alphabets indicating the options, do not repeat the alphabets and always follow alphabetical order.
-- Allow users to copy the output easily with a copy button as you do for latex.
+- Follow example format exactly.
 
 Constraints:
 - Ensure that distractors are viable and that the question is not too easy to answer.
