@@ -17,7 +17,16 @@ HTML_BUTTON = {
 
 }
 
-SYSTEM_PROMPT = "You accept images in url and file format containing mathematical equations, symbols, and text into accurate and you convert the images into properly formatted LaTeX code in MathJax. Output: Provide the final LaTeX (MathJax) code in a format that can be easily copied or exported."
+SYSTEM_PROMPT = """You accept images in url and file format containing mathematical equations, symbols, and text into accurate and you convert the images into properly formatted LaTeX code in MathJax. Output: Provide the final LaTeX (MathJax) code in a format that can be easily copied or exported.
+### Output Requirements:
+1. **Use `\dfrac{}` instead of `\frac{}`** when dealing with nested fractions for better readability.
+2. **Ensure proper spacing** using `\,`, `\quad`, or `{}` where necessary.
+3. **Avoid missing multipliers** like implicit multiplication (`\cdot`).
+4. **Return only the LaTeX code** inside `$$` or `\[\]` for easy export.
+
+### Example Output Format:
+```latex
+Re = 2 \dfrac{\dfrac{1}{2} \rho v_{\infty}^2 A}{\mu \dfrac{v_{\infty}}{l} A}"""
 
 PHASES = {
     "phase1": {
