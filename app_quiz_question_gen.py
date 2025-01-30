@@ -124,9 +124,9 @@ Selection: NIC Quiz
 (x) the correct answer
 ( ) an incorrect answer 
 
-Feedback is provided in the format below:
+||You can add feedback like this 
 Correct: The definition of the Active Adult segment emphasizes age eligibility, market-rate rental, and lifestyle focus while excluding meal services.
-Incorrect: Please review section 2.1: Defining the Segment, and try again.
+Incorrect: Please review section 2.1: Defining the Segment, and try again.||
 
 End of example for NIC Quiz Feedback
 """
