@@ -14,7 +14,10 @@ Output:
 - If there is no feedback indicated within the example, there should be no feedback produced.
 - If there is an asterisk indicating the correct answer within the example, there should always be an asterisk indicating the correct answer in your output.
 - If there are alphabets indicating the options, do not repeat the alphabets and always follow alphabetical order.
-- Follow example format exactly.
+- Ensure that the output matches the format exactly, including brackets, parentheses, spacing, and line breaks.
+- Do NOT deviate from the structure seen in examples.
+- Use the same spacing and bullet symbols (e.g., `( )`, `(x)`, `*`, `A:`, `B:`, etc.).
+- Maintain line breaks and indentation exactly as in the examples.
 
 Constraints:
 - Ensure that distractors are viable and that the question is not too easy to answer.
@@ -119,12 +122,13 @@ Selection: Open edX OLX Quiz
 End of example for Open edX OLX Quiz
 
 Selection: NIC Quiz
->>Add the question text, or prompt, here. This text is required
-( ) an incorrect answer 
-(x) the correct answer
-( ) an incorrect answer 
+>>Which of the following characteristics define the active adult segment according to NIC?<<
 
->>You can add feedback like this:
+( )A. Rental properties that provide full meal services
+( )B. Properties exclusively restricted to residents aged 62 years or older
+( )C. Multifamily properties with limited lifestyle amenities
+(x)D. Rental properties that are age-eligible, market-rate, and lifestyle focused, while excluding meal services
+
 Correct: The definition of the Active Adult segment emphasizes age eligibility, market-rate rental, and lifestyle focus while excluding meal services.
 Incorrect: Please review section 2.1: Defining the Segment, and try again.
 
