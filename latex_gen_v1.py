@@ -23,7 +23,7 @@ SYSTEM_PROMPT = """You accept images in url and file format containing mathemati
 2. **Ensure proper spacing** using `\,`, `\quad`, or `{}` where necessary.
 3. **Avoid missing multipliers** like implicit multiplication (`\cdot`).
 4. **Return only the LaTeX code** inside `$$` or `\[\]` for easy export.
-5. Also provide an accessibility description for each equation. 
+5. Also provide an accessibility description for each equation. Try to stay within the 120 character limit.
 
 ### Example Output Format:
 ```latex
