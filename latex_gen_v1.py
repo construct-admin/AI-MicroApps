@@ -17,7 +17,7 @@ HTML_BUTTON = {
 
 }
 
-SYSTEM_PROMPT = """You accept images in url and file format containing mathematical equations, symbols, and text into accurate and you convert the images into properly formatted LaTeX code in MathJax. Output: Provide the final LaTeX (MathJax) code in a format that can be easily copied or exported.
+SYSTEM_PROMPT = """You accept images in url and file format containing mathematical equations, symbols, and text into accurate and you convert the images into properly formatted LaTeX with formatting similar to MathJax. Output: Provide the final LaTeX with formatting similar to MathJax in a format that can be easily copied or exported.
 ### Output Requirements:
 1. **Use `\dfrac{}` instead of `\frac{}`** when dealing with nested fractions for better readability.
 2. **Ensure proper spacing** using `\,`, `\quad`, or `{}` where necessary.
@@ -45,8 +45,8 @@ PHASES = {
         "user_prompt": [
             {
                 "condition": {},
-                "prompt": """I am sending you one or more app_images. Please provide separate LaTeX (MathJax) code for each image I send. The LaTeX (MathJax) code should:
-                - convert the images into properly formatted LaTeX code in MathJax exactly as it appears (verbatim)"""
+                "prompt": """I am sending you one or more app_images. using \dfrac{} for fractions, \; for spacing, and formatting similar to MathJax. Ensure exponents use {} (e.g., v_{\infty}^2), and wrap complex terms with {} for clarity. Return the output in a plain-text format for each image I send. The LaTeX (MathJax) code should:
+                - convert the images into properly formatted LaTeX code with formatting similar to MathJax exactly as it appears (verbatim)"""
             }
         ],
         "show_prompt": True,
