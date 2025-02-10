@@ -92,9 +92,8 @@ PHASES = {
             {
                 "condition": {},
                 "prompt": (
-                    "I am sending you the module name: {module_title}, "
-                    "page title: {page_title}, and the content extracted from the uploaded files: {uploaded_files}. "
-                    "Provide this to me in properly formatted HTML format displaying all html tags."
+                    """I am sending you the module name: {module_title}, page title: {page_title}, and the content extracted from the uploaded files: {uploaded_files}. 
+                        Provide this to me in properly formatted HTML format displaying all html tags."""
                 )
             }
         ],
