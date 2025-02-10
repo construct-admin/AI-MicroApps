@@ -14,7 +14,7 @@ except ImportError:
 # ---------------------------
 PUBLISHED = True
 APP_URL = "https://ai-microapps-cimp.streamlit.app/"
-# APP_IMAGE = "construct.webp"  # Uncomment and adjust if you wish to display an image
+# APP_IMAGE = "construct.webp"
 
 APP_TITLE = "Construct HTML Generator"
 APP_INTRO = "This micro-app allows you to convert text content into a HTML format."
@@ -65,7 +65,7 @@ def extract_text_from_uploaded_files(files):
     return "\n".join(texts)
 
 # ---------------------------
-# PHASES and Fields
+# PHASES and Fields (Dictionary Approach)
 # ---------------------------
 PHASES = {
     "generate_html": {
@@ -116,7 +116,7 @@ LLM_CONFIG_OVERRIDE = {
 
 PAGE_CONFIG = {
     "page_title": "Construct HTML Generator",
-    # "page_icon": "app_images/construct.webp",  # Uncomment if an icon image is available
+    # "page_icon": "app_images/construct.webp",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }
@@ -124,14 +124,16 @@ PAGE_CONFIG = {
 SIDEBAR_HIDDEN = True
 
 # ---------------------------------------
-# AI Conversion Function (Optional)
+# AI Conversion Function Using the Dictionary
 # ---------------------------------------
 def generate_html(module_title, page_title, uploaded_text):
     """
-    Uses the SYSTEM_PROMPT and the PHASES user prompt to generate HTML.
-    Sends the prompt to the AI API using the model "gpt-4o-mini" and returns properly formatted HTML.
+    Uses the SYSTEM_PROMPT and the PHASES user prompt (dictionary approach) to generate HTML.
+    Sends the prompt to the OpenAI API (model "gpt-4o-mini") and returns properly formatted HTML.
     """
+    # Retrieve the prompt template from the PHASES dictionary.
     prompt_template = PHASES["generate_html"]["user_prompt"][0]["prompt"]
+    # Generate the user prompt by formatting the template with the user inputs.
     user_prompt = prompt_template.format(
         module_title=module_title,
         page_title=page_title,
@@ -155,6 +157,7 @@ def generate_html(module_title, page_title, uploaded_text):
                 max_tokens=1500,
                 temperature=0.3
             )
+            # Access the generated HTML from the response using dictionary access.
             generated_html = response["choices"][0]["message"]["content"].strip()
             return generated_html
         except Exception as e:
@@ -198,7 +201,7 @@ def create_wiki_page(page_title, page_body, canvas_domain, course_id, headers):
         "wiki_page": {
             "title": page_title,
             "body": page_body,
-            "published": PUBLISHED  # Set to False if you want the page to remain unpublished/draft
+            "published": PUBLISHED  # Change to False for draft mode.
         }
     }
     response = requests.post(url, headers=headers, json=payload)
@@ -245,7 +248,7 @@ def main(config):
     )
     
     st.title(config["page_title"] if "page_title" in config else APP_TITLE)
-    # st.image(APP_IMAGE)  # Uncomment if you have an image file at the specified path.
+    # st.image(APP_IMAGE)  # Uncomment if you have an image file to display.
     st.markdown(APP_INTRO)
     st.markdown(APP_HOW_IT_WORKS)
     
