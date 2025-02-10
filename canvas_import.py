@@ -25,17 +25,18 @@ PHASES = {
                 "type": "text_input",
                 "label": "Enter the title of your page:"
             },
-            "content": {
-                "type": "text_area",
-                "label": "Enter the content:",
-                "height": 500,
-            }
+            "uploaded_files": {
+                "type": "file_uploader",
+                "label": "Choose files",
+                "allowed_files": ['docx', 'pdf'],
+                "multiple_files": True,
+            },
         },
         "phase_instructions": "Provide me with the content in the correct html format. ",
         "user_prompt": [
             {
                 "condition": {},
-                "prompt": "I am sending you the module name: {module_title} , page title: {page_title} and content for the page: {content}. Provide this to me in properly formatted html format."
+                "prompt": "I am sending you the module name: {module_title} , page title: {page_title} and content for the page: {uploaded_files}. Provide this to me in properly formatted html format."
             }
         ],
         "ai_response": True,
