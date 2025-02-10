@@ -242,7 +242,7 @@ def main(config):
     )
     
     st.title(config["page_title"] if "page_title" in config else APP_TITLE)
-    st.image(APP_IMAGE)
+    # st.image(APP_IMAGE)
     st.markdown(APP_INTRO)
     st.markdown(APP_HOW_IT_WORKS)
     
