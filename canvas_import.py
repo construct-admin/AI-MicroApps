@@ -144,7 +144,7 @@ def generate_html(module_title, page_title, uploaded_text):
         openai.api_key = openai_api_key
         try:
             response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",  # or your preferred model
+                model="gpt-4o-mini",  
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt}
