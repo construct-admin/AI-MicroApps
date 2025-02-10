@@ -140,6 +140,23 @@ def generate_user_prompt(module_title, page_title, uploaded_text):
     )
     return final_prompt
 
+def build_user_prompt(user_input):
+    """
+    Build the user prompt dynamically based on user input.
+    Uses the prompt template from PHASES["generate_html"]["user_prompt"].
+    """
+    try:
+        user_prompt_parts = [
+            config["prompt"].format(**{key: user_input.get(key, "") 
+                                       for key in config.get("condition", {}).keys()})
+            for config in PHASES["generate_html"]["user_prompt"]
+            if all(user_input.get(key, "") == value 
+                   for key, value in config.get("condition", {}).items())
+        ]
+        return "\n".join(user_prompt_parts)
+    except KeyError as e:
+        raise ValueError(f"Missing key in user input: {e}")
+
 # ---------------------------------------
 # Canvas API Functions
 # ---------------------------------------
