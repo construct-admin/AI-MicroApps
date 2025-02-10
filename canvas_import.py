@@ -14,7 +14,7 @@ except ImportError:
 # ---------------------------
 PUBLISHED = True
 APP_URL = "https://ai-microapps-cimp.streamlit.app/"
-APP_IMAGE = "construct.webp"
+# APP_IMAGE = "construct.webp"
 
 APP_TITLE = "Construct HTML Generator"
 APP_INTRO = "This micro-app allows you to convert text content into a HTML format."
@@ -116,7 +116,7 @@ LLM_CONFIG_OVERRIDE = {
 
 PAGE_CONFIG = {
     "page_title": "Construct HTML Generator",
-    "page_icon": "app_images/construct.webp",
+    #"page_icon": "app_images/construct.webp",
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }
