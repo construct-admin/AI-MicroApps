@@ -13,3 +13,4 @@ langchain==0.2.16
 langchain-community==0.2.16
 pypdf>=3.0.0
 pymupdf
+python-docx
