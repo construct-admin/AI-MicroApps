@@ -3,7 +3,7 @@ import os
 import requests
 import streamlit as st
 
-# Optional: for AI conversion if desired.
+# Optional: for AI conversion if desired (not used in this version).
 try:
     import openai
 except ImportError:
@@ -13,7 +13,7 @@ except ImportError:
 # Configuration and Metadata
 # ---------------------------
 PUBLISHED = True
-APP_URL = "https://alt-text-bot.streamlit.app/"  # (You can change this as needed)
+APP_URL = "https://alt-text-bot.streamlit.app/"
 # APP_IMAGE = "construct.webp"  # Uncomment and adjust if you want to display an image
 
 APP_TITLE = "Construct HTML Generator"
@@ -21,7 +21,8 @@ APP_INTRO = "This micro-app allows you to convert text content into HTML format.
 APP_HOW_IT_WORKS = """
 1. Fill in the details of your Canvas page.
 2. Upload your document (DOCX or PDF).
-3. AI will convert the extracted text into properly formatted HTML.
+3. The app will generate a user prompt (copyable) that includes the module name, page title, and the extracted content.
+   You can then use that prompt as part of your system prompt.
 """
 
 SYSTEM_PROMPT = "Convert raw content into properly formatted HTML excluding any DOCTYPE or extraneous header lines."
@@ -116,7 +117,7 @@ LLM_CONFIG_OVERRIDE = {
 
 PAGE_CONFIG = {
     "page_title": "Construct HTML Generator",
-    # "page_icon": "app_images/construct.webp",  # Uncomment if an icon file is available
+    # "page_icon": "app_images/construct.webp",  # Uncomment if you have an image asset
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }
@@ -124,47 +125,20 @@ PAGE_CONFIG = {
 SIDEBAR_HIDDEN = True
 
 # ---------------------------------------
-# AI Conversion Function Using Dictionary Approach
+# New Prompt Generation (No AI Call)
 # ---------------------------------------
-def generate_html(module_title, page_title, uploaded_text):
+def generate_user_prompt(module_title, page_title, uploaded_text):
     """
-    Uses the SYSTEM_PROMPT and the PHASES user prompt (dictionary approach) to generate HTML.
-    Sends the prompt to the OpenAI API using model "gpt-4o-mini" and returns properly formatted HTML.
+    Uses the PHASES user prompt template to generate a prompt string.
+    This string is displayed in a copyable format and stored in a variable.
     """
-    # Retrieve the prompt template from the PHASES dictionary.
     prompt_template = PHASES["generate_html"]["user_prompt"][0]["prompt"]
-    # Generate the user prompt by formatting the template with user inputs.
-    user_prompt = prompt_template.format(
+    final_prompt = prompt_template.format(
         module_title=module_title,
         page_title=page_title,
         uploaded_files=uploaded_text
     )
-    
-    openai_api_key = os.getenv("OPENAI_API_KEY")
-    if not openai_api_key:
-        st.error("OPENAI_API_KEY environment variable is not set.")
-        return None
-
-    if openai:
-        openai.api_key = openai_api_key
-        try:
-            response = openai.ChatCompletion.create(
-                model="gpt-4o-mini",  # Using model "gpt-4o-mini"
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": user_prompt}
-                ],
-                max_tokens=1500,
-                temperature=0.3
-            )
-            generated_html = response["choices"][0]["message"]["content"].strip()
-            return generated_html
-        except Exception as e:
-            st.error(f"Error generating HTML via AI: {e}")
-            return None
-    else:
-        # Fallback: wrap the extracted text in basic HTML.
-        return f"<html><body><h3>{page_title}</h3><p>{uploaded_text}</p></body></html>"
+    return final_prompt
 
 # ---------------------------------------
 # Canvas API Functions
@@ -246,7 +220,7 @@ def main(config):
     )
     
     st.title(config.get("page_title", APP_TITLE))
-    # st.image(APP_IMAGE)  # Uncomment if you have an image asset.
+    # st.image(APP_IMAGE)  # Uncomment if you want to display an image.
     st.markdown(APP_INTRO)
     st.markdown(APP_HOW_IT_WORKS)
     
@@ -268,20 +242,20 @@ def main(config):
         st.markdown("**Extracted Content:**")
         st.code(uploaded_text, language="text")
     
-    st.header("Step 2: Generate HTML")
-    if st.button("Generate HTML"):
+    st.header("Step 2: Generate User Prompt")
+    if st.button("Generate Prompt"):
         if not module_title or not page_title or not uploaded_text:
             st.error("Please provide all inputs (module title, page title, and upload at least one file).")
         else:
-            generated_html = generate_html(module_title, page_title, uploaded_text)
-            if generated_html:
-                st.markdown("### Generated HTML:")
-                st.code(generated_html, language="html")
-                st.session_state.generated_html = generated_html
+            final_user_prompt = generate_user_prompt(module_title, page_title, uploaded_text)
+            st.markdown("### Generated User Prompt:")
+            st.code(final_user_prompt, language="text")  # Display in a copyable format
+            st.session_state.final_user_prompt = final_user_prompt
     
     st.header("Step 3: Push to Canvas")
-    if "generated_html" in st.session_state:
+    if "final_user_prompt" in st.session_state:
         if st.button("Push to Canvas"):
+            # Retrieve Canvas credentials from environment variables.
             canvas_domain_env = os.getenv("CANVAS_DOMAIN")
             course_id_env = os.getenv("COURSE_ID")
             access_token = os.getenv("CANVAS_ACCESS_TOKEN")
@@ -300,8 +274,9 @@ def main(config):
                 st.error("Module creation failed.")
                 return
             
-            # 2. Create a wiki page with the generated HTML.
-            page_data = create_wiki_page(page_title, st.session_state.generated_html, canvas_domain_env, course_id_env, headers)
+            # 2. Create a wiki page with the generated user prompt.
+            # (Here, we are using the generated user prompt as the page body.)
+            page_data = create_wiki_page(page_title, st.session_state.final_user_prompt, canvas_domain_env, course_id_env, headers)
             if not page_data:
                 st.error("Page creation failed.")
                 return
@@ -313,9 +288,8 @@ def main(config):
             add_page_to_module(mod_id, page_title, page_url, canvas_domain_env, course_id_env, headers)
     
 if __name__ == "__main__":
-    # If you have a separate core_logic module, import it; otherwise, call main directly.
     try:
-        from core_logic.main import main as core_main
+        from core_logic.main import main as core_main  # Optional: if you have a core_logic module.
     except ImportError:
         pass
     main(config=globals())
