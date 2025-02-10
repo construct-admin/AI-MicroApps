@@ -144,7 +144,7 @@ def generate_html(module_title, page_title, uploaded_text):
         openai.api_key = openai_api_key
         try:
             response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",  # or your preferred model
+                model="gpt-4o",  # or your preferred model
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt}
@@ -152,7 +152,7 @@ def generate_html(module_title, page_title, uploaded_text):
                 max_tokens=1500,
                 temperature=0.3
             )
-            generated_html = response.choices[0].message['content'].strip()
+            generated_html = response["choices"][0]["message"]["content"].strip()
             return generated_html
         except Exception as e:
             st.error(f"Error generating HTML via AI: {e}")
