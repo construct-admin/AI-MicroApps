@@ -14,7 +14,7 @@ except ImportError:
 # ---------------------------
 PUBLISHED = True
 APP_URL = "https://ai-microapps-cimp.streamlit.app/"
-# APP_IMAGE = "construct.webp"
+# APP_IMAGE = "construct.webp"  # Uncomment and adjust if you wish to display an image
 
 APP_TITLE = "Construct HTML Generator"
 APP_INTRO = "This micro-app allows you to convert text content into a HTML format."
@@ -116,7 +116,7 @@ LLM_CONFIG_OVERRIDE = {
 
 PAGE_CONFIG = {
     "page_title": "Construct HTML Generator",
-    #"page_icon": "app_images/construct.webp",
+    # "page_icon": "app_images/construct.webp",  # Uncomment if an icon image is available
     "layout": "centered",
     "initial_sidebar_state": "expanded"
 }
@@ -129,7 +129,7 @@ SIDEBAR_HIDDEN = True
 def generate_html(module_title, page_title, uploaded_text):
     """
     Uses the SYSTEM_PROMPT and the PHASES user prompt to generate HTML.
-    If OPENAI_API_KEY is set, uses OpenAI; otherwise, falls back to a simple conversion.
+    Sends the prompt to the AI API using the model "gpt-4o-mini" and returns properly formatted HTML.
     """
     prompt_template = PHASES["generate_html"]["user_prompt"][0]["prompt"]
     user_prompt = prompt_template.format(
@@ -138,13 +138,16 @@ def generate_html(module_title, page_title, uploaded_text):
         uploaded_files=uploaded_text
     )
     
-    # If OpenAI is configured, use it.
     openai_api_key = os.getenv("OPENAI_API_KEY")
-    if openai and openai_api_key:
+    if not openai_api_key:
+        st.error("OPENAI_API_KEY environment variable is not set.")
+        return None
+
+    if openai:
         openai.api_key = openai_api_key
         try:
             response = openai.ChatCompletion.create(
-                model="gpt-4o-mini",  
+                model="gpt-4o-mini",  # Changed model to "gpt-4o-mini"
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": user_prompt}
@@ -152,14 +155,13 @@ def generate_html(module_title, page_title, uploaded_text):
                 max_tokens=1500,
                 temperature=0.3
             )
-            # Use dictionary access for the response (compatible with openai>=1.0.0)
             generated_html = response["choices"][0]["message"]["content"].strip()
             return generated_html
         except Exception as e:
             st.error(f"Error generating HTML via AI: {e}")
             return None
     else:
-        # Fallback: wrap the extracted text in basic HTML tags.
+        # Fallback: simply wrap the extracted text in basic HTML tags.
         return f"<html><body><h3>{page_title}</h3><p>{uploaded_text}</p></body></html>"
 
 # ---------------------------------------
@@ -243,7 +245,7 @@ def main(config):
     )
     
     st.title(config["page_title"] if "page_title" in config else APP_TITLE)
-    # st.image(APP_IMAGE)
+    # st.image(APP_IMAGE)  # Uncomment if you have an image file at the specified path.
     st.markdown(APP_INTRO)
     st.markdown(APP_HOW_IT_WORKS)
     
@@ -261,7 +263,7 @@ def main(config):
     # If files are uploaded, extract text.
     uploaded_text = ""
     if uploaded_files:
-        uploaded_text = config["generate_html_files"] = extract_text_from_uploaded_files(uploaded_files)
+        uploaded_text = extract_text_from_uploaded_files(uploaded_files)
         st.markdown("**Extracted Content:**")
         st.code(uploaded_text, language="text")
     
@@ -311,6 +313,5 @@ def main(config):
             add_page_to_module(mod_id, page_title, page_url, canvas_domain_env, course_id_env, headers)
     
 if __name__ == "__main__":
-    from core_logic.main import main as core_main  # If you have a core_logic module; otherwise, ignore.
-    # Here we call our main function with the current globals as config.
+    from core_logic.main import main as core_main  # Optional: if you have a core_logic module.
     main(config=globals())
