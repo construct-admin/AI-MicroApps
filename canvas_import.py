@@ -94,7 +94,7 @@ PHASES = {
                 "prompt": (
                     "I am sending you the module name: {module_title}, "
                     "page title: {page_title}, and the content extracted from the uploaded files: {uploaded_files}. "
-                    "Provide this to me in properly formatted HTML format."
+                    "Provide this to me in properly formatted HTML format displaying all html tags."
                 )
             }
         ],
@@ -129,7 +129,7 @@ SIDEBAR_HIDDEN = True
 def generate_html(module_title, page_title, uploaded_text):
     """
     Uses the SYSTEM_PROMPT and the PHASES user prompt (dictionary approach) to generate HTML.
-    Sends the prompt to the OpenAI API (model "gpt-4o-mini") and returns properly formatted HTML.
+    Sends the prompt to the OpenAI API using model "gpt-4o-mini" and returns properly formatted HTML.
     """
     # Retrieve the prompt template from the PHASES dictionary.
     prompt_template = PHASES["generate_html"]["user_prompt"][0]["prompt"]
@@ -145,27 +145,24 @@ def generate_html(module_title, page_title, uploaded_text):
         st.error("OPENAI_API_KEY environment variable is not set.")
         return None
 
-    if openai:
-        openai.api_key = openai_api_key
-        try:
-            response = openai.ChatCompletion.create(
-                model="gpt-4o-mini",  # Changed model to "gpt-4o-mini"
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": user_prompt}
-                ],
-                max_tokens=1500,
-                temperature=0.3
-            )
-            # Access the generated HTML from the response using dictionary access.
-            generated_html = response["choices"][0]["message"]["content"].strip()
-            return generated_html
-        except Exception as e:
-            st.error(f"Error generating HTML via AI: {e}")
-            return None
-    else:
-        # Fallback: simply wrap the extracted text in basic HTML tags.
-        return f"<html><body><h3>{page_title}</h3><p>{uploaded_text}</p></body></html>"
+    openai.api_key = openai_api_key
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini",  # Using the desired model
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=1500,
+            temperature=0.3
+        )
+        # Access the generated HTML using dictionary access:
+        generated_html = response["choices"][0]["message"]["content"].strip()
+        return generated_html
+    except Exception as e:
+        st.error(f"Error generating HTML via AI: {e}")
+        return None
+
 
 # ---------------------------------------
 # Canvas API Functions
