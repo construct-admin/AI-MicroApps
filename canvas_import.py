@@ -268,19 +268,24 @@ def main(config):
 
             # 🔥 Call OpenAI to get formatted HTML
             ai_generated_html = get_ai_generated_html(final_user_prompt)
-        
+
             if ai_generated_html:
+                # 🛑 Remove any ``` markers from AI response
+                ai_generated_html = ai_generated_html.strip("`") 
+
                 st.markdown("### AI-Generated HTML Output:")
-                st.code(ai_generated_html, language="html")  # Display AI-generated HTML in a copyable format
+                st.text_area("AI Response:", ai_generated_html, height=300)
+
+             # Store in session state so the "Push to Canvas" button remains visible
                 st.session_state.ai_generated_html = ai_generated_html
             else:
                 st.error("AI failed to generate HTML content.")
 
+
     
     st.header("Step 3: Push to Canvas")
-    if "final_user_prompt" in st.session_state:
+    if "ai_generated_html" in st.session_state and st.session_state.ai_generated_html:
         if st.button("Push to Canvas"):
-            # Retrieve Canvas credentials from environment variables.
             canvas_domain_env = st.secrets["CANVAS_DOMAIN"]
             course_id_env = st.secrets["CANVAS_ID"]
             access_token = st.secrets["CANVAS_ACCESS_TOKEN"]
@@ -288,31 +293,30 @@ def main(config):
             if not canvas_domain_env or not course_id_env or not access_token:
                 st.error("Missing required environment variables: CANVAS_DOMAIN, COURSE_ID, CANVAS_ACCESS_TOKEN.")
                 return
-            
+        
             headers = {
                 "Authorization": f"Bearer {access_token}",
                 "Content-Type": "application/json"
             }
-            
+
             # 1. Create a module.
             mod_id = create_module(module_title, canvas_domain_env, course_id_env, headers)
             if not mod_id:
                 st.error("Module creation failed.")
                 return
-            
-            # 2. Create a wiki page with the generated user prompt.
-            # (Here, we are using the generated user prompt as the page body.)
-            page_data = create_wiki_page(page_title, st.session_state.get("ai_generated_html", "AI failed to generate HTML"), canvas_domain_env, course_id_env, headers)
 
+            # 2. Create a wiki page with AI-generated HTML
+            page_data = create_wiki_page(page_title, st.session_state.ai_generated_html, canvas_domain_env, course_id_env, headers)
             if not page_data:
                 st.error("Page creation failed.")
                 return
-            
+
             # 3. Add the wiki page to the module.
             page_url = page_data.get("url")
             if not page_url:
                 page_url = page_title.lower().replace(" ", "-")
             add_page_to_module(mod_id, page_title, page_url, canvas_domain_env, course_id_env, headers)
+
 
 def get_ai_generated_html(prompt):
     """
