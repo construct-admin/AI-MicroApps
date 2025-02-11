@@ -313,6 +313,39 @@ def main(config):
             if not page_url:
                 page_url = page_title.lower().replace(" ", "-")
             add_page_to_module(mod_id, page_title, page_url, canvas_domain_env, course_id_env, headers)
+
+def get_ai_generated_html(prompt):
+    """
+    Calls OpenAI API to convert extracted content into properly formatted HTML.
+    """
+    openai_api_key = st.secrets["OPENAI_API_KEY"]  # Ensure you retrieve this from secrets
+
+    if not openai_api_key:
+        st.error("Missing OpenAI API Key. Please add it to your Streamlit secrets.")
+        return None
+
+    headers = {
+        "Authorization": f"Bearer {openai_api_key}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "model": "gpt-4o",  # Ensure this matches your preferred model
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.3
+    }
+
+    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+    
+    if response.status_code == 200:
+        return response.json()["choices"][0]["message"]["content"].strip()
+    else:
+        st.error(f"OpenAI API Error: {response.status_code} - {response.text}")
+        return None
+
     
 if __name__ == "__main__":
     try:
