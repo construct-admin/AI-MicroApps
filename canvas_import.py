@@ -192,12 +192,13 @@ def get_existing_module_id(module_name, canvas_domain, course_id, headers):
     if response.status_code == 200:
         modules = response.json()
         for module in modules:
-            if module["name"].lower() == module_name.lower():
+            if module["name"].strip().lower() == module_name.strip().lower():
                 return module["id"]  # Return existing module ID if found
     else:
         st.error(f"Error checking existing modules: {response.status_code} {response.text}")
 
     return None  # Return None if module not found
+
 
 
 def create_wiki_page(page_title, page_body, canvas_domain, course_id, headers):
@@ -320,28 +321,34 @@ def main(config):
 
             # 1. Create a module.
             # 🔍 Check if module already exists
-            mod_id = get_existing_module_id(module_title, canvas_domain_env, course_id_env, headers)
-            if not mod_id:
-                # If module doesn't exist, create a new one
-                mod_id = create_module(module_title, canvas_domain_env, course_id_env, headers)
-                if not mod_id:
-                    st.error("Module creation failed.")
-                    return
-            else:
-                st.info(f"Module '{module_title}' already exists. Adding the new page to it.")
+# 🔍 Check if the module already exists
+    mod_id = get_existing_module_id(module_title, canvas_domain_env, course_id_env, headers)
 
+    if mod_id:
+        st.info(f"Module '{module_title}' already exists. Adding the new page to it.")
+    else:
+        # If module doesn't exist, create a new one
+        mod_id = create_module(module_title, canvas_domain_env, course_id_env, headers)
+        if not mod_id:
+            st.error("Module creation failed.")
+            return
 
-            # 2. Create a wiki page with AI-generated HTML
-            page_data = create_wiki_page(page_title, st.session_state.ai_generated_html, canvas_domain_env, course_id_env, headers)
-            if not page_data:
-                st.error("Page creation failed.")
-                return
+    # 2. Create a wiki page with AI-generated HTML
+    page_data = create_wiki_page(page_title, st.session_state.ai_generated_html, canvas_domain_env, course_id_env, headers)
+    if not page_data:
+        st.error("Page creation failed.")
+        return
 
-            # 3. Add the wiki page to the module.
-            page_url = page_data.get("url")
-            if not page_url:
-                page_url = page_title.lower().replace(" ", "-")
-            add_page_to_module(mod_id, page_title, page_url, canvas_domain_env, course_id_env, headers)
+    # 3. Add the wiki page to the existing or new module
+    page_url = page_data.get("url")
+    if not page_url:
+        page_url = page_title.lower().replace(" ", "-")
+
+    add_page_to_module(mod_id, page_title, page_url, canvas_domain_env, course_id_env, headers)
+
+    # ✅ Mark submission as complete to trigger restart button
+    st.session_state.submission_complete = True
+
 
 
 def get_ai_generated_html(prompt):
@@ -389,10 +396,11 @@ if "submission_complete" in st.session_state and st.session_state.submission_com
 
     if st.button("Add Another Page"):
         # Reset only relevant session state variables
-        st.session_state.pop("module_title", None)
-        st.session_state.pop("page_title", None)
-        st.session_state.pop("uploaded_text", None)
-        st.session_state.pop("ai_generated_html", None)
-        st.session_state.pop("submission_complete", None)
+        for key in ["module_title", "page_title", "uploaded_text", "ai_generated_html", "submission_complete"]:
+            if key in st.session_state:
+                del st.session_state[key]
         st.rerun()
+
+
+    
 
