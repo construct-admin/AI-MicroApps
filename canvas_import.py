@@ -273,9 +273,10 @@ def main(config):
     if "final_user_prompt" in st.session_state:
         if st.button("Push to Canvas"):
             # Retrieve Canvas credentials from environment variables.
-            canvas_domain_env = os.getenv("CANVAS_DOMAIN")
-            course_id_env = os.getenv("COURSE_ID")
-            access_token = os.getenv("CANVAS_ACCESS_TOKEN")
+            canvas_domain_env = st.secrets["CANVAS_DOMAIN"]
+            course_id_env = st.secrets["CANVAS_ID"]
+            access_token = st.secrets["CANVAS_ACCESS_TOKEN"]
+
             if not canvas_domain_env or not course_id_env or not access_token:
                 st.error("Missing required environment variables: CANVAS_DOMAIN, COURSE_ID, CANVAS_ACCESS_TOKEN.")
                 return
