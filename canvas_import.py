@@ -180,6 +180,25 @@ def create_module(module_name, canvas_domain, course_id, headers):
     else:
         st.error(f"Error creating module: {response.status_code} {response.text}")
         return None
+    
+def get_existing_module_id(module_name, canvas_domain, course_id, headers):
+    """
+    Check if a module with the given name exists in Canvas.
+    If found, return its module ID; otherwise, return None.
+    """
+    url = f"https://{canvas_domain}/api/v1/courses/{course_id}/modules"
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        modules = response.json()
+        for module in modules:
+            if module["name"].lower() == module_name.lower():
+                return module["id"]  # Return existing module ID if found
+    else:
+        st.error(f"Error checking existing modules: {response.status_code} {response.text}")
+
+    return None  # Return None if module not found
+
 
 def create_wiki_page(page_title, page_body, canvas_domain, course_id, headers):
     """
@@ -300,10 +319,17 @@ def main(config):
             }
 
             # 1. Create a module.
-            mod_id = create_module(module_title, canvas_domain_env, course_id_env, headers)
+            # 🔍 Check if module already exists
+            mod_id = get_existing_module_id(module_title, canvas_domain_env, course_id_env, headers)
             if not mod_id:
-                st.error("Module creation failed.")
-                return
+                # If module doesn't exist, create a new one
+                mod_id = create_module(module_title, canvas_domain_env, course_id_env, headers)
+                if not mod_id:
+                    st.error("Module creation failed.")
+                    return
+            else:
+                st.info(f"Module '{module_title}' already exists. Adding the new page to it.")
+
 
             # 2. Create a wiki page with AI-generated HTML
             page_data = create_wiki_page(page_title, st.session_state.ai_generated_html, canvas_domain_env, course_id_env, headers)
@@ -357,3 +383,16 @@ if __name__ == "__main__":
     except ImportError:
         pass
     main(config=globals())
+
+if "submission_complete" in st.session_state and st.session_state.submission_complete:
+    st.success("Page successfully added to Canvas!")
+
+    if st.button("Add Another Page"):
+        # Reset only relevant session state variables
+        st.session_state.pop("module_title", None)
+        st.session_state.pop("page_title", None)
+        st.session_state.pop("uploaded_text", None)
+        st.session_state.pop("ai_generated_html", None)
+        st.session_state.pop("submission_complete", None)
+        st.rerun()
+
