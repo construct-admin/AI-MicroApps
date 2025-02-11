@@ -265,9 +265,17 @@ def main(config):
             st.error("Please provide all inputs (module title, page title, and upload at least one file).")
         else:
             final_user_prompt = generate_user_prompt(module_title, page_title, uploaded_text)
-            st.markdown("### Generated User Prompt:")
-            st.code(final_user_prompt, language="text")  # Display in a copyable format
-            st.session_state.final_user_prompt = final_user_prompt
+
+            # 🔥 Call OpenAI to get formatted HTML
+            ai_generated_html = get_ai_generated_html(final_user_prompt)
+        
+            if ai_generated_html:
+                st.markdown("### AI-Generated HTML Output:")
+                st.code(ai_generated_html, language="html")  # Display AI-generated HTML in a copyable format
+                st.session_state.ai_generated_html = ai_generated_html
+            else:
+                st.error("AI failed to generate HTML content.")
+
     
     st.header("Step 3: Push to Canvas")
     if "final_user_prompt" in st.session_state:
@@ -294,7 +302,8 @@ def main(config):
             
             # 2. Create a wiki page with the generated user prompt.
             # (Here, we are using the generated user prompt as the page body.)
-            page_data = create_wiki_page(page_title, st.session_state.final_user_prompt, canvas_domain_env, course_id_env, headers)
+            page_data = create_wiki_page(page_title, st.session_state.get("ai_generated_html", "AI failed to generate HTML"), canvas_domain_env, course_id_env, headers)
+
             if not page_data:
                 st.error("Page creation failed.")
                 return
