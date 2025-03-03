@@ -1,3 +1,9 @@
+
+import os
+import fitz  # PyMuPDF for PDF processing
+import logging
+import streamlit as st
+
 APP_URL = "https://role_play_app.streamlit.app/"
 APP_IMAGE = "construct.webp"
 PUBLISHED = True
@@ -5,12 +11,22 @@ PUBLISHED = True
 APP_TITLE = "Tiana Tagami: Chatbot"
 APP_INTRO = """Use this Chatbot to interact with Tiana Tagami"""
 
+# PAGE_CONFIG = {
 
+#     "page_title": "Tiana Tagami",
+#     "page_icon": "️🍒",
+#     "layout": "centered",
+#     "initial_sidebar_state": "expanded"
+# }
 
-import os
-import fitz  # PyMuPDF for PDF processing
-import logging
-import streamlit as st
+# ✅ Set Page Configuration FIRST to avoid errors
+st.set_page_config(
+    page_title="Tiana Tagami",
+    page_icon="🍒",
+    layout="centered",
+    initial_sidebar_state="expanded"
+)
+
 
 # Enable logging
 logging.basicConfig(level=logging.DEBUG)
@@ -43,7 +59,7 @@ def build_user_prompt(user_input):
         chat_request = user_input.get("chat_request", "").strip()
         
          # Debugging: Print retrieved values
-        print("Learning Objectives:", chat_request)
+        print("user chat_", chat_request)
         
         #check if Chat request is empty.         
         if not chat_request:
@@ -81,6 +97,9 @@ You purchased the farm in 2011 and are currently preparing for an upcoming meeti
 Your goal is to compile comprehensive financial statements by engaging in a detailed, text-based conversation with a financial director from a boutique consulting firm via WhatsApp.
 
 Key Details to Emphasize in Your Persona:
+
+Data Format: 
+Avoid using Latex for your numbers  and keep them in integer format. 
 
 Background & Context:
 You own and operate a Cherry Orchard farm.
@@ -172,17 +191,67 @@ DISPLAY_COST = False
 COMPLETION_MESSAGE = "Thank you for chating with Tiana Tagami"
 COMPLETION_CELEBRATION = False
 
-PAGE_CONFIG = {
+st.markdown(
+    """
+<style>
+        /* WhatsApp Light Background */
+        .stApp {
+            background-color: #eae6df;
+            font-family: 'Arial', sans-serif;
+        }
 
-    "page_title": "Tiana Tagami",
-    "page_icon": "️🍒",
-    "layout": "centered",
-    "initial_sidebar_state": "expanded"
-}
+        /* Messages container */
+        .stChatMessage {
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 75%;
+            margin-bottom: 8px;
+        }
+
+        /* User messages (light green bubbles) */
+        .stChatMessage:nth-child(even) {
+            background-color: #dcf8c6;
+            color: black;
+            align-self: flex-end;
+        }
+
+        /* AI messages (white bubbles) */
+        .stChatMessage:nth-child(odd) {
+            background-color: white;
+            color: black;
+            align-self: flex-start;
+            border: 1px solid #d1d7db;
+        }
+
+        /* Input box styling */
+        .stTextInput {
+            border-radius: 20px;
+            padding: 8px 12px;
+            border: 1px solid #34b7f1;
+            background-color: white;
+            color: black;
+        }
+
+        /* Hide the sidebar */
+        [data-testid="stSidebar"] {
+            display: none;
+        }
+        
+        #phase-1-ask-tiani-tagami-a-question {
+            display: none;
+        }
+        }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
 
 SIDEBAR_HIDDEN = True
 
 from core_logic.main import main
-if __name__ == "__main__":
-    
+if __name__ == "__main__":    
     main(config=globals())
