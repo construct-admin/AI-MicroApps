@@ -25,7 +25,7 @@ if not st.session_state.authenticated:
     if st.button("Submit"):
         if hash_code(access_code_input) == ACCESS_CODE_HASH:
             st.session_state.authenticated = True
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.error("Incorrect access code. Please try again.")
 
