@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import hashlib
 
-# ✅ Ensure page config is set at the top
+# configuration must be at the top.
 st.set_page_config(
     page_title="Text from Image Generator",
     page_icon="app_images/construct.webp",
@@ -10,19 +10,19 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-### ✅ Define `hash_code` function before using it
+### hash code function for the encryption
 def hash_code(input_code):
     """Hashes the access code using SHA-256."""
     return hashlib.sha256(input_code.encode()).hexdigest()
 
-### ✅ Securely Retrieve Hashed Access Code
+### retrieve hash code 
 ACCESS_CODE_HASH = os.getenv("ACCESS_CODE_HASH")
 
 if not ACCESS_CODE_HASH:
     st.error("⚠️ Hashed access code not found. Please set ACCESS_CODE_HASH.")
     st.stop()
 
-### ✅ Authentication Logic
+### Authentication Logic
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
@@ -33,14 +33,14 @@ if not st.session_state.authenticated:
     if st.button("Submit"):
         if hash_code(access_code_input) == ACCESS_CODE_HASH:
             st.session_state.authenticated = True
-            st.rerun()  # ✅ FIXED: Use `st.rerun()` instead of `st.experimental_rerun()`
+            st.rerun() 
         else:
             st.error("Incorrect access code. Please try again.")
 
-    st.stop()  # ✅ Prevent unauthorized access
+    st.stop()  # Prevent unauthorized access
 
 
-### ✅ Main Application Configurations
+### Main Application Configurations
 APP_URL = "https://image-text-gen.streamlit.app/"
 APP_IMAGE = "construct.webp"
 PUBLISHED = True
@@ -96,7 +96,7 @@ COMPLETION_CELEBRATION = False
 
 SIDEBAR_HIDDEN = True
 
-### ✅ Logout Button in Sidebar
+### Logout Button in Sidebar
 st.sidebar.button("Logout", on_click=lambda: st.session_state.update({"authenticated": False}))
 
 from core_logic.main import main
