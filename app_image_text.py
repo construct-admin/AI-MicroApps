@@ -1,3 +1,32 @@
+import streamlit as st
+import os
+import streamlit as st
+
+### ADDING IN AUTHENTICATION
+ACCESS_CODE_HASH = os.getenv("ACCESS_CODE_HASH")  # Store hashed value securely
+
+if not ACCESS_CODE_HASH:
+    st.error("⚠️ Hashed access code not found. Please set ACCESS_CODE_HASH.")
+    st.stop()
+
+# Authentication Page
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("🔒 Access Restricted")
+    access_code_input = st.text_input("Enter Access Code:", type="password")
+
+    if st.button("Submit"):
+        if hash_code(access_code_input) == ACCESS_CODE_HASH:
+            st.session_state.authenticated = True
+            st.experimental_rerun()
+        else:
+            st.error("Incorrect access code. Please try again.")
+
+    st.stop()
+
+
 APP_URL = "https://image-text-gen.streamlit.app/" 
 APP_IMAGE = "construct.webp" 
 PUBLISHED = True # Status of the app
@@ -63,6 +92,10 @@ PAGE_CONFIG = {
 }
 
 SIDEBAR_HIDDEN = True
+
+### AUTHENTICATION
+
+st.sidebar.button("Logout", on_click=lambda: st.session_state.update({"authenticated": False}))
 
 from core_logic.main import main
 if __name__ == "__main__":
