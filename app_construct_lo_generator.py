@@ -1,3 +1,44 @@
+import streamlit as st
+import os
+import hashlib
+
+# configuration must be at the top.
+st.set_page_config(
+    page_title="Construct LO Generator",
+    page_icon="app_images/construct.webp",
+    layout="centered",
+    initial_sidebar_state="expanded"
+)
+
+### hash code function for the encryption
+def hash_code(input_code):
+    """Hashes the access code using SHA-256."""
+    return hashlib.sha256(input_code.encode()).hexdigest()
+
+### retrieve hash code 
+ACCESS_CODE_HASH = os.getenv("ACCESS_CODE_HASH")
+
+if not ACCESS_CODE_HASH:
+    st.error("⚠️ Hashed access code not found. Please set ACCESS_CODE_HASH.")
+    st.stop()
+
+### Authentication Logic
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("🔒 Access Restricted")
+    access_code_input = st.text_input("Enter Access Code:", type="password")
+
+    if st.button("Submit"):
+        if hash_code(access_code_input) == ACCESS_CODE_HASH:
+            st.session_state.authenticated = True
+            st.rerun() 
+        else:
+            st.error("Incorrect access code. Please try again.")
+
+    st.stop()  # Prevent unauthorized access
+
 PUBLISHED = True
 APP_URL = "https://ai-microapps-ltajmcd53aypk3cp7mxsey.streamlit.app/"
 APP_IMAGE = "construct.webp"
@@ -223,13 +264,7 @@ LLM_CONFIG_OVERRIDE = {"gpt-4o": {
     }
 }
 
-# Page configuration
-PAGE_CONFIG = {
-    "page_title": "Construct LO Generator",
-    "page_icon": "app_images/construct.webp",
-    "layout": "centered",
-    "initial_sidebar_state": "expanded"
-}
+
 
 SIDEBAR_HIDDEN = True
 
@@ -247,6 +282,10 @@ def build_user_prompt(user_input):
         return "\n".join(user_prompt_parts)
     except KeyError as e:
         raise ValueError(f"Missing key in user input: {e}")
+    
+### Logout Button in Sidebar
+st.sidebar.button("Logout", on_click=lambda: st.session_state.update({"authenticated": False}))
+
 
 # Entry point
 from core_logic.main import main
