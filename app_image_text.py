@@ -1,6 +1,11 @@
 import streamlit as st
 import os
 import streamlit as st
+import hashlib
+
+def hash_code(input_code):
+    """Hashes the access code using SHA-256."""
+    return hashlib.sha256(input_code.encode()).hexdigest()
 
 ### ADDING IN AUTHENTICATION
 ACCESS_CODE_HASH = os.getenv("ACCESS_CODE_HASH")  # Store hashed value securely
