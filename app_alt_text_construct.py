@@ -114,7 +114,7 @@ PHASES = {
                 "condition": {"important_text": True, "complex_image": True},
                 "prompt": """I am sending you one or more complex app_images. Please provide separate appropriate alt text for each image I send. The alt text should:
                 - Describe the most important concept displayed in the image in less than 120 characters. \n
-                - The long description should explain the relationship between components and transcribe text verbatim to provide a detailed and informative description of the image. \n
+                - The long description should explain the relationship between parts and transcribe text verbatim to provide a detailed and informative description of the image. \n
                 Please provide your output in this format \n
                 **Short Description:**\n
                 [Short Description]\n\n
