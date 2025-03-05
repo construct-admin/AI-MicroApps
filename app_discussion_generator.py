@@ -130,7 +130,7 @@ PHASES = {
             },
             {
                 "condition": {},
-                "prompt": "Please align the learning objectives to the following academic stage level: {academic_stage_radio}."
+                "prompt": "Please align the discussion question to the following academic stage level: {academic_stage_radio}."
             }
         ],
         "ai_response": True,
