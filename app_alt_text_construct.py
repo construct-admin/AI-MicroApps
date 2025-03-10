@@ -1,3 +1,43 @@
+import streamlit as st
+import os
+import hashlib
+
+st.set_page_config(
+    page_title = "Alt Text Generator",
+    page_icon = "app_images/construct.webp",
+    layout = "centered",
+    initial_sidebar_state = "expanded"
+)
+
+### hash code function for the encryption
+def hash_code(input_code):
+    """Hashes the access code using SHA-256."""
+    return hashlib.sha256(input_code.encode()).hexdigest()
+
+### retrieve hash code 
+ACCESS_CODE_HASH = os.getenv("ACCESS_CODE_HASH")
+
+if not ACCESS_CODE_HASH:
+    st.error("⚠️ Hashed access code not found. Please set ACCESS_CODE_HASH.")
+    st.stop()
+
+### Authentication Logic
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.title("🔒 Access Restricted")
+    access_code_input = st.text_input("Enter Access Code:", type="password")
+
+    if st.button("Submit"):
+        if hash_code(access_code_input) == ACCESS_CODE_HASH:
+            st.session_state.authenticated = True
+            st.rerun() 
+        else:
+            st.error("Incorrect access code. Please try again.")
+
+    st.stop()  # Prevent unauthorized access
+
 APP_URL = "https://alt-text-bot.streamlit.app/"
 APP_IMAGE = "construct.webp"
 PUBLISHED = True
@@ -74,7 +114,7 @@ PHASES = {
                 "condition": {"important_text": True, "complex_image": True},
                 "prompt": """I am sending you one or more complex app_images. Please provide separate appropriate alt text for each image I send. The alt text should:
                 - Describe the most important concept displayed in the image in less than 120 characters. \n
-                - The long description should explain the relationship between components and transcribe text verbatim to provide a detailed and informative description of the image. \n
+                - The long description should explain the relationship between parts and transcribe text verbatim to provide a detailed and informative description of the image. \n
                 Please provide your output in this format \n
                 **Short Description:**\n
                 [Short Description]\n\n
@@ -104,14 +144,11 @@ DISPLAY_COST = True
 COMPLETION_MESSAGE = "Thanks for using the Alt Text Generator service"
 COMPLETION_CELEBRATION = False
 
-PAGE_CONFIG = {
-    "page_title": "Alt Text Generator",
-    "page_icon": "app_images/construct.webp",
-    "layout": "centered",
-    "initial_sidebar_state": "expanded"
-}
 
 SIDEBAR_HIDDEN = True
+
+### Logout Button in Sidebar
+st.sidebar.button("Logout", on_click=lambda: st.session_state.update({"authenticated": False}))
 
 from core_logic.main import main
 if __name__ == "__main__":

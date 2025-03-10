@@ -1,0 +1,13 @@
+{"prompt": "Please provide back a visual transcript of the image that has been provided that is aligned with WCAG2.2 Standards. Ensure that the length of the visual transcript has a maximum of %MAX_WORDS% words.", "max_words": "20", "content_filter": {"hate": {"filtered": false,
+"severity": "safe"},
+"protected_material_code": {"detected": false,
+                   "filtered": false},
+"protected_material_text": {"detected": false,
+                   "filtered": false},
+"self_harm": {"filtered": false,
+     "severity": "safe"},
+"sexual": {"filtered": false,
+  "severity": "safe"},
+"violence": {"filtered": false,
+    "severity": "safe"}}
+}
