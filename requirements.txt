@@ -15,3 +15,8 @@ pypdf>=3.0.0
 pymupdf
 python-docx
 opencv-python
+numpy
+requests
+pillow
+pytesseract
+pysrt
