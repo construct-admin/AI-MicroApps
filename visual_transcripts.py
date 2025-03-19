@@ -1,4 +1,5 @@
 import streamlit as st
+import cv2
 import numpy as np
 import os
 import tempfile
@@ -7,112 +8,96 @@ import requests
 from PIL import Image
 from openai import OpenAI
 from docx import Document
-import cv2  # Ensure OpenCV is installed
 
-# ✅ OpenAI API Key
+# Initialize OpenAI client
 GPT_API_KEY = os.getenv("OPENAI_API_KEY")
-if not GPT_API_KEY:
-    st.error("⚠️ OpenAI API Key is missing! Add it in Streamlit Secrets.")
-    st.stop()
-
 client = OpenAI(api_key=GPT_API_KEY)
 
-# ✅ Set Streamlit Page Config
+# Set Streamlit theme
 st.set_page_config(page_title="VT Generator", page_icon="🖼️", layout="wide")
 
-# ✅ Ensure all session state variables exist
-session_defaults = {
-    "saved_frames": [],
-    "saved_subtitles": [],
-    "frame_index": 0,
-    "frame_subtitle_map": {},
-    "subtitles": {},
-    "frames": [],
-    "transcriptions": {},
-    "video_processed": False
-}
-for key, default in session_defaults.items():
-    if key not in st.session_state:
-        st.session_state[key] = default
+# Sidebar setup
+st.sidebar.title("Saved Frames & Transcripts")
+st.session_state.setdefault("saved_frames", [])
+st.session_state.setdefault("saved_subtitles", [])
+st.session_state.setdefault("frame_index", 0)
+st.session_state.setdefault("frame_subtitle_map", {})
+st.session_state.setdefault("subtitles", {})
+st.session_state.setdefault("debug_log", [])  # Debugging log
 
-# ✅ File Uploads
+# Debugging Log
+st.session_state["debug_log"].append("✅ App Started")
+
+# Upload Video and SRT File
 video_file = st.file_uploader("Upload Video File (MP4)", type=["mp4"])
 srt_file = st.file_uploader("Upload Subtitle File (SRT)", type=["srt"])
+
+if video_file:
+    st.session_state["debug_log"].append("✅ Video file uploaded.")
+if srt_file:
+    st.session_state["debug_log"].append("✅ SRT file uploaded.")
+
+st.sidebar.text_area("Debug Log", "\n".join(st.session_state["debug_log"]), height=200, key="debug_log_area")
 
 # ✅ Function to parse SRT files
 def parse_srt(file):
     subtitles = {}
-    try:
-        lines = file.read().decode("utf-8").split("\n")
-        index, start_time = None, None
-        for line in lines:
-            line = line.strip()
-            if line.isdigit():
-                index = int(line)
-            elif "-->" in line:
-                start_time = line.split(" --> ")[0]
-                start_time = sum(float(x) * 60 ** i for i, x in enumerate(reversed(start_time.replace(',', '.').split(':'))))
-            elif line:
-                if index is not None and start_time is not None:
-                    subtitles[start_time] = line
-    except Exception as e:
-        st.error(f"❌ Error parsing SRT file: {e}")
+    lines = file.read().decode("utf-8").split("\n")
+    index, start_time = None, None
+    for line in lines:
+        line = line.strip()
+        if line.isdigit():
+            index = int(line)
+        elif "-->" in line:
+            start_time = line.split(" --> ")[0]
+            start_time = sum(float(x) * 60 ** i for i, x in enumerate(reversed(start_time.replace(',', '.').split(':'))))
+        elif line:
+            if index is not None and start_time is not None:
+                subtitles[start_time] = line
     return subtitles
 
-# ✅ Function to extract frames from video
-def extract_frames(video_path):
-    cap = cv2.VideoCapture(video_path)
-    if not cap.isOpened():
-        st.error("❌ Failed to open video file.")
-        return [], 0
-
-    fps = int(cap.get(cv2.CAP_PROP_FPS))
-    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    frames = []
-
-    for _ in range(total_frames):
-        success, frame = cap.read()
-        if not success:
-            break
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frames.append(Image.fromarray(frame))
-
-    cap.release()
-    return frames, fps
-
-# ✅ Process Video and Transcript
+# ✅ Process video & subtitles
 if video_file and srt_file and st.button("Process Video & Transcript"):
     try:
+        st.session_state["debug_log"].append("🔄 Processing Video & Transcript...")
+
         temp_video_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
         with open(temp_video_path, "wb") as f:
             f.write(video_file.read())
 
-        subtitles = parse_srt(srt_file)
-        frames, fps = extract_frames(temp_video_path)
+        st.session_state["subtitles"] = parse_srt(srt_file)
 
-        if frames:
-            st.session_state["frames"] = frames
-            st.session_state["subtitles"] = subtitles
-            st.session_state["frame_subtitle_map"] = {
-                int(start_time * fps): text for start_time, text in subtitles.items()
-            }
-            st.session_state["frame_index"] = 0  # Reset frame index
-            st.session_state["video_processed"] = True  # ✅ Track processing state
-            st.success("✅ Video and transcript processed successfully!")
-        else:
-            st.error("❌ Failed to extract frames. Check your video file.")
+        cap = cv2.VideoCapture(temp_video_path)
+        fps = int(cap.get(cv2.CAP_PROP_FPS))
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+        if "frames" not in st.session_state or not st.session_state["frames"]:
+            st.session_state["frames"] = []
+            for _ in range(total_frames):
+                success, frame = cap.read()
+                if not success:
+                    break
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                st.session_state["frames"].append(Image.fromarray(frame))
+
+        cap.release()
+        st.session_state["frame_subtitle_map"] = {int(start_time * fps): text for start_time, text in st.session_state["subtitles"].items()}
+        st.session_state["debug_log"].append("✅ Processing Complete!")
+
     except Exception as e:
-        st.error(f"❌ Error processing video: {e}")
+        st.session_state["debug_log"].append(f"❌ Error: {str(e)}")
+        st.error("An error occurred while processing the video and transcript.")
+    
+    st.sidebar.text_area("Debug Log", "\n".join(st.session_state["debug_log"]), height=200, key="debug_log_area_2")
 
 # ✅ Display transcript
 st.sidebar.subheader("Transcript")
-if st.session_state["video_processed"]:
-    for timestamp, text in st.session_state["subtitles"].items():
-        st.sidebar.write(f"**{timestamp}**: {text}")
+for timestamp, text in st.session_state["subtitles"].items():
+    st.sidebar.write(f"**{timestamp}**: {text}")
 
 # ✅ Frame Navigation
-total_frames = len(st.session_state["frames"]) - 1
-if total_frames >= 0 and st.session_state["video_processed"]:
+total_frames = len(st.session_state.get("frames", [])) - 1
+if total_frames >= 0:
     frame_index = st.slider("Select Frame", 0, total_frames, st.session_state["frame_index"], key="frame_slider")
     st.session_state["frame_index"] = frame_index
     st.image(st.session_state["frames"][frame_index], caption=f"Frame {frame_index}")
@@ -142,6 +127,9 @@ def encode_image(image):
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 # ✅ Transcription using OpenAI's API
+if "transcriptions" not in st.session_state:
+    st.session_state["transcriptions"] = {}
+
 for i, (frame, subtitle) in enumerate(zip(st.session_state["saved_frames"], st.session_state["saved_subtitles"])):
     if st.sidebar.button(f"Transcribe Frame {i}"):
         st.sidebar.write(f"Processing transcription for Frame {i}...")
@@ -158,8 +146,29 @@ for i, (frame, subtitle) in enumerate(zip(st.session_state["saved_frames"], st.s
             ],
             "max_tokens": 300
         }
+
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
         gpt_response = response.json()
         transcription = gpt_response['choices'][0]['message']['content']
-        st.sidebar.text_area(f"GPT Response for Frame {i}", transcription, key=f"transcript_{i}")
 
+        st.sidebar.text_area(f"GPT Response for Frame {i}", transcription, key=f"gpt_response_{i}")
+        st.session_state["transcriptions"][i] = transcription
+
+        if st.sidebar.button(f"Insert into Transcript {i}"):
+            frame_timestamp = list(st.session_state["subtitles"].keys())[i]
+            st.session_state["subtitles"][frame_timestamp] += f"\n[GPT]: {st.session_state['transcriptions'][i]}"
+            st.sidebar.write("Inserted into transcript!")
+
+# ✅ Download full transcript
+def download_transcript():
+    doc = Document()
+    doc.add_heading("Visual Transcript", level=1)
+    for timestamp, text in st.session_state["subtitles"].items():
+        doc.add_paragraph(f"{timestamp}: {text}")
+    temp_doc_path = tempfile.NamedTemporaryFile(delete=False, suffix=".docx").name
+    doc.save(temp_doc_path)
+    with open(temp_doc_path, "rb") as doc_file:
+        st.sidebar.download_button("Download Transcript", doc_file, file_name="visual_transcript.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+
+st.sidebar.subheader("Download Options")
+download_transcript()
