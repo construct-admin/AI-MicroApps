@@ -27,7 +27,7 @@ if "authenticated" not in st.session_state:
 
 if not st.session_state.authenticated:
     st.title("🔒 Access Restricted")
-    access_code_input = st.text_input("Enter Access Code:", type="password")
+    access_code_input = st.text_input("Enter Access Code:", type="password", key="access_code_input")
 
     if st.button("Submit"):
         if hash_code(access_code_input) == ACCESS_CODE_HASH:
