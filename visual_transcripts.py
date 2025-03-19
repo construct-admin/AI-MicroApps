@@ -7,7 +7,7 @@ import requests
 from PIL import Image
 from openai import OpenAI
 from docx import Document
-import cv2  # Ensure OpenCV is properly imported
+import cv2  # Ensure OpenCV is available
 
 # Initialize OpenAI client
 GPT_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -74,13 +74,15 @@ if video_file and srt_file:
         st.session_state["subtitles"] = parse_srt(srt_file)
         frames, fps = extract_frames(temp_video_path)
 
-        st.session_state["frames"] = frames
-        st.session_state["frame_subtitle_map"] = {
-            int(start_time * fps): text for start_time, text in st.session_state["subtitles"].items()
-        }
-        st.session_state["frame_index"] = 0  # Reset frame index
-
-        st.success("Video and transcript processed successfully!")
+        if frames:
+            st.session_state["frames"] = frames
+            st.session_state["frame_subtitle_map"] = {
+                int(start_time * fps): text for start_time, text in st.session_state["subtitles"].items()
+            }
+            st.session_state["frame_index"] = 0  # Reset frame index
+            st.success("Video and transcript processed successfully!")
+        else:
+            st.error("Failed to extract frames. Check your video file.")
 
 # Display transcript
 st.sidebar.subheader("Transcript")
