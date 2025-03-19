@@ -9,7 +9,7 @@ from openai import OpenAI
 from docx import Document
 import cv2  # Ensure OpenCV is installed
 
-# Set OpenAI API Key
+# ✅ OpenAI API Key
 GPT_API_KEY = os.getenv("OPENAI_API_KEY")
 if not GPT_API_KEY:
     st.error("⚠️ OpenAI API Key is missing! Add it in Streamlit Secrets.")
@@ -17,10 +17,10 @@ if not GPT_API_KEY:
 
 client = OpenAI(api_key=GPT_API_KEY)
 
-# Set Streamlit theme
+# ✅ Set Streamlit Page Config
 st.set_page_config(page_title="VT Generator", page_icon="🖼️", layout="wide")
 
-# Ensure session state variables exist
+# ✅ Ensure all session state variables exist
 session_defaults = {
     "saved_frames": [],
     "saved_subtitles": [],
@@ -28,17 +28,18 @@ session_defaults = {
     "frame_subtitle_map": {},
     "subtitles": {},
     "frames": [],
-    "transcriptions": {}
+    "transcriptions": {},
+    "video_processed": False
 }
 for key, default in session_defaults.items():
     if key not in st.session_state:
         st.session_state[key] = default
 
-# Upload Video and SRT File
+# ✅ File Uploads
 video_file = st.file_uploader("Upload Video File (MP4)", type=["mp4"])
 srt_file = st.file_uploader("Upload Subtitle File (SRT)", type=["srt"])
 
-# Function to parse SRT files
+# ✅ Function to parse SRT files
 def parse_srt(file):
     subtitles = {}
     try:
@@ -58,7 +59,7 @@ def parse_srt(file):
         st.error(f"❌ Error parsing SRT file: {e}")
     return subtitles
 
-# Function to extract frames from video
+# ✅ Function to extract frames from video
 def extract_frames(video_path):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -79,38 +80,39 @@ def extract_frames(video_path):
     cap.release()
     return frames, fps
 
-# Process video and transcript
-if video_file and srt_file:
-    if st.button("Process Video & Transcript"):
-        try:
-            temp_video_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
-            with open(temp_video_path, "wb") as f:
-                f.write(video_file.read())
+# ✅ Process Video and Transcript
+if video_file and srt_file and st.button("Process Video & Transcript"):
+    try:
+        temp_video_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
+        with open(temp_video_path, "wb") as f:
+            f.write(video_file.read())
 
-            subtitles = parse_srt(srt_file)
-            frames, fps = extract_frames(temp_video_path)
+        subtitles = parse_srt(srt_file)
+        frames, fps = extract_frames(temp_video_path)
 
-            if frames:
-                st.session_state["frames"] = frames
-                st.session_state["subtitles"] = subtitles
-                st.session_state["frame_subtitle_map"] = {
-                    int(start_time * fps): text for start_time, text in subtitles.items()
-                }
-                st.session_state["frame_index"] = 0  # Reset frame index
-                st.success("✅ Video and transcript processed successfully!")
-            else:
-                st.error("❌ Failed to extract frames. Check your video file.")
-        except Exception as e:
-            st.error(f"❌ Error processing video: {e}")
+        if frames:
+            st.session_state["frames"] = frames
+            st.session_state["subtitles"] = subtitles
+            st.session_state["frame_subtitle_map"] = {
+                int(start_time * fps): text for start_time, text in subtitles.items()
+            }
+            st.session_state["frame_index"] = 0  # Reset frame index
+            st.session_state["video_processed"] = True  # ✅ Track processing state
+            st.success("✅ Video and transcript processed successfully!")
+        else:
+            st.error("❌ Failed to extract frames. Check your video file.")
+    except Exception as e:
+        st.error(f"❌ Error processing video: {e}")
 
-# Display transcript
+# ✅ Display transcript
 st.sidebar.subheader("Transcript")
-for timestamp, text in st.session_state["subtitles"].items():
-    st.sidebar.write(f"**{timestamp}**: {text}")
+if st.session_state["video_processed"]:
+    for timestamp, text in st.session_state["subtitles"].items():
+        st.sidebar.write(f"**{timestamp}**: {text}")
 
-# Frame Navigation
+# ✅ Frame Navigation
 total_frames = len(st.session_state["frames"]) - 1
-if total_frames >= 0:
+if total_frames >= 0 and st.session_state["video_processed"]:
     frame_index = st.slider("Select Frame", 0, total_frames, st.session_state["frame_index"], key="frame_slider")
     st.session_state["frame_index"] = frame_index
     st.image(st.session_state["frames"][frame_index], caption=f"Frame {frame_index}")
@@ -127,23 +129,23 @@ if total_frames >= 0:
         st.session_state["saved_frames"].append(st.session_state["frames"][frame_index])
         st.session_state["saved_subtitles"].append(st.session_state["frame_subtitle_map"].get(frame_index, "No Subtitle"))
 
-# Show saved frames
+# ✅ Show saved frames
 for i, (frame, subtitle) in enumerate(zip(st.session_state["saved_frames"], st.session_state["saved_subtitles"])):
     st.sidebar.image(frame, caption=f"Saved Frame {i}")
     st.sidebar.write(subtitle)
 
-# Function to encode image as base64
+# ✅ Function to encode image as base64
 def encode_image(image):
     buffered = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
     image.save(buffered, format="JPEG")
     with open(buffered.name, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
 
-# Transcription using OpenAI's API
+# ✅ Transcription using OpenAI's API
 for i, (frame, subtitle) in enumerate(zip(st.session_state["saved_frames"], st.session_state["saved_subtitles"])):
     if st.sidebar.button(f"Transcribe Frame {i}"):
         st.sidebar.write(f"Processing transcription for Frame {i}...")
-        
+
         base64_image = encode_image(frame)
         headers = {"Content-Type": "application/json", "Authorization": f"Bearer {GPT_API_KEY}"}
         payload = {
@@ -160,5 +162,4 @@ for i, (frame, subtitle) in enumerate(zip(st.session_state["saved_frames"], st.s
         gpt_response = response.json()
         transcription = gpt_response['choices'][0]['message']['content']
         st.sidebar.text_area(f"GPT Response for Frame {i}", transcription, key=f"transcript_{i}")
-
 
