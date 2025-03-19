@@ -7,6 +7,7 @@ import requests
 from PIL import Image
 from openai import OpenAI
 from docx import Document
+import cv2  # Ensure OpenCV is properly imported
 
 # Initialize OpenAI client
 GPT_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -22,6 +23,7 @@ st.session_state.setdefault("saved_subtitles", [])
 st.session_state.setdefault("frame_index", 0)
 st.session_state.setdefault("frame_subtitle_map", {})
 st.session_state.setdefault("subtitles", {})
+st.session_state.setdefault("frames", [])
 st.session_state.setdefault("transcriptions", {})
 
 # Upload Video and SRT File
@@ -45,19 +47,13 @@ def parse_srt(file):
                 subtitles[start_time] = line
     return subtitles
 
-if video_file and srt_file and st.button("Process Video & Transcript"):
-    temp_video_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
-    with open(temp_video_path, "wb") as f:
-        f.write(video_file.read())
-
-    st.session_state["subtitles"] = parse_srt(srt_file)
-    
-    import cv2
-    cap = cv2.VideoCapture(temp_video_path)
+# Function to extract frames from video
+def extract_frames(video_path):
+    cap = cv2.VideoCapture(video_path)
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-
     frames = []
+
     for _ in range(total_frames):
         success, frame = cap.read()
         if not success:
@@ -66,8 +62,25 @@ if video_file and srt_file and st.button("Process Video & Transcript"):
         frames.append(Image.fromarray(frame))
 
     cap.release()
-    st.session_state["frames"] = frames
-    st.session_state["frame_subtitle_map"] = {int(start_time * fps): text for start_time, text in st.session_state["subtitles"].items()}
+    return frames, fps
+
+# Process video and transcript
+if video_file and srt_file:
+    if st.button("Process Video & Transcript"):
+        temp_video_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
+        with open(temp_video_path, "wb") as f:
+            f.write(video_file.read())
+
+        st.session_state["subtitles"] = parse_srt(srt_file)
+        frames, fps = extract_frames(temp_video_path)
+
+        st.session_state["frames"] = frames
+        st.session_state["frame_subtitle_map"] = {
+            int(start_time * fps): text for start_time, text in st.session_state["subtitles"].items()
+        }
+        st.session_state["frame_index"] = 0  # Reset frame index
+
+        st.success("Video and transcript processed successfully!")
 
 # Display transcript
 st.sidebar.subheader("Transcript")
@@ -75,7 +88,7 @@ for timestamp, text in st.session_state["subtitles"].items():
     st.sidebar.write(f"**{timestamp}**: {text}")
 
 # Frame Navigation
-total_frames = len(st.session_state.get("frames", [])) - 1
+total_frames = len(st.session_state["frames"]) - 1
 if total_frames >= 0:
     frame_index = st.slider("Select Frame", 0, total_frames, st.session_state["frame_index"], key="frame_slider")
     st.session_state["frame_index"] = frame_index
