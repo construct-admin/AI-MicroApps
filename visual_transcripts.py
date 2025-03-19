@@ -1,5 +1,4 @@
 import streamlit as st
-import cv2
 import numpy as np
 import os
 import tempfile
@@ -9,6 +8,12 @@ from PIL import Image
 from openai import OpenAI
 from docx import Document
 import hashlib
+
+try:
+    import cv2
+except ImportError:
+    st.error("OpenCV (cv2) is not installed. Please ensure it is included in requirements.txt.")
+    cv2 = None
 
 st.set_page_config(
     page_title = "Visual Transcript Generator",
