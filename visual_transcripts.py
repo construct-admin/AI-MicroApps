@@ -20,10 +20,6 @@ client = OpenAI(api_key=GPT_API_KEY)
 # ✅ Set Streamlit Page Config
 st.set_page_config(page_title="VT Generator", page_icon="🖼️", layout="wide")
 
-# ✅ Debugging Log
-if "debug_log" not in st.session_state:
-    st.session_state["debug_log"] = []
-
 # ✅ Ensure all session state variables exist
 session_defaults = {
     "saved_frames": [],
@@ -39,21 +35,9 @@ for key, default in session_defaults.items():
     if key not in st.session_state:
         st.session_state[key] = default
 
-# ✅ Debugging Step 1: Check Session State Initialization
-st.sidebar.write("✅ Debug Log")
-st.session_state["debug_log"].append("Session state initialized.")
-st.sidebar.text_area("Debug Log", "\n".join(st.session_state["debug_log"]), height=200)
-
 # ✅ File Uploads
 video_file = st.file_uploader("Upload Video File (MP4)", type=["mp4"])
 srt_file = st.file_uploader("Upload Subtitle File (SRT)", type=["srt"])
-
-# ✅ Debugging Step 2: Check File Uploads
-if video_file:
-    st.session_state["debug_log"].append("✅ Video file uploaded.")
-if srt_file:
-    st.session_state["debug_log"].append("✅ SRT file uploaded.")
-st.sidebar.text_area("Debug Log", "\n".join(st.session_state["debug_log"]), height=200)
 
 # ✅ Function to parse SRT files
 def parse_srt(file):
@@ -73,7 +57,6 @@ def parse_srt(file):
                     subtitles[start_time] = line
     except Exception as e:
         st.error(f"❌ Error parsing SRT file: {e}")
-        st.session_state["debug_log"].append(f"❌ SRT Parsing Error: {e}")
     return subtitles
 
 # ✅ Function to extract frames from video
@@ -81,28 +64,24 @@ def extract_frames(video_path):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         st.error("❌ Failed to open video file.")
-        st.session_state["debug_log"].append("❌ OpenCV failed to open video file.")
         return [], 0
 
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     frames = []
 
-    for i in range(total_frames):
+    for _ in range(total_frames):
         success, frame = cap.read()
         if not success:
             break
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frames.append(Image.fromarray(frame))
-        if i % 100 == 0:
-            st.session_state["debug_log"].append(f"✅ Extracted {i}/{total_frames} frames...")
 
     cap.release()
     return frames, fps
 
 # ✅ Process Video and Transcript
 if video_file and srt_file and st.button("Process Video & Transcript"):
-    st.session_state["debug_log"].append("🚀 Processing started.")
     try:
         temp_video_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
         with open(temp_video_path, "wb") as f:
@@ -119,16 +98,11 @@ if video_file and srt_file and st.button("Process Video & Transcript"):
             }
             st.session_state["frame_index"] = 0  # Reset frame index
             st.session_state["video_processed"] = True  # ✅ Track processing state
-            st.session_state["debug_log"].append("✅ Video & transcript processing complete!")
             st.success("✅ Video and transcript processed successfully!")
         else:
             st.error("❌ Failed to extract frames. Check your video file.")
-            st.session_state["debug_log"].append("❌ Frame extraction failed.")
     except Exception as e:
         st.error(f"❌ Error processing video: {e}")
-        st.session_state["debug_log"].append(f"❌ Video Processing Error: {e}")
-
-st.sidebar.text_area("Debug Log", "\n".join(st.session_state["debug_log"]), height=200)
 
 # ✅ Display transcript
 st.sidebar.subheader("Transcript")
@@ -155,4 +129,37 @@ if total_frames >= 0 and st.session_state["video_processed"]:
         st.session_state["saved_frames"].append(st.session_state["frames"][frame_index])
         st.session_state["saved_subtitles"].append(st.session_state["frame_subtitle_map"].get(frame_index, "No Subtitle"))
 
-st.sidebar.text_area("Debug Log", "\n".join(st.session_state["debug_log"]), height=200)
+# ✅ Show saved frames
+for i, (frame, subtitle) in enumerate(zip(st.session_state["saved_frames"], st.session_state["saved_subtitles"])):
+    st.sidebar.image(frame, caption=f"Saved Frame {i}")
+    st.sidebar.write(subtitle)
+
+# ✅ Function to encode image as base64
+def encode_image(image):
+    buffered = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
+    image.save(buffered, format="JPEG")
+    with open(buffered.name, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
+# ✅ Transcription using OpenAI's API
+for i, (frame, subtitle) in enumerate(zip(st.session_state["saved_frames"], st.session_state["saved_subtitles"])):
+    if st.sidebar.button(f"Transcribe Frame {i}"):
+        st.sidebar.write(f"Processing transcription for Frame {i}...")
+
+        base64_image = encode_image(frame)
+        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {GPT_API_KEY}"}
+        payload = {
+            "model": "gpt-4o",
+            "messages": [
+                {"role": "user", "content": [
+                    {"type": "text", "text": "What’s in this image?"},
+                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
+                ]}
+            ],
+            "max_tokens": 300
+        }
+        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+        gpt_response = response.json()
+        transcription = gpt_response['choices'][0]['message']['content']
+        st.sidebar.text_area(f"GPT Response for Frame {i}", transcription, key=f"transcript_{i}")
+
