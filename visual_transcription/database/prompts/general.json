@@ -1,0 +1,4 @@
+{
+    "prompt": "Please describe what you see in this image in detail, focusing on the main visual elements. Keep your description to %MAX_WORDS% words maximum.",
+    "name": "General Purpose"
+} 

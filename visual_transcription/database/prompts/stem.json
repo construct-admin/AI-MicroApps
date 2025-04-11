@@ -1,0 +1,4 @@
+{
+    "prompt": "Analyze this image from a scientific perspective. Identify any scientific equipment, diagrams, experiments, formulas, or technical components visible. Explain their function or purpose if recognizable. Limit your analysis to %MAX_WORDS% words.",
+    "name": "STEM"
+} 

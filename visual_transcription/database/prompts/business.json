@@ -1,0 +1,4 @@
+{
+    "prompt": "Analyze this image from a business perspective. Identify any business settings, products, marketing materials, financial data, organizational charts, or professional interactions. Describe business-relevant elements such as branding, operations, or presentation materials within %MAX_WORDS% words.",
+    "name": "Business"
+} 
