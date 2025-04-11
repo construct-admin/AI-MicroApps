@@ -1,0 +1,565 @@
+1
+00:00:00,000 --> 00:00:23,639
+We've discussed this linear model for regression so far, and so what I want to do is now start
+
+2
+00:00:23,639 --> 00:00:27,000
+to think about how we can take into account nonlinearities.
+
+3
+00:00:27,000 --> 00:00:28,479
+That's going to be our goal.
+
+4
+00:00:28,479 --> 00:00:33,040
+By the end of this video, you should be able to create nonlinear features to allow a linear
+
+5
+00:00:33,040 --> 00:00:38,479
+regression model to capture nonlinear relationships and explain how including these nonlinear
+
+6
+00:00:38,479 --> 00:00:42,080
+features is equivalent to having a nonlinear model.
+
+7
+00:00:42,080 --> 00:00:45,720
+So, the predictions we're making so far are just a linear sum of our features, so if we
+
+8
+00:00:45,720 --> 00:00:50,759
+have three features, the output's going to be theta1 times phi1 plus theta2 times phi2
+
+9
+00:00:50,759 --> 00:00:53,680
+plus theta3 times phi3, maybe plus an "indistinct".
+
+10
+00:00:53,680 --> 00:00:59,520
+We can write this out as a sigma expression, just a normal sum in with a sigma by just
+
+11
+00:00:59,520 --> 00:01:05,319
+saying y-hat is the sum over all j's from j equals 1 to d of theta j times phi j, and
+
+12
+00:01:05,319 --> 00:01:09,000
+again, you could throw in a b if you want to have this extra interest.
+
+13
+00:01:09,000 --> 00:01:10,400
+So, that's what we've got so far.
+
+14
+00:01:10,400 --> 00:01:13,440
+So, let's consider some data that's just clearly not linear.
+
+15
+00:01:13,440 --> 00:01:19,040
+If we have a y and x, just a simple regression where you have just a y and an x.
+
+16
+00:01:19,040 --> 00:01:24,160
+So here what we see is the fuel efficiency versus engine power for many different models
+
+17
+00:01:24,160 --> 00:01:25,160
+of car.
+
+18
+00:01:25,160 --> 00:01:27,440
+This is another dataset built into seaborn.
+
+19
+00:01:27,440 --> 00:01:33,040
+So on the y-axis, we have fuel efficiency in miles per gallon, which is similar to liters
+
+20
+00:01:33,040 --> 00:01:37,720
+per kilometer if you're a liters per kilometer person, but it's the opposite.
+
+21
+00:01:37,720 --> 00:01:41,720
+And then on the x-axis, we have the total engine power in horsepower, and a horsepower
+
+22
+00:01:41,720 --> 00:01:44,360
+is just 745 watts.
+
+23
+00:01:44,360 --> 00:01:50,239
+So, what we see is that as the engine power goes up, the number of miles you can travel
+
+24
+00:01:50,239 --> 00:01:55,120
+per gallon goes down, so the fuel efficiency decreases, and it seems to decrease in this
+
+25
+00:01:55,120 --> 00:01:58,480
+sort of almost parabola-like shape.
+
+26
+00:01:58,480 --> 00:02:02,839
+So, my goal is to try and build a model that says big cars use more fuel in a way that
+
+27
+00:02:02,839 --> 00:02:05,480
+actually captures this nonlinear dependency.
+
+28
+00:02:05,480 --> 00:02:09,660
+Now we could just build a linear model, that's fine, like as we did before.
+
+29
+00:02:09,970 --> 00:02:14,919
+but it's not really going to capture this nonlinear behavior, clearly,
+this is a straight line. This model has
+
+30
+00:02:15,160 --> 00:02:20,319
+an okay mean squared air of 23.94 and maybe that's good enough
+for your purposes, but it's
+
+31
+00:02:20,760 --> 00:02:24,289
+clear to me that it is not capturing something important
+about the input. So, what can we do?
+
+32
+00:02:24,460 --> 00:02:30,989
+Well, I mean, I guess make something up, I could just draw my own
+red line, because a model is just a line
+
+33
+00:02:31,260 --> 00:02:34,719
+Like I can draw any shape I want with a pen and that's
+my model.
+
+34
+00:02:34,959 --> 00:02:40,680
+So, I am going to pick a line which happens to be a parabola. So, if I eyeball
+this data,I just look at it, okay.
+
+35
+00:02:41,359 --> 00:02:47,000
+I think the bottom of the parabola looks like it's at around x equal to 250, and y
+
+36
+00:02:47,000 --> 00:02:50,199
+equals 10, just somewhere over here.
+
+37
+00:02:50,199 --> 00:02:54,960
+And then I think it should intersect, so I need another point along the parabola, at
+
+38
+00:02:54,960 --> 00:02:58,240
+x equals 75, y equals 27.5.
+
+39
+00:02:58,240 --> 00:03:02,720
+Well, since I've given you two points on a parabola, you can do some math.
+
+40
+00:03:02,720 --> 00:03:06,320
+I mean, I'm not going to do it here, but I did it out on paper at some point.
+
+41
+00:03:06,360 --> 00:03:12,039
+And you can figure out that the equation for this parabola given by these two points is
+
+42
+00:03:12,039 --> 00:03:13,880
+the following equation.
+
+43
+00:03:13,880 --> 00:03:19,679
+So, it's y is equal to x minus 250 over 1,750 plus 10.
+
+44
+00:03:19,679 --> 00:03:23,119
+And that x minus 250, by the way, should be squared.
+
+45
+00:03:23,119 --> 00:03:27,639
+I could also rewrite that if I wanted in a different form by just giving the squared
+
+46
+00:03:27,639 --> 00:03:30,000
+term, the linear term, and the offset.
+
+47
+00:03:30,000 --> 00:03:36,000
+So in that case, it's this expression, x squared over 1750 plus 2 sevenths x plus 45.7.
+
+48
+00:03:36,000 --> 00:03:39,839
+These are two different equations that are just the same thing, just multiplied out differently.
+
+49
+00:03:39,839 --> 00:03:43,880
+So, that parabola I just made up and did a little algebra offline to figure out what
+
+50
+00:03:43,880 --> 00:03:50,479
+it is, has a mean squared error of 21, which is better than the line that the Scikit-learn
+
+51
+00:03:50,479 --> 00:03:52,160
+library is able to come up with.
+
+52
+00:03:52,160 --> 00:03:53,520
+So it's very smart, right?
+
+53
+00:03:53,520 --> 00:03:59,119
+It's able to fit the literally best line in the whole world, but I was able to do better
+
+54
+00:03:59,119 --> 00:04:01,639
+because I made a parabola, and just eyeballing it.
+
+55
+00:04:01,639 --> 00:04:02,919
+So it's better.
+
+56
+00:04:02,919 --> 00:04:07,320
+And because it does that, I can't use scikit-learn's linear regression module to find the best
+
+57
+00:04:07,320 --> 00:04:10,199
+w and the best v and the best b.
+
+58
+00:04:10,199 --> 00:04:12,919
+That's a bit of a problem.
+
+59
+00:04:12,919 --> 00:04:17,559
+So one way we might imagine doing this, and this is a purely hypothetical thought experiment,
+
+60
+00:04:17,559 --> 00:04:22,679
+would be, well, we could build a separate squared regression module, but that's actually
+
+61
+00:04:22,679 --> 00:04:24,679
+opening up a whole giant can of worms.
+
+62
+00:04:24,679 --> 00:04:25,679
+It's complicated.
+
+63
+00:04:25,679 --> 00:04:26,679
+It's a mess.
+
+64
+00:04:26,679 --> 00:04:28,959
+Instead, I'm going to do something super clever.
+
+65
+00:04:28,959 --> 00:04:33,239
+And if there's any idea in the machine learning part of this course that I want you to really,
+
+66
+00:04:33,239 --> 00:04:35,040
+really understand, it's this.
+
+67
+00:04:35,040 --> 00:04:39,399
+It's how we can still fit a parabola, but using a linear regression model.
+
+68
+00:04:39,399 --> 00:04:43,839
+This is going to seem crazy, like impossible, but there's actually a really straightforward
+
+69
+00:04:43,839 --> 00:04:47,839
+way to do it, that once you're comfortable with it, it's the underpinning of machine
+
+70
+00:04:47,839 --> 00:04:48,839
+learning.
+
+71
+00:04:48,839 --> 00:04:53,559
+There's all kinds of really, really complicated models out there that are just linear models
+
+72
+00:04:53,559 --> 00:04:57,559
+because they use this trick, and so they're able to do nonlinear things.
+
+73
+00:04:57,559 --> 00:05:02,359
+So the trick is that I'm going to add a new feature to my data, which is the horsepower
+
+74
+00:05:02,359 --> 00:05:07,359
+square, and then I'm going to fit a two-dimensional linear regression model, where the first feature
+
+75
+00:05:07,359 --> 00:05:11,179
+is the horsepower, and the second is the square of the horsepower.
+
+76
+00:05:11,179 --> 00:05:16,000
+This is just another DataFrame, or another set of samples from some distribution, where
+
+77
+00:05:16,000 --> 00:05:22,040
+here I have a horsepower of 130, and the horsepower squared is 16,900, and the miles per gallon
+
+78
+00:05:22,040 --> 00:05:24,880
+is 18.
+
+79
+00:05:24,880 --> 00:05:29,500
+So, I just happen to create a synthetic feature, the horsepower squared, that will also happen
+
+80
+00:05:29,500 --> 00:05:33,959
+to be useful, and then I'm just going to fit this model just like before.
+
+81
+00:05:33,959 --> 00:05:38,519
+So, I'll go to linear regression, and I'll say, hey, I want you to fit a model that predicts
+
+82
+00:05:38,519 --> 00:05:43,920
+the miles per gallon from not just the HP, or horsepower feature, but also the HP and
+
+83
+00:05:43,920 --> 00:05:45,959
+HP squared feature.
+
+84
+00:05:45,959 --> 00:05:49,160
+And if you do that, you get something that works quite well.
+
+85
+00:05:49,160 --> 00:05:54,480
+So in particular, if I go into scikit-learn, and I create this model, and then I plot its
+
+86
+00:05:55,079 --> 00:05:56,079
+I get a parabola.
+
+87
+00:05:56,079 --> 00:05:57,079
+I really do.
+
+88
+00:05:57,079 --> 00:05:58,079
+It's a parabola.
+
+89
+00:05:58,079 --> 00:05:59,480
+And I provide it in the notebook.
+
+90
+00:05:59,480 --> 00:06:04,279
+You can actually sit down and play with this, and see that it really is a parabola.
+
+91
+00:06:04,279 --> 00:06:06,279
+But this is the outcome of that notebook.
+
+92
+00:06:06,279 --> 00:06:12,440
+So, we get a parabolic shape by, you could say cheating, by adding a horsepower squared
+
+93
+00:06:12,440 --> 00:06:13,440
+feature.
+
+94
+00:06:13,440 --> 00:06:14,440
+But it totally works.
+
+95
+00:06:14,440 --> 00:06:16,700
+This is 100% legit, and it works really well.
+
+96
+00:06:16,700 --> 00:06:21,640
+And what's better is that this linear regression model that scikit-learn comes up with, of
+
+97
+00:06:21,640 --> 00:06:22,839
+course, it's smart.
+
+98
+00:06:22,839 --> 00:06:25,519
+It's able to come up with literally the best parabola.
+
+99
+00:06:25,519 --> 00:06:29,959
+So, whereas I came up with a parabola with a mean squared error of 21, it came up with
+
+100
+00:06:29,959 --> 00:06:32,839
+a mean squared error of 18.98.
+
+101
+00:06:32,839 --> 00:06:33,839
+That's fantastic, right?
+
+102
+00:06:33,839 --> 00:06:36,720
+That's just amazing that it's able to do so much better than me.
+
+103
+00:06:36,720 --> 00:06:41,399
+It picks different W's, V's, and B's, if you want to think about it that way, that are
+
+104
+00:06:41,399 --> 00:06:42,399
+better.
+
+105
+00:06:42,399 --> 00:06:45,679
+Now, however, because we've managed to cram this into a linear regression model, I'll
+
+106
+00:06:45,679 --> 00:06:50,239
+simply call this first parameter theta one, the second one theta two, and my offset I'll
+
+107
+00:06:50,239 --> 00:06:51,239
+call B.
+
+108
+00:06:51,440 --> 00:06:54,920
+Now, if this makes you at all uncomfortable, that's what the homework's for, but it really
+
+109
+00:06:54,920 --> 00:06:56,640
+is as legit as I say.
+
+110
+00:06:56,640 --> 00:06:57,640
+It works fine.
+
+111
+00:06:57,640 --> 00:07:00,640
+Now, an interesting question arises.
+
+112
+00:07:00,640 --> 00:07:02,399
+What if we added more features?
+
+113
+00:07:02,399 --> 00:07:04,640
+Like what if we added the cube?
+
+114
+00:07:04,640 --> 00:07:08,320
+Like I know it looked kind of parabolic, but maybe having a cube feature helps.
+
+115
+00:07:08,320 --> 00:07:10,359
+Would we get better results?
+
+116
+00:07:10,359 --> 00:07:11,359
+What will the model look like?
+
+117
+00:07:11,359 --> 00:07:15,720
+Well, to do that, let's pop over and try it out real quick in the notebook.
+
+118
+00:07:15,720 --> 00:07:21,399
+So, what I'm going to do is go down here, past all this code, and I am going to get
+
+119
+00:07:21,399 --> 00:07:24,440
+to the point where we have our cubic model.
+
+120
+00:07:24,440 --> 00:07:27,440
+Now I'm going to tell it to run all of my code up through here.
+
+121
+00:07:27,440 --> 00:07:30,239
+I think that was, nope, that's not the right button.
+
+122
+00:07:30,239 --> 00:07:35,200
+We're going to say run as we go all the way up to here.
+
+123
+00:07:35,200 --> 00:07:40,959
+So, now what we've got is three features, horsepower, horsepower squared, and a cube of horsepower,
+
+124
+00:07:40,959 --> 00:07:43,859
+and they're going to fit a cubic model.
+
+125
+00:07:43,859 --> 00:07:48,899
+And if I do this, my cubic model looks something like this.
+
+126
+00:07:48,899 --> 00:07:52,859
+Looks kind of like the parabolic model, but what I can tell you is that it's mean squared
+
+127
+00:07:52,859 --> 00:07:55,859
+error 18.944.
+
+128
+00:07:55,859 --> 00:08:02,899
+And that is even better, I think it was called SQ model, than we got out of the squared model.
+
+129
+00:08:02,899 --> 00:08:06,299
+Not much better, but we could see the mean squared error came lower.
+
+130
+00:08:06,299 --> 00:08:08,899
+And so a question that arises is, could it keep doing this forever?
+
+131
+00:08:08,899 --> 00:08:10,660
+What would happen?
+
+132
+00:08:10,660 --> 00:08:13,500
+And we'll be exploring that as we move on to our next part.
+
+133
+00:08:14,140 --> 00:08:18,179
+So, if we summarize those three models we built, we have our simple linear model, our squared
+
+134
+00:08:18,179 --> 00:08:22,859
+model, and our cubic model, and we get a big jump in performance from the linear to the
+
+135
+00:08:22,859 --> 00:08:23,859
+squared model.
+
+136
+00:08:23,859 --> 00:08:29,100
+The MSE drops in 21 to 18.98, and then we get just a little bit better when we get to
+
+137
+00:08:29,100 --> 00:08:33,479
+the cubic model, and also the shape of the model doesn't look all that different.
+
+138
+00:08:33,479 --> 00:08:37,460
+So, qualitatively, the curve is similar, the improvements just a little bit bigger, but
+
+139
+00:08:37,460 --> 00:08:41,580
+a natural question that pops up is, what happens if we go to a fourth order or even more?
+
+140
+00:08:41,581 --> 00:08:44,000
+and so we'll be exploring that as we move on to the next video.
