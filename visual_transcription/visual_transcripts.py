@@ -17,6 +17,62 @@ from dotenv import load_dotenv
 st.set_page_config(page_title="VT Generator", page_icon="🖼️", layout="wide")
 load_dotenv()
 
+def load_all_system_prompts():
+    path_to_prompts = "database\prompts"
+    for file in os.listdir(path_to_prompts):
+        with open(os.path.join(path_to_prompts, file), "r") as json_file:
+            json_data = json.load(json_file)
+            # Store the prompt text in session state using the name as the key
+            st.session_state[json_data["name"]] = json_data["prompt"].replace("%MAX_WORDS%", str(st.session_state["max_words"]))
+
+# Add password authentication
+def check_password():
+    """Returns True if the password is correct, False otherwise."""
+    # Initialize session state for authentication
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+    
+    # If already authenticated, return True
+    if st.session_state.authenticated:
+        return True
+    
+    # Create login form
+    st.title("VT Generator - Authentication Required")
+    st.markdown("### Please enter your password to continue")
+    st.markdown("This application requires authentication to access its functionality.")
+    
+    # Create columns for centered form
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        password = st.text_input("Password:", type="password", key="password_input")
+        login_button = st.button("Login", key="login_button", type="primary")
+        
+        # Verify password
+        if login_button or password:
+            if password == "pRoV3rsity!!@2024":
+                st.session_state.authenticated = True
+                st.success("Authentication successful! Loading application...")
+                st.experimental_rerun()
+                return True
+            else:
+                st.error("Incorrect password. Please try again.")
+                return False
+    
+    # Display a placeholder image if available
+    try:
+        placeholder_image_path = "\image_place_holder.png"
+        if os.path.exists(placeholder_image_path):
+            st.image(placeholder_image_path, use_column_width=True, caption="VT Generator - Visual Transcription Service")
+    except:
+        st.markdown("### VT Generator - Visual Transcription Service")
+    
+    return False
+
+# Check authentication before showing the main application
+if not check_password():
+    st.stop()  # Stop execution here if not authenticated
+
 # Initialize OpenAI client
 GPT_API_KEY = os.getenv("PERSONAL_OPENAI_KEY")
 client = OpenAI(api_key=GPT_API_KEY)
@@ -49,6 +105,14 @@ def encode_image(image):
     image.save(buffered, format="JPEG")
     with open(buffered.name, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
+
+# Function to convert seconds to HH:MM:SS format
+def seconds_to_timestamp(seconds):
+    """Convert seconds to HH:MM:SS format."""
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    seconds = int(seconds % 60)
+    return f"{hours:02}:{minutes:02}:{seconds:02}"
 
 # Function to parse SRT files
 def parse_srt(file):
@@ -211,24 +275,30 @@ def download_transcript():
     if merged_transcripts:
         # Add a section explaining the format
         doc.add_paragraph("This document contains both audio transcripts and visual descriptions in chronological order.")
-        doc.add_paragraph("Timestamps are shown in seconds from the start of the video.")
+        doc.add_paragraph("Timestamps are shown in HH:MM:SS format.")
         
         # Add all merged transcripts in chronological order
         for entry in merged_transcripts:
             if len(entry) == 3:  # Audio entry (timestamp, text, "audio")
                 timestamp, text, source = entry
+                formatted_time = seconds_to_timestamp(timestamp)
                 para = doc.add_paragraph()
-                para.add_run(f"[{timestamp:.2f}s] ").bold = True
+                para.add_run(f"[{formatted_time}] ").bold = True
                 para.add_run(f"{text}")
             else:  # Visual entry (timestamp, text, "visual", frame_number)
                 timestamp, text, source, frame_number = entry
+                formatted_time = seconds_to_timestamp(timestamp)
                 para = doc.add_paragraph()
-                para.add_run(f"[{timestamp:.2f}s - Frame {frame_number}] ").bold = True
+                para.add_run(f"[{formatted_time} - Frame {frame_number}] ").bold = True
                 para.add_run(f"Visual Description: {text}").italic = True
     else:
         # Fall back to original subtitles if no merged transcripts
         for timestamp, text in st.session_state["subtitles"].items():
-            doc.add_paragraph(f"{timestamp}: {text}")
+            try:
+                formatted_time = seconds_to_timestamp(float(timestamp))
+                doc.add_paragraph(f"{formatted_time}: {text}")
+            except (ValueError, TypeError):
+                doc.add_paragraph(f"{timestamp}: {text}")
     
     temp_doc_path = tempfile.NamedTemporaryFile(delete=False, suffix=".docx").name
     doc.save(temp_doc_path)
@@ -305,45 +375,43 @@ st.session_state.setdefault("active_tab", 0)  # 0=Settings, 1=Media Upload, 2=Vi
 # Add flag for showing workspace after video processing
 st.session_state.setdefault("show_workspace", False)
 st.session_state["max_words"] = st.session_state.get("max_words", "20")
+st.session_state.get("prompt_categories", [])
+
+load_all_system_prompts()
+
 # Try to load settings
 get_settings()
 
 # GPT-4o settings
 if "gpt-4o" not in st.session_state:
     try:
-        # First try to load default (general) prompt from new prompt system
-        prompt_file_path = "database/prompts/general.json"
-        if os.path.exists(prompt_file_path):
-            with open(prompt_file_path, "r") as json_file:
-                gpt4o_data = json.load(json_file)
-                st.session_state['gpt-4o'] = {
-                    "prompt": gpt4o_data["prompt"], 
-                    "max_words": st.session_state["max_words"]
-                }
-                # Initial replacement
-                st.session_state['gpt-4o']["prompt"] = st.session_state['gpt-4o']["prompt"].replace(
-                    "%MAX_WORDS%", str(st.session_state["max_words"]))
+        # Initialize the gpt-4o dictionary with max_words
+        st.session_state['gpt-4o'] = {
+            "max_words": st.session_state["max_words"]
+        }
+        
+        # Check if "General Purpose" prompt was loaded by load_all_system_prompts
+        if "General Purpose" in st.session_state:
+            # Get the prompt text that was loaded by load_all_system_prompts
+            st.session_state['gpt-4o']["prompt"] = st.session_state["General Purpose"]
+            st.session_state.prompt_category = "general"
         # Fall back to legacy path for backward compatibility
         elif os.path.exists(r"utils\chat_GPT.json"):
             with open(r"utils\chat_GPT.json", "r") as json_file:
                 gpt4o_data = json.load(json_file)
-                st.session_state['gpt-4o'] = {
-                    "prompt": gpt4o_data["prompt"], 
-                    "max_words": st.session_state["max_words"]
-                }
-                # Initial replacement
-                st.session_state['gpt-4o']["prompt"] = st.session_state['gpt-4o']["prompt"].replace(
+                st.session_state['gpt-4o']["prompt"] = gpt4o_data.get("prompt", "").replace(
                     "%MAX_WORDS%", str(st.session_state["max_words"]))
+                st.session_state.prompt_category = "general"
         else:
             # Default fallback if no files found
-            st.session_state['gpt-4o'] = {"prompt": "Describe the image in detail.", "max_words": "100"}
-        
-        # Initialize prompt category
-        st.session_state.prompt_category = "general"
-            
+            st.session_state['gpt-4o']["prompt"] = f"Describe the image in detail in no more than {st.session_state['max_words']} words."
+            st.session_state.prompt_category = "general"
     except Exception as e:
         st.error(f"Error loading prompt settings: {e}")
-        st.session_state['gpt-4o'] = {"prompt": "Describe the image in detail.", "max_words": "100"}
+        st.session_state['gpt-4o'] = {
+            "prompt": f"Describe the image in detail in no more than {st.session_state['max_words']} words.",
+            "max_words": st.session_state["max_words"]
+        }
 
 # Sidebar setup
 st.sidebar.title("Saved Frames & Transcripts")
@@ -387,20 +455,20 @@ with settings_tab:
         st.session_state.frame_increment = int(increment_value)
         st.success(f"Frame increment updated to {st.session_state.frame_increment}")
     
-    st.markdown("---")
+    # st.markdown("---")
     
-    # Drawing Settings
-    st.subheader("Drawing Settings")
-    # Add drawing settings
-    # Add stroke width slider
-    stroke_width = st.slider("Stroke width:", 1, 25, st.session_state.stroke_slider, key='stroke_width_input')
-    if stroke_width != st.session_state.stroke_slider:
-        st.session_state.stroke_slider = stroke_width
+    # # Drawing Settings
+    # st.subheader("Drawing Settings")
+    # # Add drawing settings
+    # # Add stroke width slider
+    # stroke_width = st.slider("Stroke width:", 1, 25, st.session_state.stroke_slider, key='stroke_width_input')
+    # if stroke_width != st.session_state.stroke_slider:
+    #     st.session_state.stroke_slider = stroke_width
         
-    # Add color picker for stroke color
-    stroke_color = st.color_picker("Stroke color:", st.session_state.stroke_color, key='stroke_color_input')
-    if stroke_color != st.session_state.stroke_color:
-        st.session_state.stroke_color = stroke_color
+    # # Add color picker for stroke color
+    # stroke_color = st.color_picker("Stroke color:", st.session_state.stroke_color, key='stroke_color_input')
+    # if stroke_color != st.session_state.stroke_color:
+    #     st.session_state.stroke_color = stroke_color
     
     st.markdown("---")
     
@@ -638,32 +706,26 @@ with workspace_tab:
                 selected_category = category_mapping[prompt_category]
                 if st.session_state.prompt_category != selected_category:
                     st.session_state.prompt_category = selected_category
-                    # Load the appropriate prompt from the JSON file
-                    try:
-                        with open(f"database/prompts/{selected_category}.json", "r") as json_file:
-                            prompt_data = json.load(json_file)
-                            st.session_state['gpt-4o'] = {
-                                "prompt": prompt_data["prompt"], 
-                                "max_words": st.session_state["max_words"]
-                            }
-                            # Replace placeholder with actual max words
-                            st.session_state['gpt-4o']["prompt"] = st.session_state['gpt-4o']["prompt"].replace(
-                                "%MAX_WORDS%", str(st.session_state["max_words"]))
-                            st.success(f"Loaded {prompt_data['name']} prompt")
-                    except Exception as e:
-                        st.error(f"Error loading prompt: {e}")
+                    
+                    # Get the prompt text directly from session state using the prompt's display name
+                    if prompt_category in st.session_state:
+                        # Use the prompt text that was already loaded by load_all_system_prompts
+                        st.session_state['gpt-4o']["prompt"] = st.session_state[prompt_category]
+                        st.success(f"Loaded {prompt_category} prompt")
+                    else:
+                        # If not found in session state, try to load it from file
+                        try:
+                            with open(f"database/prompts/{selected_category}.json", "r") as json_file:
+                                prompt_data = json.load(json_file)
+                                st.session_state['gpt-4o']["prompt"] = prompt_data["prompt"].replace(
+                                    "%MAX_WORDS%", str(st.session_state["max_words"]))
+                                st.success(f"Loaded {prompt_data['name']} prompt")
+                        except Exception as e:
+                            st.error(f"Error loading prompt: {e}")
                 
-                # Display current prompt
-                current_prompt = st.session_state['gpt-4o'].get("prompt", "No prompt available")
-                st.markdown(f"### Current Prompt")
-                st.text_area(
-                    "Current prompt (resizable)",
-                    value=current_prompt,
-                    height=100,
-                    key="prompt_display_area",
-                    disabled=True,
-                    label_visibility="collapsed"
-                )
+                # Instead of displaying the full prompt, just show which prompt category is active
+                st.markdown(f"### Using {prompt_category} prompt")
+                st.info(f"Maximum word count: {st.session_state['max_words']} words")
                 
                 st.markdown("---")  # Add separator
                 
@@ -927,23 +989,28 @@ with workspace_tab:
             for entry in merged_transcripts:
                 if len(entry) == 3:  # Audio entry (timestamp, text, "audio")
                     timestamp, text, source = entry
-                    st.write(f"**[{timestamp:.2f}s]** {text}")
+                    formatted_time = seconds_to_timestamp(timestamp)
+                    st.write(f"**[{formatted_time}]** {text}")
                 else:  # Visual entry (timestamp, text, "visual", frame_number)
                     timestamp, text, source, frame_number = entry
-                    st.write(f"**[{timestamp:.2f}s - Frame {frame_number}]** 🖼️ *{text}*")
+                    formatted_time = seconds_to_timestamp(timestamp)
+                    st.write(f"**[{formatted_time} - Frame {frame_number}]** 🖼️ *{text}*")
                 
             # Add a download option for the combined transcript
             if st.button("Update Combined Transcript Document"):
                 # Create a new document with merged transcripts
                 doc = Document()
                 doc.add_heading("Combined Visual and Audio Transcript", level=1)
+                doc.add_paragraph("Timestamps are shown in HH:MM:SS format.")
                 for entry in merged_transcripts:
                     if len(entry) == 3:  # Audio entry
                         timestamp, text, source = entry
-                        doc.add_paragraph(f"[{timestamp:.2f}s] {text}")
+                        formatted_time = seconds_to_timestamp(timestamp)
+                        doc.add_paragraph(f"[{formatted_time}] {text}")
                     else:  # Visual entry
                         timestamp, text, source, frame_number = entry
-                        doc.add_paragraph(f"[{timestamp:.2f}s - Frame {frame_number}] {text}")
+                        formatted_time = seconds_to_timestamp(timestamp)
+                        doc.add_paragraph(f"[{formatted_time} - Frame {frame_number}] {text}")
                 
                 # Save and offer for download
                 temp_doc_path = tempfile.NamedTemporaryFile(delete=False, suffix=".docx").name
@@ -962,6 +1029,15 @@ with workspace_tab:
 # Sidebar: Display Saved Frames 
 # -----------------------------------------------
 with st.sidebar:
+    # Add logout button at the top of the sidebar
+    if st.button("Logout", key="logout_button"):
+        st.session_state.authenticated = False
+        st.experimental_rerun()
+    
+    # Display authentication status
+    st.sidebar.success("✅ Authenticated")
+    st.sidebar.markdown("---")
+        
     st.markdown("### Selected Frames for Transcription")
     
     # Check if saved_frames exists and is not empty
