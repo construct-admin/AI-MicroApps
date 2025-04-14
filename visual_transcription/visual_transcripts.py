@@ -17,21 +17,45 @@ from dotenv import load_dotenv
 st.set_page_config(page_title="VT Generator", page_icon="🖼️", layout="wide")
 load_dotenv()
 
+# Initialize session state variables
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+    
+if "max_words" not in st.session_state:
+    st.session_state["max_words"] = "20"
+    
+if "prompt_category" not in st.session_state:
+    st.session_state.prompt_category = "general"
+
 def load_all_system_prompts():
-    path_to_prompts = "database\prompts"
-    for file in os.listdir(path_to_prompts):
-        with open(os.path.join(path_to_prompts, file), "r") as json_file:
-            json_data = json.load(json_file)
-            # Store the prompt text in session state using the name as the key
-            st.session_state[json_data["name"]] = json_data["prompt"].replace("%MAX_WORDS%", str(st.session_state["max_words"]))
+    try:
+        path_to_prompts = os.path.join("database", "prompts")
+        if not os.path.exists(path_to_prompts):
+            # Try alternative path
+            path_to_prompts = os.path.join("visual_transcription", "database", "prompts")
+            if not os.path.exists(path_to_prompts):
+                st.warning(f"Prompts directory not found at '{path_to_prompts}'. Using default values.")
+                return
+                
+        # If we get here, the directory exists
+        for file in os.listdir(path_to_prompts):
+            if not file.endswith('.json'):
+                continue
+                
+            try:
+                with open(os.path.join(path_to_prompts, file), "r") as json_file:
+                    json_data = json.load(json_file)
+                    # Store the prompt text in session state using the name as the key
+                    st.session_state[json_data["name"]] = json_data["prompt"].replace("%MAX_WORDS%", str(st.session_state["max_words"]))
+            except Exception as file_error:
+                st.warning(f"Error loading prompt file {file}: {file_error}")
+    except Exception as e:
+        st.warning(f"Error in load_all_system_prompts: {e}")
+        # Continue execution even if loading fails
 
 # Add password authentication
 def check_password():
     """Returns True if the password is correct, False otherwise."""
-    # Initialize session state for authentication
-    if "authenticated" not in st.session_state:
-        st.session_state.authenticated = False
-    
     # If already authenticated, return True
     if st.session_state.authenticated:
         return True
@@ -59,13 +83,8 @@ def check_password():
                 st.error("Incorrect password. Please try again.")
                 return False
     
-    # Display a placeholder image if available
-    try:
-        placeholder_image_path = "\image_place_holder.png"
-        if os.path.exists(placeholder_image_path):
-            st.image(placeholder_image_path, use_column_width=True, caption="VT Generator - Visual Transcription Service")
-    except:
-        st.markdown("### VT Generator - Visual Transcription Service")
+    # Display application title only (removed placeholder image)
+    st.markdown("### VT Generator - Visual Transcription Service")
     
     return False
 
@@ -374,7 +393,6 @@ st.session_state.setdefault("stroke_color", "#00FF00")
 st.session_state.setdefault("active_tab", 0)  # 0=Settings, 1=Media Upload, 2=Visual Transcription
 # Add flag for showing workspace after video processing
 st.session_state.setdefault("show_workspace", False)
-st.session_state["max_words"] = st.session_state.get("max_words", "20")
 st.session_state.get("prompt_categories", [])
 
 load_all_system_prompts()
@@ -661,8 +679,23 @@ with media_tab:
 
 
         else:
-            # Display a disabled button or message when no video is uploaded
-             st.write("Please upload a video before processing.") # Changed from button to text
+            # Display a message when no video is uploaded (removed placeholder image)
+            st.info("Please upload a video in the Media Upload tab to begin.")
+            
+            # Add a button to allow resetting the session state if needed
+            if st.session_state.get("uploaded", False) or st.session_state.get("video") is not None:
+                if st.button("Reset Video State"):
+                    # Clean up video if it exists
+                    if "video" in st.session_state and st.session_state.video is not None:
+                        try:
+                            st.session_state.video.release()
+                        except:
+                            pass
+                    # Reset all video-related state variables
+                    st.session_state.video = None
+                    st.session_state.uploaded = False
+                    st.session_state.frame_number = 0
+                    st.experimental_rerun()
 
 
 # -----------------------------------------------
@@ -944,17 +977,9 @@ with workspace_tab:
                     pass
                 st.session_state.video = None
     else:
-        # Display a placeholder when no video is uploaded
-        try:
-            placeholder_image_path = "\image_place_holder.png"
-            if os.path.exists(placeholder_image_path):
-                # Display the placeholder image
-                st.image(placeholder_image_path, use_column_width=True, caption="Please upload a video in the Media Upload tab to begin.")
-            else:
-                st.info("Please upload a video in the Media Upload tab to begin.")
-        except Exception as e:
-            st.info("Please upload a video in the Media Upload tab to begin.")
-            
+        # Display a message when no video is uploaded (removed placeholder image)
+        st.info("Please upload a video in the Media Upload tab to begin.")
+        
         # Add a button to allow resetting the session state if needed
         if st.session_state.get("uploaded", False) or st.session_state.get("video") is not None:
             if st.button("Reset Video State"):
