@@ -1,0 +1,67 @@
+[
+    {
+      "time_stamp": "00:00:00",
+      "transcripts": "Hello, welcome to our audio transcription demonstration.",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:00:05",
+      "transcripts": "Today we will be discussing various topics in technology.",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:00:10",
+      "transcripts": "This is a sample transcription segment designed to illustrate our JSON structure.",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:00:15",
+      "transcripts": "Feel free to customize these texts with actual transcriptions from your audio files.",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:00:20",
+      "transcripts": "Thank you for using our transcription service!",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:01:00",
+      "transcripts": "Let's dive deeper into the world of artificial intelligence.",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:02:00",
+      "transcripts": "Machine learning is a subset of AI that focuses on data and algorithms.",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:03:00",
+      "transcripts": "Deep learning is a more advanced form of machine learning.",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:04:00",
+      "transcripts": "Neural networks are the backbone of deep learning.",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:05:00",
+      "transcripts": "Data science is an interdisciplinary field that uses scientific methods to extract knowledge from data.",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:06:00",
+      "transcripts": "Big data refers to data sets that are too large or complex for traditional data-processing software.",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:07:00",
+      "transcripts": "Cloud computing provides on-demand computing resources over the internet.",
+      "mode": "AT"
+    },
+    {
+      "time_stamp": "00:08:00",
+      "transcripts": "Thank you for joining us in this exploration of technology.",
+      "mode": "AT"
+    }
+  ]
