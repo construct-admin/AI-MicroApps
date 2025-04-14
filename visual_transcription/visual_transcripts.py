@@ -60,12 +60,12 @@ def check_password():
                 return False
     
     # Display a placeholder image if available
-    try:
-        placeholder_image_path = "\image_place_holder.png"
-        if os.path.exists(placeholder_image_path):
-            st.image(placeholder_image_path, use_column_width=True, caption="VT Generator - Visual Transcription Service")
-    except:
-        st.markdown("### VT Generator - Visual Transcription Service")
+    # try:
+    #     placeholder_image_path = "\image_place_holder.png"
+    #     if os.path.exists(placeholder_image_path):
+    #         st.image(placeholder_image_path, use_column_width=True, caption="VT Generator - Visual Transcription Service")
+    # except:
+    #     st.markdown("### VT Generator - Visual Transcription Service")
     
     return False
 
