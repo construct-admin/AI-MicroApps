@@ -1,7 +1,7 @@
 {
-    "frame_increment": 1,
-    "stroke_slider": 3,
-    "stroke_color": "#00FF00",
+    "frame_increment": 10,
+    "stroke_slider": 2,
+    "stroke_color": "#29357b",
     "max_words": "100",
     "prompt_category": "general"
 }

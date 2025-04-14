@@ -6166,3 +6166,13 @@ For more information refer to the [docs](https://docs.streamlit.io/library/api-r
 2025-04-12 00:32:11,755 - login_logger - INFO - Project created successfully: Hello Jacques for user: Jacques
 2025-04-12 00:32:11,755 - login_logger - INFO - Project created successfully: Hello Jacques for user: Jacques
 2025-04-12 00:32:11,755 - login_logger - INFO - Project created successfully: Hello Jacques for user: Jacques
+2025-04-14 10:39:09,003 - login_logger - INFO - Login module initialized
+2025-04-14 10:39:56,250 - login_logger - INFO - Login attempt: Shaun
+2025-04-14 10:39:56,252 - login_logger - INFO - User Shaun logged in successfully
+2025-04-14 10:40:15,966 - login_logger - INFO - Attempting to load project: test
+2025-04-14 10:40:16,008 - login_logger - INFO - Video file found at: database\users\Shaun\projects\test\videos\project_video.mp4
+2025-04-14 10:40:21,025 - login_logger - INFO - Video properties: 1916x1024, 30.0 fps, 6256 frames
+2025-04-14 10:40:21,029 - login_logger - INFO - Using subtitles loaded from JSON file instead of processing SRT
+2025-04-14 10:40:21,030 - login_logger - INFO - Set current_project as dictionary with name: test
+2025-04-14 10:40:21,031 - login_logger - INFO - Project test loaded successfully
+2025-04-14 10:43:55,224 - login_logger - INFO - Settings saved successfully for user: Shaun
