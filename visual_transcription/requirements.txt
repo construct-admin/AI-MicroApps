@@ -8,4 +8,4 @@ openai
 docx
 python-docx
 pillow==9.4.0
-
+python=3.10
