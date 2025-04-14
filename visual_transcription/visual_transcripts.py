@@ -1006,7 +1006,11 @@ with workspace_tab:
         st.write(st.session_state.audio_transcript)
     else:
         # Get merged transcripts in chronological order
-        merged_transcripts = merge_transcripts()
+        try:
+            merged_transcripts = merge_transcripts()
+        except Exception as e:
+            st.error(f"Error merging transcripts: {e}")
+            merged_transcripts = []
         
         if merged_transcripts:
             st.write("Showing all transcripts in chronological order:")
