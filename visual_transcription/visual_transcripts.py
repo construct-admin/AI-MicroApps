@@ -624,8 +624,6 @@ with media_tab:
                         temp_file.write(st.session_state.pending_video_file.read())
                         temp_file_path = temp_file.name
                     st.write(f'Video saved temporarily.')
-                    st.write("Temp file path:", temp_file_path)
-                    st.write("File exists:", os.path.exists(temp_file_path))    
                     if not os.path.exists(temp_file_path):
                         st.error('Temporary file was not created successfully.')
                         st.session_state.uploaded = False
@@ -638,7 +636,6 @@ with media_tab:
                             st.session_state.video.release()
 
                         st.session_state.video = cv2.VideoCapture(temp_file_path)
-                        st.write("Video opened:", st.session_state.video.isOpened())
                         if st.session_state.video.isOpened():
                             st.session_state.total_frames = int(st.session_state.video.get(cv2.CAP_PROP_FRAME_COUNT))
                             st.session_state.uploaded = True
@@ -772,10 +769,6 @@ with workspace_tab:
                 
                 video_obj.set(cv2.CAP_PROP_POS_FRAMES, st.session_state.frame_number)
                 ret, frame_bgr = video_obj.read()  # Keep original frame in BGR
-                st.error("Could not read frame — either EOF, bad video, or frame index issue.")
-                st.write("Total frames:", st.session_state.total_frames)
-                st.write("Current frame index:", st.session_state.frame_number)
-
 
                 if ret:
                     # --- Prepare for Canvas ---
@@ -906,111 +899,107 @@ with workspace_tab:
                                 video_obj.set(cv2.CAP_PROP_POS_FRAMES, st.session_state.frame_number)
                                 ret_save, frame_bgr_save = video_obj.read()
 
-                                if st.session_state.frame_number >= st.session_state.total_frames:
-                                    st.warning("Frame number out of range. Resetting to 0.")
-                                    st.session_state.frame_number = 0
+                                if ret_save:
+                                    saved_image_data_rgb = None
+                                    is_cropped_flag = False
 
-                                    if ret_save:
-                                        saved_image_data_rgb = None
-                                        is_cropped_flag = False
-
-                                        # Check if there's a crop to use
-                                        if current_processed_crop_bgr is not None and current_processed_crop_bgr.size > 0:
-                                            # Save the cropped version (convert to RGB)
-                                            saved_image_data_rgb = cv2.cvtColor(current_processed_crop_bgr, cv2.COLOR_BGR2RGB)
-                                            is_cropped_flag = True
-                                            st.success(f"Saving **cropped** frame {st.session_state.frame_number}")
-                                        else:
-                                            # Save the full frame version (convert to RGB)
-                                            saved_image_data_rgb = cv2.cvtColor(frame_bgr_save, cv2.COLOR_BGR2RGB)
-                                            is_cropped_flag = False
-                                            st.success(f"Saving **full** frame {st.session_state.frame_number}")
-
-                                        # Store in session state with frame info
-                                        try:
-                                            # Create a copy of the numpy array
-                                            frame_copy = saved_image_data_rgb.copy()
-                                            
-                                            # Store in session state with clear structure
-                                            st.session_state.saved_frames[st.session_state.frame_number] = {
-                                                'frame': frame_copy, # Store RGB numpy array copy
-                                                'frame_number': st.session_state.frame_number,
-                                                'is_cropped': is_cropped_flag,
-                                                'has_visual_transcripts': False,
-                                                'getting_visual_transcripts': False,
-                                                'visual_transcripts': None
-                                            }
-                                            
-                                            # Increment the canvas key to force a redraw/clear of the canvas
-                                            st.session_state.canvas_key += 1
-                                            
-                                            # Clear the crop preview after saving
-                                            current_processed_crop_bgr = None
-                                            
-                                            st.success(f"Saved frame {st.session_state.frame_number}")
-                                            st.experimental_rerun()
-                                        except Exception as save_error:
-                                            st.error(f"Error saving frame: {save_error}")
+                                    # Check if there's a crop to use
+                                    if current_processed_crop_bgr is not None and current_processed_crop_bgr.size > 0:
+                                        # Save the cropped version (convert to RGB)
+                                        saved_image_data_rgb = cv2.cvtColor(current_processed_crop_bgr, cv2.COLOR_BGR2RGB)
+                                        is_cropped_flag = True
+                                        st.success(f"Saving **cropped** frame {st.session_state.frame_number}")
                                     else:
-                                        st.error('Could not capture the frame to save.')
-                                else:
-                                    st.error("Video is not available. Please load your video in the Media Upload tab.")
+                                        # Save the full frame version (convert to RGB)
+                                        saved_image_data_rgb = cv2.cvtColor(frame_bgr_save, cv2.COLOR_BGR2RGB)
+                                        is_cropped_flag = False
+                                        st.success(f"Saving **full** frame {st.session_state.frame_number}")
 
-                        with col3:
-                            if st.button(f'➡️ Forward {st.session_state.frame_increment} Frame{"s" if st.session_state.frame_increment > 1 else ""}'):
-                                if st.session_state.frame_number < st.session_state.total_frames - 1:
-                                    # Calculate new frame number with bounds checking
-                                    new_frame = st.session_state.frame_number + st.session_state.frame_increment
-                                    # Ensure we don't go beyond the last frame
-                                    st.session_state.frame_number = min(st.session_state.total_frames - 1, new_frame)
-                                    # Clear transient crop when navigating away
+                                    # Store in session state with frame info
                                     try:
+                                        # Create a copy of the numpy array
+                                        frame_copy = saved_image_data_rgb.copy()
+                                        
+                                        # Store in session state with clear structure
+                                        st.session_state.saved_frames[st.session_state.frame_number] = {
+                                            'frame': frame_copy, # Store RGB numpy array copy
+                                            'frame_number': st.session_state.frame_number,
+                                            'is_cropped': is_cropped_flag,
+                                            'has_visual_transcripts': False,
+                                            'getting_visual_transcripts': False,
+                                            'visual_transcripts': None
+                                        }
+                                        
+                                        # Increment the canvas key to force a redraw/clear of the canvas
+                                        st.session_state.canvas_key += 1
+                                        
+                                        # Clear the crop preview after saving
                                         current_processed_crop_bgr = None
-                                    except:
-                                        pass
-                                    st.experimental_rerun()
-                    else:
-                        st.error(f'Could not read frame {st.session_state.frame_number}. End of video or error.')
-                        
-                        # Add a button to allow resetting the video
-                        if st.button("Reset Video"):
-                            if "video" in st.session_state:
+                                        
+                                        st.success(f"Saved frame {st.session_state.frame_number}")
+                                        st.experimental_rerun()
+                                    except Exception as save_error:
+                                        st.error(f"Error saving frame: {save_error}")
+                                else:
+                                    st.error('Could not capture the frame to save.')
+                            else:
+                                st.error("Video is not available. Please load your video in the Media Upload tab.")
+
+                    with col3:
+                        if st.button(f'➡️ Forward {st.session_state.frame_increment} Frame{"s" if st.session_state.frame_increment > 1 else ""}'):
+                            if st.session_state.frame_number < st.session_state.total_frames - 1:
+                                # Calculate new frame number with bounds checking
+                                new_frame = st.session_state.frame_number + st.session_state.frame_increment
+                                # Ensure we don't go beyond the last frame
+                                st.session_state.frame_number = min(st.session_state.total_frames - 1, new_frame)
+                                # Clear transient crop when navigating away
                                 try:
-                                    st.session_state.video.release()
+                                    current_processed_crop_bgr = None
                                 except:
                                     pass
-                            st.session_state.video = None
-                            st.session_state.uploaded = False
-                            st.experimental_rerun()
-            except Exception as e:
-                st.error(f"Error accessing or processing video: {e}")
-                st.info("Please try uploading your video again in the Media Upload tab.")
-                # Reset video-related session state to force clean reload
-                st.session_state.uploaded = False
-                if "video" in st.session_state:
+                                st.experimental_rerun()
+                else:
+                    st.error(f'Could not read frame {st.session_state.frame_number}. End of video or error.')
+                    
+                    # Add a button to allow resetting the video
+                    if st.button("Reset Video"):
+                        if "video" in st.session_state:
+                            try:
+                                st.session_state.video.release()
+                            except:
+                                pass
+                        st.session_state.video = None
+                        st.session_state.uploaded = False
+                        st.experimental_rerun()
+        except Exception as e:
+            st.error(f"Error accessing or processing video: {e}")
+            st.info("Please try uploading your video again in the Media Upload tab.")
+            # Reset video-related session state to force clean reload
+            st.session_state.uploaded = False
+            if "video" in st.session_state:
+                try:
+                    st.session_state.video.release()
+                except:
+                    pass
+                st.session_state.video = None
+    else:
+        # Display a message when no video is uploaded (removed placeholder image)
+        st.info("Please upload a video in the Media Upload tab to begin.")
+        
+        # Add a button to allow resetting the session state if needed
+        if st.session_state.get("uploaded", False) or st.session_state.get("video") is not None:
+            if st.button("Reset Video State"):
+                # Clean up video if it exists
+                if "video" in st.session_state and st.session_state.video is not None:
                     try:
                         st.session_state.video.release()
                     except:
                         pass
-                    st.session_state.video = None
-        else:
-            # Display a message when no video is uploaded (removed placeholder image)
-            st.info("Please upload a video in the Media Upload tab to begin.")
-            
-            # Add a button to allow resetting the session state if needed
-            if st.session_state.get("uploaded", False) or st.session_state.get("video") is not None:
-                if st.button("Reset Video State"):
-                    # Clean up video if it exists
-                    if "video" in st.session_state and st.session_state.video is not None:
-                        try:
-                            st.session_state.video.release()
-                        except:
-                            pass
-                    # Reset all video-related state variables
-                    st.session_state.video = None
-                    st.session_state.uploaded = False
-                    st.session_state.frame_number = 0
-                    st.experimental_rerun()
+                # Reset all video-related state variables
+                st.session_state.video = None
+                st.session_state.uploaded = False
+                st.session_state.frame_number = 0
+                st.experimental_rerun()
     
     # --- Display Final Transcript Information (moved into the workspace tab) ---
     st.markdown("---")
