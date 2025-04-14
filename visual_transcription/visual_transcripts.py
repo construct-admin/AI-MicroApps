@@ -83,9 +83,6 @@ def check_password():
                 st.error("Incorrect password. Please try again.")
                 return False
     
-    # Display application title only (removed placeholder image)
-    st.markdown("### VT Generator - Visual Transcription Service")
-    
     return False
 
 # Check authentication before showing the main application
