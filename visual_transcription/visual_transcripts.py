@@ -332,6 +332,7 @@ def merge_transcripts():
     Returns a list of (timestamp, text, source_type) tuples sorted by timestamp.
     """
     combined_entries = []
+
     
     # Add entries from audio transcripts (subtitles)
     if st.session_state["subtitles"]:
@@ -373,6 +374,7 @@ st.session_state.setdefault("saved_subtitles", [])
 st.session_state.setdefault("frame_index", 0)
 st.session_state.setdefault("frame_subtitle_map", {})
 st.session_state.setdefault("subtitles", {})
+st.session_state.get("subtitles", {})
 st.session_state.setdefault("transcriptions", {})
 # New session state to track which transcriptions have been inserted into the transcript
 st.session_state.setdefault("inserted_transcriptions", set())
