@@ -289,7 +289,11 @@ def download_transcript():
     doc.add_heading("Visual Transcript", level=1)
     
     # Use the merged transcripts for a more comprehensive document
-    merged_transcripts = merge_transcripts()
+    try:
+        merged_transcripts = merge_transcripts()
+    except Exception as e:
+        st.error(f"Error merging transcripts: {e}")
+        merged_transcripts = []
     
     if merged_transcripts:
         # Add a section explaining the format
