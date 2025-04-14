@@ -725,7 +725,6 @@ with workspace_tab:
                 
                 # Instead of displaying the full prompt, just show which prompt category is active
                 st.markdown(f"### Using {prompt_category} prompt")
-                st.info(f"Maximum word count: {st.session_state['max_words']} words")
                 
                 st.markdown("---")  # Add separator
                 
