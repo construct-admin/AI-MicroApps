@@ -83,6 +83,9 @@ def check_password():
                 st.error("Incorrect password. Please try again.")
                 return False
     
+    # Display application title only (removed placeholder image)
+    st.markdown("### VT Generator - Visual Transcription Service")
+    
     return False
 
 # Check authentication before showing the main application
@@ -905,19 +908,12 @@ with workspace_tab:
                     # Use the canvas_key from session state to force redraw when needed
                     current_canvas_key = f"main_canvas_video_{st.session_state.canvas_key}"
                     try:
-                        # Resize the image to 10% of its original size
-                        reduced_width = int(display_width * 0.1)
-                        reduced_height = int(display_height * 0.1)
-                        reduced_image = pil_image_bg.resize((reduced_width, reduced_height), Image.LANCZOS)
-                        # Scale back up to maintain display dimensions
-                        display_image = reduced_image.resize((display_width, display_height), Image.NEAREST)
-                        
                         canvas_result = st_canvas(
                             fill_color="rgba(255, 165, 0, 0.3)",
                             stroke_width=st.session_state.get('stroke_slider', 3), # Use stroke width from settings
                             stroke_color=st.session_state.get('stroke_color', '#00FF00'), # Use stroke color from settings
                             background_color="#eee",
-                            background_image=display_image, # Use reduced resolution image
+                            background_image=pil_image_bg, # Use PIL image here
                             update_streamlit=True,
                             height=display_height, # Use calculated height to maintain aspect ratio
                             width=display_width,   # Use calculated display size
